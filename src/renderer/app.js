@@ -13,6 +13,7 @@ let lastRenderedMVP = null;
 let currentHolderMVP = null;
 let degenTokenAddresses = new Set();
 let holderTokenAddresses = new Set();
+let expandedTokenAddress = null; // Track which token is currently expanded
 
 class DexterApp {
   constructor() {
@@ -671,7 +672,7 @@ class DexterApp {
       };
 
       return `
-        <div class="token-row ${rankClass}" data-address="${token.contractAddress}" title="Click to copy address">
+        <div class="token-row ${rankClass}" data-address="${token.contractAddress}" data-has-components="${token.components ? 'true' : 'false'}" data-is-mvp="${token.isMVP ? 'true' : 'false'}" title="Click to copy address">
           <div class="token-rank">${token.rank}</div>
           <div class="token-main">
             <div class="token-icon">${iconHtml}</div>
@@ -684,6 +685,7 @@ class DexterApp {
           <div class="token-cell current">${currentMc}${mcArrows}</div>
           <div class="token-cell volume">${volume}${volArrows}</div>
           <div class="token-cell net ${netClass}">${netDisplay}</div>
+          <div class="token-cell score">${token.score !== null ? token.score.toFixed(1) : 'N/A'}</div>
           <div class="token-cell time">${timeAgo}</div>
           <div class="token-cell peak">${multiplier}</div>
           <div class="token-actions">
@@ -691,6 +693,9 @@ class DexterApp {
           </div>
           <div class="token-actions">
             <button class="token-action-btn telegram-btn" data-address="${token.contractAddress}" title="Send to Telegram">⇡</button>
+          </div>
+          <div class="token-score-breakdown" style="display: none;">
+            ${this.renderTokenScoreBreakdown(token)}
           </div>
         </div>
       `;
@@ -701,6 +706,118 @@ class DexterApp {
     this.setupCardClickListeners();
     this.setupBlacklistListeners();
     this.setupTelegramListeners();
+  }
+
+  renderTokenScoreBreakdown(token) {
+    if (!token.components) {
+      return '<div class="breakdown-unavailable">Score breakdown not available</div>';
+    }
+
+    const components = token.components;
+    const buyPressure = components.buyPressure || { raw: 0, weighted: 0 };
+    const netBuyVolume = components.netBuyVolume || { raw: 0, weighted: 0 };
+    const txnsVelocity = components.txnsVelocity || { raw: 0, weighted: 0 };
+    const priceMomentum = components.priceMomentum || { raw: 0, weighted: 0 };
+    const sseMomentum = components.sseMomentum || { raw: 0, weighted: 0 };
+
+    const buyPressureColor = this.getBuyPressureColor(buyPressure.raw);
+    const buyPressurePercent = (buyPressure.raw * 100).toFixed(1);
+    const netBuyVolumeColor = netBuyVolume.raw >= 0 ? '#4ade80' : '#f87171';
+    const priceMomentumColor = priceMomentum.raw >= 0 ? '#4ade80' : '#f87171';
+    const sseMomentumColor = sseMomentum.raw >= 0 ? '#4ade80' : '#f87171';
+    const metricsFresh = token.metricsFresh !== undefined ? token.metricsFresh : true;
+
+    return `
+      <div class="token-breakdown">
+        <div class="breakdown-header">
+          <span class="breakdown-title">Score Breakdown</span>
+          <span class="breakdown-total">${token.score.toFixed(1)} pts</span>
+        </div>
+
+        <div class="mvp-breakdown">
+          <!-- Buy Pressure -->
+          <div class="mvp-breakdown-item">
+            <div class="mvp-breakdown-label">
+              <span class="mvp-breakdown-icon">📈</span>
+              Buy Pressure
+            </div>
+            <div class="mvp-breakdown-values">
+              <span style="color: ${buyPressureColor}">${buyPressurePercent}%</span>
+              <span class="mvp-breakdown-contribution" style="color: #60a5fa">
+                → ${buyPressure.weighted.toFixed(1)} pts
+              </span>
+            </div>
+            <div class="mvp-breakdown-bar">
+              <div class="mvp-breakdown-fill" style="width: ${buyPressurePercent}%; background: ${buyPressureColor}"></div>
+            </div>
+          </div>
+
+          <!-- Net Buy Volume -->
+          <div class="mvp-breakdown-item">
+            <div class="mvp-breakdown-label">
+              <span class="mvp-breakdown-icon">💰</span>
+              Net Buy Volume
+            </div>
+            <div class="mvp-breakdown-values">
+              <span style="color: ${netBuyVolumeColor}">${this.formatUSD(netBuyVolume.raw)}</span>
+              <span class="mvp-breakdown-contribution" style="color: #a78bfa">
+                → ${netBuyVolume.weighted.toFixed(1)} pts
+              </span>
+            </div>
+          </div>
+
+          <!-- Transaction Velocity -->
+          <div class="mvp-breakdown-item">
+            <div class="mvp-breakdown-label">
+              <span class="mvp-breakdown-icon">⚡</span>
+              Txns Velocity
+            </div>
+            <div class="mvp-breakdown-values">
+              <span>${txnsVelocity.raw} txns/5m</span>
+              <span class="mvp-breakdown-contribution" style="color: #fbbf24">
+                → ${txnsVelocity.weighted.toFixed(1)} pts
+              </span>
+            </div>
+          </div>
+
+          <!-- Price Momentum -->
+          <div class="mvp-breakdown-item">
+            <div class="mvp-breakdown-label">
+              <span class="mvp-breakdown-icon">🚀</span>
+              Price Momentum
+            </div>
+            <div class="mvp-breakdown-values">
+              <span style="color: ${priceMomentumColor}">
+                ${priceMomentum.raw >= 0 ? '+' : ''}${priceMomentum.raw.toFixed(1)}%
+              </span>
+              <span class="mvp-breakdown-contribution" style="color: #34d399">
+                → ${priceMomentum.weighted.toFixed(1)} pts
+              </span>
+            </div>
+          </div>
+
+          <!-- SSE Momentum -->
+          <div class="mvp-breakdown-item">
+            <div class="mvp-breakdown-label">
+              <span class="mvp-breakdown-icon">📡</span>
+              SSE Momentum
+            </div>
+            <div class="mvp-breakdown-values">
+              <span style="color: ${sseMomentumColor}">
+                ${sseMomentum.raw >= 0 ? '+' : ''}${(sseMomentum.raw * 100).toFixed(1)}%
+              </span>
+              <span class="mvp-breakdown-contribution" style="color: #f472b6">
+                → ${sseMomentum.weighted.toFixed(1)} pts
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="breakdown-metrics-status">
+          Metrics: ${metricsFresh ? '<span style="color: #4ade80">✓ Fresh</span>' : '<span style="color: #f87171">⚠ Stale</span>'}
+        </div>
+      </div>
+    `;
   }
 
   updateTokensInPlace(sortedTokens) {
@@ -771,6 +888,10 @@ class DexterApp {
         }
       }
 
+      // Update score
+      const scoreDisplay = token.score !== null ? token.score.toFixed(1) : 'N/A';
+      updateIfChanged('.token-cell.score', scoreDisplay);
+
       // Only update time if it changed significantly (to avoid constant updates)
       if (!prevData.lastTimeUpdate || Date.now() - prevData.lastTimeUpdate > 1000) {
         updateIfChanged('.token-cell.time', timeAgo);
@@ -778,6 +899,14 @@ class DexterApp {
       }
 
       updateIfChanged('.token-cell.peak', token.multiplier);
+
+      // Update expanded breakdown if this token is expanded
+      if (expandedTokenAddress === token.contractAddress) {
+        const breakdown = row.querySelector('.token-score-breakdown');
+        if (breakdown && token.components) {
+          this.updateTokenBreakdown(breakdown, token);
+        }
+      }
 
       // Store previous data
       previousTokenData[token.contractAddress] = {
@@ -787,6 +916,119 @@ class DexterApp {
         lastTimeUpdate: prevData.lastTimeUpdate || Date.now()
       };
     });
+  }
+
+  updateTokenBreakdown(breakdownEl, token) {
+    if (!token.components) return;
+
+    const components = token.components;
+    const buyPressure = components.buyPressure || { raw: 0, weighted: 0 };
+    const netBuyVolume = components.netBuyVolume || { raw: 0, weighted: 0 };
+    const txnsVelocity = components.txnsVelocity || { raw: 0, weighted: 0 };
+    const priceMomentum = components.priceMomentum || { raw: 0, weighted: 0 };
+    const sseMomentum = components.sseMomentum || { raw: 0, weighted: 0 };
+
+    const breakdownItems = breakdownEl.querySelectorAll('.mvp-breakdown-item');
+
+    // Update total score
+    const totalEl = breakdownEl.querySelector('.breakdown-total');
+    if (totalEl) {
+      const newTotal = token.score.toFixed(1);
+      if (totalEl.textContent !== newTotal) {
+        totalEl.textContent = newTotal;
+      }
+    }
+
+    // Buy Pressure (item 0)
+    if (breakdownItems[0]) {
+      const valEl = breakdownItems[0].querySelector('.mvp-breakdown-values span:first-child');
+      const ptsEl = breakdownItems[0].querySelector('.mvp-breakdown-contribution');
+      const barEl = breakdownItems[0].querySelector('.mvp-breakdown-fill');
+
+      const newBuyPressure = `${(buyPressure.raw * 100).toFixed(1)}%`;
+      const buyPressureColor = this.getBuyPressureColor(buyPressure.raw);
+
+      if (valEl && valEl.textContent !== newBuyPressure) {
+        valEl.textContent = newBuyPressure;
+        valEl.style.color = buyPressureColor;
+      }
+      if (ptsEl) ptsEl.textContent = `→ ${buyPressure.weighted.toFixed(1)} pts`;
+      if (barEl) {
+        barEl.style.width = `${buyPressure.raw * 100}%`;
+        barEl.style.background = buyPressureColor;
+      }
+    }
+
+    // Net Buy Volume (item 1)
+    if (breakdownItems[1]) {
+      const valEl = breakdownItems[1].querySelector('.mvp-breakdown-values span:first-child');
+      const ptsEl = breakdownItems[1].querySelector('.mvp-breakdown-contribution');
+
+      const newNetVol = this.formatUSD(netBuyVolume.raw);
+      const netVolColor = netBuyVolume.raw >= 0 ? '#4ade80' : '#f87171';
+
+      if (valEl && valEl.textContent !== newNetVol) {
+        valEl.textContent = newNetVol;
+        valEl.style.color = netVolColor;
+      }
+      if (ptsEl) ptsEl.textContent = `→ ${netBuyVolume.weighted.toFixed(1)} pts`;
+    }
+
+    // Transaction Velocity (item 2)
+    if (breakdownItems[2]) {
+      const valEl = breakdownItems[2].querySelector('.mvp-breakdown-values span:first-child');
+      const ptsEl = breakdownItems[2].querySelector('.mvp-breakdown-contribution');
+
+      const newTxns = `${txnsVelocity.raw} txns/5m`;
+
+      if (valEl && valEl.textContent !== newTxns) {
+        valEl.textContent = newTxns;
+      }
+      if (ptsEl) ptsEl.textContent = `→ ${txnsVelocity.weighted.toFixed(1)} pts`;
+    }
+
+    // Price Momentum (item 3)
+    if (breakdownItems[3]) {
+      const valEl = breakdownItems[3].querySelector('.mvp-breakdown-values span:first-child');
+      const ptsEl = breakdownItems[3].querySelector('.mvp-breakdown-contribution');
+
+      const raw = priceMomentum.raw;
+      const newPriceMom = `${raw >= 0 ? '+' : ''}${raw.toFixed(1)}%`;
+      const priceColor = raw >= 0 ? '#4ade80' : '#f87171';
+
+      if (valEl && valEl.textContent !== newPriceMom) {
+        valEl.textContent = newPriceMom;
+        valEl.style.color = priceColor;
+      }
+      if (ptsEl) ptsEl.textContent = `→ ${priceMomentum.weighted.toFixed(1)} pts`;
+    }
+
+    // SSE Momentum (item 4)
+    if (breakdownItems[4]) {
+      const valEl = breakdownItems[4].querySelector('.mvp-breakdown-values span:first-child');
+      const ptsEl = breakdownItems[4].querySelector('.mvp-breakdown-contribution');
+
+      const raw = sseMomentum.raw;
+      const newSSE = `${raw >= 0 ? '+' : ''}${(raw * 100).toFixed(1)}%`;
+      const sseColor = raw >= 0 ? '#4ade80' : '#f87171';
+
+      if (valEl && valEl.textContent !== newSSE) {
+        valEl.textContent = newSSE;
+        valEl.style.color = sseColor;
+      }
+      if (ptsEl) ptsEl.textContent = `→ ${sseMomentum.weighted.toFixed(1)} pts`;
+    }
+
+    // Update metrics freshness indicator
+    const metricsStatusEl = breakdownEl.querySelector('.breakdown-metrics-status');
+    if (metricsStatusEl && token.metricsFresh !== undefined) {
+      const statusHtml = token.metricsFresh
+        ? '<span style="color: #4ade80">✓ Fresh</span>'
+        : '<span style="color: #f87171">⚠ Stale</span>';
+      if (metricsStatusEl.innerHTML !== `Metrics: ${statusHtml}`) {
+        metricsStatusEl.innerHTML = `Metrics: ${statusHtml}`;
+      }
+    }
   }
 
   reorderAndUpdateTokens(sortedTokens) {
@@ -816,6 +1058,17 @@ class DexterApp {
 
     // Replace children atomically (avoids flash from intermediate empty state)
     this.tokenContainer.replaceChildren(fragment);
+
+    // Preserve expanded state after reorder
+    if (expandedTokenAddress) {
+      const expandedRow = this.tokenContainer.querySelector(`[data-address="${expandedTokenAddress}"]`);
+      if (expandedRow) {
+        const breakdown = expandedRow.querySelector('.token-score-breakdown');
+        if (breakdown) {
+          breakdown.style.display = 'block';
+        }
+      }
+    }
   }
 
   updateSingleRowContent(row, token) {
@@ -1308,10 +1561,37 @@ class DexterApp {
     const cards = document.querySelectorAll('.token-row[data-address]');
     cards.forEach(card => {
       card.addEventListener('click', (e) => {
+        // Ignore clicks on buttons
         if (e.target.closest('.blacklist-btn')) return;
         if (e.target.closest('.telegram-btn')) return;
+
         const address = card.getAttribute('data-address');
-        this.copyToClipboard(address, card);
+        const hasComponents = card.getAttribute('data-has-components') === 'true';
+
+        if (!hasComponents) {
+          // No components, just copy address
+          this.copyToClipboard(address, card);
+          return;
+        }
+
+        const breakdown = card.querySelector('.token-score-breakdown');
+        if (!breakdown) {
+          // No breakdown element, just copy address
+          this.copyToClipboard(address, card);
+          return;
+        }
+
+        // Close all other expanded rows (accordion behavior)
+        document.querySelectorAll('.token-score-breakdown').forEach(otherBreakdown => {
+          if (otherBreakdown !== breakdown) {
+            otherBreakdown.style.display = 'none';
+          }
+        });
+
+        // Toggle this row and track state
+        const isCurrentlyVisible = breakdown.style.display !== 'none';
+        breakdown.style.display = isCurrentlyVisible ? 'none' : 'block';
+        expandedTokenAddress = isCurrentlyVisible ? null : address;
       });
     });
   }

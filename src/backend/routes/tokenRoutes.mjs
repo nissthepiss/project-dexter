@@ -18,6 +18,9 @@ export function createTokenRoutes({ tokenManager, logger }) {
 
           const isMVP = mvpData && token.contractAddress === mvpData.address;
 
+          // Calculate score components for each token
+          const scoreData = tokenManager.getScoreForToken(token, viewMode);
+
           return {
             ...token,
             rank: index + 1,
@@ -25,7 +28,36 @@ export function createTokenRoutes({ tokenManager, logger }) {
             multiplier: (token.peakMultiplier).toFixed(2) + 'x',
             currentMultiplier: (token.currentMc / token.spottedMc).toFixed(2) + 'x',
             netPercent: parseFloat(netPercent.toFixed(2)),
-            isMVP: isMVP
+            isMVP: isMVP,
+            score: scoreData ? parseFloat(scoreData.total.toFixed(2)) : null,
+            components: scoreData ? {
+              buyPressure: {
+                raw: parseFloat(scoreData.components.buyPressure.raw.toFixed(3)),
+                weighted: parseFloat(scoreData.components.buyPressure.weighted.toFixed(2)),
+                weight: scoreData.components.buyPressure.weight
+              },
+              netBuyVolume: {
+                raw: parseFloat(scoreData.components.netBuyVolume.raw.toFixed(2)),
+                weighted: parseFloat(scoreData.components.netBuyVolume.weighted.toFixed(2)),
+                weight: scoreData.components.netBuyVolume.weight
+              },
+              txnsVelocity: {
+                raw: scoreData.components.txnsVelocity.raw,
+                weighted: parseFloat(scoreData.components.txnsVelocity.weighted.toFixed(2)),
+                weight: scoreData.components.txnsVelocity.weight
+              },
+              priceMomentum: {
+                raw: parseFloat(scoreData.components.priceMomentum.raw.toFixed(2)),
+                weighted: parseFloat(scoreData.components.priceMomentum.weighted.toFixed(2)),
+                weight: scoreData.components.priceMomentum.weight
+              },
+              sseMomentum: {
+                raw: parseFloat(scoreData.components.sseMomentum.raw.toFixed(3)),
+                weighted: parseFloat(scoreData.components.sseMomentum.weighted.toFixed(2)),
+                weight: scoreData.components.sseMomentum.weight
+              }
+            } : null,
+            metricsFresh: scoreData ? scoreData.metricsFresh : false
           };
         }),
         mvp: mvpData ? {

@@ -975,6 +975,11 @@ class TokenManager {
     return mvpCalculator.getMVP(top10, viewMode);
   }
 
+  // Get score data for a single token (used for top10 component display)
+  getScoreForToken(token, viewMode = 'all-time') {
+    return mvpCalculator.calculateMVPScore(token, viewMode);
+  }
+
   // Helper: Get all tokens for "Check Tokens" view
   getAllTokens() {
     return Array.from(this.trackedTokens.values())

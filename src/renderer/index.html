@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER Token Hunter</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="terminal-body">
+    <!-- Scanline Overlay -->
+    <div class="scanlines"></div>
+    <div class="scanlines-glow"></div>
+
+    <!-- Terminal Container -->
+    <div class="terminal-container">
+        <!-- Terminal Header -->
+        <header class="terminal-header">
+            <div class="header-left">
+                <div class="terminal-controls">
+                    <span class="control-dot close"></span>
+                    <span class="control-dot minimize"></span>
+                    <span class="control-dot maximize"></span>
+                </div>
+                <div class="header-title">
+                    <span class="title-prefix">~/dexter</span>
+                    <span class="title-separator">::</span>
+                    <span class="title-command">token-hunter</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <h1 class="app-title">
+                    <span class="title-dexter">DEXTER</span>
+                    <span class="title-cursor">_</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="connection-status" id="connection-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">CONNECTED</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Terminal Content -->
+        <main class="terminal-main">
+            <!-- Branding Banner -->
+            <div class="brand-banner">
+                <div class="banner-gradient"></div>
+                <div class="banner-content">
+                    <h2 class="brand-title">
+                        <span class="brand-dexter">DEXTER</span>
+                        <span class="brand-separator">.</span>
+                        <span class="brand-subtitle">TOKEN HUNTER</span>
+                    </h2>
+                    <div class="brand-meta">
+                        <span class="meta-tag">v1.0.0</span>
+                        <span class="meta-separator">|</span>
+                        <span class="meta-network">SOLANA</span>
+                        <span class="meta-separator">|</span>
+                        <span class="meta-mode" id="display-mode">DEGEN MODE</span>
+                    </div>
+                </div>
+                <div class="banner-decor">
+                    <span class="decor-line"></span>
+                    <span class="decor-bracket">[</span>
+                    <span class="decor-x">×</span>
+                    <span class="decor-bracket">]</span>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="control-section mode-section">
+                    <label class="control-label">
+                        <span class="label-prompt">$</span>
+                        <span class="label-text">mode</span>
+                    </label>
+                    <div class="mode-toggle">
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="degen" checked>
+                            <span class="mode-indicator"></span>
+                            <span class="mode-text">degen</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="holder">
+                            <span class="mode-indicator"></span>
+                            <span class="mode-text">holder</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section time-section">
+                    <label class="control-label">
+                        <span class="label-prompt">$</span>
+                        <span class="label-text">timeframe</span>
+                    </label>
+                    <div class="time-tabs">
+                        <button class="time-tab" data-view="5m">5M</button>
+                        <button class="time-tab" data-view="30m">30M</button>
+                        <button class="time-tab" data-view="1h">1H</button>
+                        <button class="time-tab" data-view="4h">4H</button>
+                        <button class="time-tab active" data-view="all-time">ALL</button>
+                        <button class="time-tab" id="holder-current-tab" data-view="current" style="display:none;">CUR</button>
+                    </div>
+                </div>
+
+                <div class="control-section options-section">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="telegram-auto-alert-checkbox" checked>
+                        <span class="checkbox-box"></span>
+                        <span class="checkbox-text">telegram-alerts</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="public-channels-checkbox" checked>
+                        <span class="checkbox-box"></span>
+                        <span class="checkbox-text">public-channels</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Token List Panel -->
+                <section class="panel token-panel">
+                    <div class="panel-header">
+                        <div class="header-left">
+                            <span class="panel-icon">»</span>
+                            <span class="panel-title">token-list</span>
+                            <span class="panel-path">./tokens/discovered</span>
+                        </div>
+                        <div class="header-right">
+                            <span class="token-count" id="token-count-header">0 tokens</span>
+                        </div>
+                    </div>
+
+                    <!-- Table Header -->
+                    <div class="table-header">
+                        <div class="th th-rank" data-sort="rank">#</div>
+                        <div class="th th-token" data-sort="token">TOKEN</div>
+                        <div class="th th-spotted" data-sort="spotted">SPOTTED</div>
+                        <div class="th th-current" data-sort="current">CURRENT</div>
+                        <div class="th th-volume" data-sort="volume">VOLUME</div>
+                        <div class="th th-net" data-sort="net">NET</div>
+                        <div class="th th-score" data-sort="score">SCORE</div>
+                        <div class="th th-time" data-sort="time">TIME</div>
+                        <div class="th th-peak" data-sort="peak">PEAK</div>
+                        <div class="th th-bl">BL</div>
+                        <div class="th th-tg">TG</div>
+                    </div>
+
+                    <!-- Token List -->
+                    <div class="table-body" id="token-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <span class="icon-spinner">◌</span>
+                            </div>
+                            <div class="empty-text">Scanning network...</div>
+                            <div class="empty-subtext">awaiting token data stream</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MVP Panel -->
+                <section class="panel mvp-panel">
+                    <div class="panel-header">
+                        <div class="header-left">
+                            <span class="panel-icon">»</span>
+                            <span class="panel-title">mvp</span>
+                            <span class="panel-path">./momentum/leader</span>
+                        </div>
+                        <div class="header-right">
+                            <span class="mvp-badge">🏆</span>
+                        </div>
+                    </div>
+
+                    <div class="mvp-content" id="mvp-content">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <span class="icon-chart">▤</span>
+                            </div>
+                            <div class="empty-text">No MVP yet</div>
+                            <div class="empty-subtext">tracking momentum...</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Status Bar -->
+            <footer class="status-bar">
+                <div class="status-left">
+                    <span class="status-prompt">»</span>
+                    <span class="status-message" id="status-message">System ready</span>
+                </div>
+                <div class="status-center">
+                    <span class="stat-item">
+                        <span class="stat-label">TOKENS</span>
+                        <span class="stat-value" id="token-count-status">0</span>
+                    </span>
+                </div>
+                <div class="status-right">
+                    <span class="update-time" id="last-update">--:--:--</span>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Quick Actions Bar -->
+        <aside class="quick-actions">
+            <button class="action-btn" id="mc-test-btn" title="Test Market Cap">
+                <span class="btn-icon">⚡</span>
+                <span class="btn-label">TEST_MC</span>
+            </button>
+            <button class="action-btn" id="purge-btn" title="Purge All Tokens">
+                <span class="btn-icon">⌫</span>
+                <span class="btn-label">PURGE</span>
+            </button>
+            <button class="action-btn" id="check-tokens-btn" title="Check Tokens">
+                <span class="btn-icon">◈</span>
+                <span class="btn-label">CHECK</span>
+            </button>
+            <button class="action-btn" id="telegram-tokens-btn" title="Telegram Tokens">
+                <span class="btn-icon">⇡</span>
+                <span class="btn-label">TELEGRAM</span>
+            </button>
+            <button class="action-btn" id="manage-channels-btn" title="Manage Channels">
+                <span class="btn-icon">📡</span>
+                <span class="btn-label">CHANNELS</span>
+            </button>
+            <button class="action-btn" id="ignore-list-btn" title="Ignore List">
+                <span class="btn-icon">⊘</span>
+                <span class="btn-label">IGNORE</span>
+            </button>
+            <div class="actions-divider"></div>
+            <button class="action-btn volume-btn" id="volume-btn" title="Alert Volume">
+                <span class="btn-icon">♪</span>
+            </button>
+            <div class="volume-popup" id="volume-popup">
+                <div class="volume-header">VOLUME</div>
+                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" step="10" value="70">
+                <span class="volume-value" id="volume-value">70%</span>
+            </div>
+        </aside>
+
+        <!-- System Tray -->
+        <aside class="system-tray">
+            <div class="tray-clock" id="system-clock">00:00</div>
+        </aside>
+    </div>
+
+    <!-- Channel Modal -->
+    <div class="modal-overlay" id="channel-modal-overlay">
+        <div class="modal" id="channel-modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="modal-prompt">$</span>
+                    <span>edit-channels</span>
+                </div>
+                <button class="modal-close" id="close-channel-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <span class="info-icon">ℹ</span>
+                    <span class="info-text">Configure Telegram public channels. Use full web links.</span>
+                </div>
+                <div class="channels-list" id="channels-list">
+                    <!-- Channels rendered dynamically -->
+                </div>
+                <button class="add-channel-btn" id="add-channel-btn">+ add_channel</button>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn primary-btn" id="save-channels-btn">SAVE</button>
+                <button class="modal-btn" id="cancel-channels-btn">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ignore Modal -->
+    <div class="modal-overlay" id="ignore-modal-overlay">
+        <div class="modal" id="ignore-modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="modal-prompt">$</span>
+                    <span>ignore-list</span>
+                </div>
+                <button class="modal-close" id="close-ignore-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="ignore-list-content" id="ignore-list-content">
+                    <!-- Ignored tokens rendered dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" id="close-ignore-btn">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
