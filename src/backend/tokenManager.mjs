@@ -6,7 +6,7 @@ import * as dexscreener from './apis/dexscreener.mjs';
 import * as bitquery from './apis/bitquery.mjs';
 import * as dexpaprika from './apis/dexpaprika.mjs';
 import { dexscreenerLimiter } from './rateLimit.mjs';
-import mvpCalculator from './mvpCalculator.mjs';
+import mvpCalculator from './mvpCalculator_v3.mjs';
 
 class TokenManager {
   constructor() {
