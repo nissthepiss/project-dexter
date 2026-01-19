@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "id": "001-new-mvp-scoring-algorithm-for-top-10-tokens",
+  "branch_name": "wreckit/001-new-mvp-scoring-algorithm-for-top-10-tokens",
+  "user_stories": [
+    {
+      "id": "US-001",
+      "title": "Extract transaction metrics from DexPaprika REST API",
+      "acceptance_criteria": [
+        "getTokenData() extracts buys, sells, txns, buy_usd, sell_usd, price_change for all 6 timeframes (5m, 15m, 30m, 1h, 6h, 24h)",
+        "getBatchPrices() includes transactionMetrics field in response",
+        "Token objects store transactionMetrics during background updates",
+        "lastMetricsUpdate timestamp tracks freshness",
+        "No rate limit errors on DexPaprika API (stays under 30 req/min)",
+        "Transaction metrics update every 15 seconds during background cycle"
+      ],
+      "priority": 1,
+      "status": "done",
+      "notes": "Modify dexpaprika.mjs:220-248 and tokenManager.mjs:395-505. Add helper function extractTransactionMetrics()."
+    },
+    {
+      "id": "US-002",
+      "title": "Create hybrid MVP calculator v3 with REST+SSE scoring",
+      "acceptance_criteria": [
+        "mvpCalculator_v3.mjs file created and extends MVPCalculatorImproved",
+        "calculateMVPScore() combines 5 components: buy pressure (35%), net buy volume (20%), txns velocity (15%), price momentum (20%), SSE momentum (10%)",
+        "getTransactionMetrics() extracts 5m timeframe metrics and calculates buyPressure, netBuyVolume, priceMomentum",
+        "calculateBuyPressureScore() normalizes to -10 to +10 scale (0.5 = neutral)",
+        "calculateNetBuyVolumeScore() uses logarithmic scaling for wide range handling",
+        "calculateTxnsVelocityScore() linear scaling with cap at 100 txns",
+        "calculatePriceMomentumScore() multiplies percentage by 2",
+        "areMetricsFresh() checks metrics age <30 seconds",
+        "adjustWeightsForViewMode() varies weights by timeframe (5m vs all-time)",
+        "Falls back to SSE-only scoring when REST metrics missing/stale",
+        "Returns { total, components, hasData, dataPoints, metricsFresh } structure"
+      ],
+      "priority": 1,
+      "status": "done",
+      "notes": "Create new file src/backend/mvpCalculator_v3.mjs. Inherit from MVPCalculatorImproved to reuse velocity tracking. Performance target: <10ms per token."
+    },
+    {
+      "id": "US-003",
+      "title": "Integrate new calculator in token manager",
+      "acceptance_criteria": [
+        "tokenManager.mjs imports mvpCalculator_v3 instead of mvpCalculator",
+        "SSE snapshot recording continues (recordSnapshot calls work unchanged)",
+        "getMVP() method uses new calculator without errors",
+        "/api/tokens/top endpoint returns MVP with 5 components",
+        "No console errors or exceptions on startup"
+      ],
+      "priority": 2,
+      "status": "done",
+      "notes": "Single line change: import mvpCalculator from './mvpCalculator_v3.mjs'. Verify at lines 359 and 500 that recordSnapshot still works."
+    },
+    {
+      "id": "US-004",
+      "title": "Update API route to expose new score components",
+      "acceptance_criteria": [
+        "/api/tokens/top response includes all 5 components in mvp.components",
+        "Each component has { raw, weighted, weight } fields",
+        "buyPressure.raw is between 0-1 (0.5 = neutral)",
+        "netBuyVolume.raw is USD value (can be negative)",
+        "txnsVelocity.raw is integer count",
+        "priceMomentum.raw is percentage change",
+        "sseMomentum.raw is decimal MC momentum",
+        "metricsFresh boolean field indicates data freshness",
+        "All numbers properly formatted (toFixed, parseFloat)",
+        "Response structure is valid JSON with no null/undefined values"
+      ],
+      "priority": 2,
+      "status": "done",
+      "notes": "Modify tokenRoutes.mjs:31-65. Replace old 3-component structure with new 5-component structure. Add metricsFresh field."
+    },
+    {
+      "id": "US-005",
+      "title": "Display new MVP components in frontend",
+      "acceptance_criteria": [
+        "MVP card displays all 5 score components",
+        "Buy pressure shows as percentage (0-100%) with color gradient bar",
+        "Net buy volume shows USD value with $ formatting (e.g., $1.2k)",
+        "Transaction velocity shows 'X txns/5m' format",
+        "Price momentum shows ±X% with green/red color",
+        "SSE momentum shows ±X% inherited from old calculator",
+        "All values update in real-time without full page re-render",
+        "Metrics status indicator shows '✓ Fresh' or '⚠ Stale'",
+        "Colors update based on values (green for positive, red for negative)",
+        "Layout is clean and readable with no overflow or overlap"
+      ],
+      "priority": 3,
+      "status": "done",
+      "notes": "Modify app.js:fullRenderMVP() and updateMVPValues(). Add helper functions: getBuyPressureColor(), formatUSD(). Add CSS for bar charts and status indicator."
+    },
+    {
+      "id": "US-006",
+      "title": "Create unit tests for MVP calculator v3",
+      "acceptance_criteria": [
+        "Unit test file tests/mvpCalculator_v3.test.mjs created",
+        "testBuyPressure() verifies buy pressure calculation (0.75 for 75 buys/25 sells)",
+        "testMissingMetrics() verifies fallback to SSE-only when metrics null",
+        "testPerformance() verifies 100 tokens calculate in <1 second",
+        "testViewModeWeights() verifies 5m mode weights SSE higher than all-time",
+        "All tests pass with no assertion failures",
+        "Tests can run with: node tests/mvpCalculator_v3.test.mjs"
+      ],
+      "priority": 4,
+      "status": "done",
+      "notes": "Create test file with 4 test cases. Use console.assert for validation. Target: <10ms per token (100 tokens in <1s)."
+    },
+    {
+      "id": "US-007",
+      "title": "Create performance benchmark script",
+      "acceptance_criteria": [
+        "Benchmark script scripts/benchmark-mvp.mjs created",
+        "Tests with 10, 50, 100, 200 tokens",
+        "Reports average time per token in milliseconds",
+        "Reports total time and throughput (tokens/second)",
+        "Console output formatted as readable table",
+        "All token sizes show <10ms average per token",
+        "Benchmark can run with: node scripts/benchmark-mvp.mjs"
+      ],
+      "priority": 4,
+      "status": "done",
+      "notes": "Create script that simulates realistic token data (random buys/sells/volume). Loop 10 iterations per size for stable average."
+    },
+    {
+      "id": "US-008",
+      "title": "Conduct live testing and weight tuning",
+      "acceptance_criteria": [
+        "Monitor application for 24 hours without crashes",
+        "Document at least 3 pump events (tokens hitting 2x)",
+        "For each pump, record MVP score 5 minutes before pump",
+        "Analyze which component(s) led the score increase",
+        "Calculate false positive rate (tokens with high score that didn't pump)",
+        "If false positive rate >20%, adjust weights to reduce noise",
+        "If pump detection rate <60%, adjust weights to increase sensitivity",
+        "Document weight tuning decisions and rationale",
+        "Re-test for another 24 hours after tuning",
+        "Compare before/after accuracy metrics"
+      ],
+      "priority": 4,
+      "status": "pending",
+      "notes": "DEFERRED TO PRODUCTION: Initial weights: 35% buy pressure, 20% net volume, 15% txns, 20% price, 10% SSE. Adjust based on real pump data. Consider view-mode specific tuning (5m vs all-time). Requires 24+ hours of production monitoring with real pump events."
+    }
+  ]
+}
