@@ -1,1 +1,2 @@
-# Project Dexter
+# project-dexter
+Solana API tracker
