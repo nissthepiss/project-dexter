@@ -1,7 +1,11 @@
 ================================================================================
 PROJECT DEXTER - POTENTIAL BUGS, ERRORS, AND DATA INCONSISTENCIES
 Analysis Date: 2026-01-21
-Iteration: 1/5
+Iteration: 2/5
+================================================================================
+
+================================================================================
+ADDITIONAL FINDINGS FROM ITERATION 2
 ================================================================================
 
 ================================================================================
@@ -369,35 +373,169 @@ DOCUMENTATION / METADATA ISSUES
     - Should be consistent
 
 ================================================================================
-SUMMARY
+ADDITIONAL ISSUES FROM ITERATION 2
 ================================================================================
 
-Total Issues Identified: 53
+54. [MEMORY LEAK] DataCollector Buffer Growth (dataCollector.mjs)
+    - Accumulates data in this.buffer without size limit
+    - Only flushes at 50 items or maxRecordsPerFile
+    - Under high load, could consume significant memory
+    - Should have max buffer size with forced flush
+
+55. [RACE CONDITION] DataCollector Concurrent Writes (dataCollector.mjs)
+    - Multiple calls to recordSnapshot()/recordTop10() can push to buffer concurrently
+    - No synchronization mechanism for buffer access
+    - Could cause data corruption or lost writes
+    - Should use mutex or queue for buffer operations
+
+56. [DATA LOSS] DataCollector Flush Failure (dataCollector.mjs)
+    - If fs.writeFileSync() fails in flush(), buffered data is lost
+    - No recovery mechanism for failed writes
+    - Should implement retry or fallback storage
+
+57. [INFINITE RECURSION] Rate Limit Acquire (rateLimit.mjs)
+    - Recursive call `return this.acquire()` could cause stack overflow
+    - If rate limiting logic has bugs, recursion never terminates
+    - Should use loop instead of recursion
+
+58. [RACE CONDITION] Public Channel Rate Limit (telegramService.mjs:341-349)
+    - Multiple concurrent calls to sendTier3Alert() could bypass rate limiting
+    - canSendToPublicChannel() and recordPublicSend() not atomic
+    - Should use mutex for rate limit check/record
+
+59. [SECURITY] Unprotected Debug Endpoints (debugRoutes.mjs)
+    - /purge endpoint can wipe all degen tokens with simple POST
+    - No authentication or confirmation required
+    - Should require authorization token
+
+60. [TIMEOUT BUG] WithTimeout Function (debugRoutes.mjs)
+    - Creates new Promise that rejects, but original promise continues executing
+    - Doesn't actually cancel the original operation
+    - Should use AbortController for proper timeout
+
+61. [NO VALIDATION] Contract Address Input (debugRoutes.mjs)
+    - Test endpoints don't validate contract address format
+    - Could pass invalid addresses causing API errors
+    - Should validate base58 format and length
+
+62. [MEMORY LEAK] Public Send History (telegramService.mjs:341-353)
+    - publicSendHistory array grows over time
+    - Only cleaned when canSendToPublicChannel() called
+    - If not called, array grows indefinitely
+    - Should implement periodic cleanup
+
+63. [RACE CONDITION] Holder Polling Interval (holderService.mjs:23-38)
+    - Multiple intervals could be set if startPolling() called concurrently
+    - No check if interval already exists before setting new one
+    - Should clear existing interval before setting new one
+
+64. [NO VALIDATION] Callback Function (holderService.mjs:94-100)
+    - onUpdate callback called without validating it's a function
+    - Could throw if onUpdate is not a function
+    - Should add typeof check before calling
+
+65. [INCONSISTENT ERROR HANDLING] API Integrations (birdeye.mjs, coingecko.mjs, solscan.mjs, jupiter.mjs)
+    - Some use console.warn/error, others should use logger service
+    - Makes debugging difficult with inconsistent logging
+    - Should standardize on logger service
+
+66. [NO RETRY] API Failures (birdeye.mjs, coingecko.mjs, solscan.mjs, jupiter.mjs)
+    - API failures return null/error without retry logic
+    - Transient failures cause data loss
+    - Should implement exponential backoff retry
+
+67. [MISSING VALIDATION] API Response Data (birdeye.mjs, coingecko.mjs, solscan.mjs, jupiter.mjs)
+    - Response validation inconsistent across APIs
+    - Some validate, others don't
+    - Could cause undefined property access errors
+    - Should validate all API responses
+
+68. [HARDCODED TIMEOUTS] API Requests (birdeye.mjs, coingecko.mjs, solscan.mjs, jupiter.mjs)
+    - All have fixed 10-second timeouts
+    - Not configurable per environment
+    - Should use environment variable or config
+
+69. [MISSING USER AGENT] Some API Requests (birdeye.mjs, coingecko.mjs)
+    - Some requests don't set User-Agent header
+    - API may block requests without User-Agent
+    - Should always set User-Agent header
+
+70. [INCONSISTENT] Database Dynamic Imports (channels.mjs, modeRoutes.mjs, blacklistRoutes.mjs)
+    - Multiple files import database dynamically on each request
+    - Inefficient and could cause initialization issues
+    - Should import once at module level
+
+71. [NO VALIDATION] Service Availability (channels.mjs, modeRoutes.mjs, blacklistRoutes.mjs)
+    - Routes assume services are available without checking
+    - Could crash if service not initialized
+    - Should check service exists before using
+
+72. [INCOMPLETE] Error Responses (channels.mjs, modeRoutes.mjs, blacklistRoutes.mjs)
+    - Some routes don't include error details in responses
+    - Makes debugging difficult for clients
+    - Should always return error message and details
+
+73. [NO TRANSACTIONS] Database Operations (db.mjs)
+    - Multiple related operations without transaction support
+    - Could leave DB in inconsistent state if one fails
+    - sql.js doesn't support transactions but should implement compensation logic
+
+74. [FILE LOCKING] Database Access (db.mjs:45-53)
+    - No file locking mechanism for database access
+    - Multiple processes could corrupt database
+    - Should implement file locking or use SQLite with proper locking
+
+75. [MEMORY USAGE] Database Loading (db.mjs:28-35)
+    - Loads entire database into memory with sql.js
+    - Could be problematic for large datasets
+    - Consider migrating to node-sqlite3 for better memory management
+
+76. [MIGRATION RISK] Schema Changes (db.mjs:78-109)
+    - Migration code assumes table exists
+    - Could fail on concurrent access during migration
+    - Should implement proper migration locking
+
+77. [DEPENDENCY SECURITY] Package Versions (package.json)
+    - Using specific versions (^1.6.0, ^4.18.2)
+    - May miss security updates in dependency tree
+    - Should regularly audit and update dependencies
+
+================================================================================
+UPDATED SUMMARY
+================================================================================
+
+Total Issues Identified: 77
 
 Severity Breakdown:
-- CRITICAL: 5 (security, data loss, race conditions, memory leaks)
-- HIGH: 10 (logic errors, unhandled errors, null references)
-- MEDIUM: 15 (race conditions, inconsistencies, error handling)
-- LOW: 20 (code quality, unused code, inconsistencies)
+- CRITICAL: 6 (security, data loss, race conditions, memory leaks)
+- HIGH: 15 (logic errors, unhandled errors, null references, infinite loops)
+- MEDIUM: 32 (race conditions, inconsistencies, error handling, performance)
+- LOW: 24 (code quality, unused code, inconsistencies)
 
 Most Affected Files:
 1. tokenManager.mjs - 15 issues
-2. app.js (frontend) - 8 issues
-3. telegramService.mjs - 6 issues
-4. db.mjs - 5 issues
+2. telegramService.mjs - 12 issues (with iteration 2 findings)
+3. app.js (frontend) - 8 issues
+4. db.mjs - 10 issues (with iteration 2 findings)
 5. dexpaprika.mjs - 5 issues
-6. mvpCalculator_v3.mjs - 4 issues
-7. server.mjs - 2 issues
-8. Other files - 8 issues
+6. Various API files - 8 issues
+7. Routes files - 6 issues
+8. mvpCalculator_v3.mjs - 4 issues
+9. server.mjs - 2 issues
+10. Other files - 7 issues
 
-Recommended Priority Fixes:
+Updated Recommended Priority Fixes:
 1. Move Telegram credentials to environment variables
-2. Fix 2h view mode missing in MVP calculator
-3. Clean up failedDiscoveryTokens Map periodically
-4. Add proper error handling for SSE connections
-5. Fix database save timing in purge operation
-6. Remove/stub out unused tokenManager properties in stats endpoint
-7. Add spottedMc=0 guard in MVP calculation
-8. Implement retry logic for DexPaprika API failures
+2. Add authentication/authorization to debug endpoints
+3. Fix infinite recursion in rateLimit.acquire()
+4. Fix 2h view mode missing in MVP calculator
+5. Clean up failedDiscoveryTokens Map periodically
+6. Add proper error handling for SSE connections
+7. Fix database save timing in purge operation
+8. Implement mutex for public channel rate limiting
+9. Add dataCollector buffer size limits
+10. Remove/stub out unused tokenManager properties in stats endpoint
+11. Add spottedMc=0 guard in MVP calculation
+12. Implement retry logic for API failures
 
 ================================================================================
