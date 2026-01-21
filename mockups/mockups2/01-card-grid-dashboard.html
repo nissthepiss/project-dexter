@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Card Grid Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Noise Texture */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .timeframe-tab {
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+
+        .timeframe-tab.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* Card Grid */
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        /* Token Card */
+        .token-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .token-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            background: radial-gradient(ellipse at center, rgba(255, 140, 0, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .token-card:hover {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .token-card:hover::before {
+            opacity: 1;
+        }
+
+        .token-card.mvp {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .rank-badge {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .rank-badge.rank-1 {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: var(--bg-primary);
+        }
+
+        .rank-badge.rank-2 {
+            background: linear-gradient(135deg, var(--silver), #a0a0a0);
+            color: var(--bg-primary);
+        }
+
+        .rank-badge.rank-3 {
+            background: linear-gradient(135deg, var(--bronze), #a0522d);
+            color: var(--bg-primary);
+        }
+
+        .score-badge {
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            color: var(--bg-primary);
+            border-radius: 20px;
+        }
+
+        /* Token Info */
+        .token-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .token-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .token-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .token-address {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Metrics */
+        .metric-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 70px;
+        }
+
+        /* Circular Progress for Market Cap */
+        .mc-progress {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .mc-progress svg {
+            transform: rotate(-90deg);
+        }
+
+        .mc-progress circle {
+            fill: none;
+            stroke-width: 4;
+        }
+
+        .mc-progress .bg {
+            stroke: var(--bg-tertiary);
+        }
+
+        .mc-progress .progress {
+            stroke: var(--accent-orange);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .mc-progress .value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Volume Bar */
+        .volume-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .volume-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Net Change */
+        .net-change {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .net-change.positive {
+            color: var(--success);
+        }
+
+        .net-change.negative {
+            color: var(--error);
+        }
+
+        /* Peak Pill */
+        .peak-pill {
+            position: absolute;
+            top: 16px;
+            right: 60px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            color: var(--accent-orange);
+            border-radius: 12px;
+            border: 1px solid var(--accent-orange-dark);
+        }
+
+        /* MVP Panel */
+        .mvp-panel {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--bg-tertiary);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .mvp-header {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .mvp-token-spotlight {
+            text-align: center;
+            padding: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid var(--accent-orange);
+        }
+
+        .mvp-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.4);
+        }
+
+        .mvp-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .mvp-score {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Score Breakdown */
+        .score-breakdown {
+            margin-top: 20px;
+        }
+
+        .breakdown-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .breakdown-item {
+            margin-bottom: 12px;
+        }
+
+        .breakdown-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-bar {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .breakdown-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .breakdown-bar-fill.high {
+            background: linear-gradient(90deg, var(--success), #22c55e);
+        }
+
+        .breakdown-bar-fill.medium {
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+        }
+
+        .breakdown-bar-fill.low {
+            background: linear-gradient(90deg, var(--error), #ef4444);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 320px;
+            padding: 8px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-orange-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">DEXTHER // TOKEN HUNTER</div>
+                <div class="header-controls">
+                    <div class="mode-toggle">
+                        <button class="mode-btn active">Degen</button>
+                        <button class="mode-btn">Holder</button>
+                    </div>
+                    <div class="timeframe-tabs">
+                        <button class="timeframe-tab active">5M</button>
+                        <button class="timeframe-tab">30M</button>
+                        <button class="timeframe-tab">1H</button>
+                        <button class="timeframe-tab">4H</button>
+                        <button class="timeframe-tab">ALL</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Token Grid -->
+            <div class="token-grid">
+                <!-- Card 1 - MVP -->
+                <div class="token-card mvp">
+                    <div class="peak-pill">5.2x</div>
+                    <div class="card-header">
+                        <div class="rank-badge rank-1">1</div>
+                        <div class="score-badge">94.2</div>
+                    </div>
+                    <div class="token-info">
+                        <div class="token-logo">B</div>
+                        <div>
+                            <div class="token-name">BONK</div>
+                            <div class="token-address">DezXAZ8z7Pnrn...</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MC</span>
+                        <div class="mc-progress">
+                            <svg width="60" height="60">
+                                <circle class="bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="32.67"></circle>
+                            </svg>
+                            <span class="value">$1.2M</span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">VOL</span>
+                        <div class="volume-bar">
+                            <div class="volume-bar-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">NET</span>
+                        <div class="net-change positive">▲ 24.5%</div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="token-card">
+                    <div class="peak-pill">3.8x</div>
+                    <div class="card-header">
+                        <div class="rank-badge rank-2">2</div>
+                        <div class="score-badge">87.6</div>
+                    </div>
+                    <div class="token-info">
+                        <div class="token-logo">W</div>
+                        <div>
+                            <div class="token-name">WIF</div>
+                            <div class="token-address">EKpQGSJtjMFqKZ9...</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MC</span>
+                        <div class="mc-progress">
+                            <svg width="60" height="60">
+                                <circle class="bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="49.01"></circle>
+                            </svg>
+                            <span class="value">$980K</span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">VOL</span>
+                        <div class="volume-bar">
+                            <div class="volume-bar-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">NET</span>
+                        <div class="net-change positive">▲ 18.2%</div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="token-card">
+                    <div class="peak-pill">2.9x</div>
+                    <div class="card-header">
+                        <div class="rank-badge rank-3">3</div>
+                        <div class="score-badge">81.3</div>
+                    </div>
+                    <div class="token-info">
+                        <div class="token-logo">M</div>
+                        <div>
+                            <div class="token-name">MYRO</div>
+                            <div class="token-address">EQSZqmSbKHVcV...</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MC</span>
+                        <div class="mc-progress">
+                            <svg width="60" height="60">
+                                <circle class="bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="65.34"></circle>
+                            </svg>
+                            <span class="value">$750K</span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">VOL</span>
+                        <div class="volume-bar">
+                            <div class="volume-bar-fill" style="width: 58%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">NET</span>
+                        <div class="net-change positive">▲ 12.8%</div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="token-card">
+                    <div class="peak-pill">1.5x</div>
+                    <div class="card-header">
+                        <div class="rank-badge">4</div>
+                        <div class="score-badge">76.8</div>
+                    </div>
+                    <div class="token-info">
+                        <div class="token-logo">P</div>
+                        <div>
+                            <div class="token-name">POPCAT</div>
+                            <div class="token-address">7GCihgDB8fe6KNj2...</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MC</span>
+                        <div class="mc-progress">
+                            <svg width="60" height="60">
+                                <circle class="bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="81.68"></circle>
+                            </svg>
+                            <span class="value">$520K</span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">VOL</span>
+                        <div class="volume-bar">
+                            <div class="volume-bar-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">NET</span>
+                        <div class="net-change negative">▼ 3.2%</div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="token-card">
+                    <div class="peak-pill">1.2x</div>
+                    <div class="card-header">
+                        <div class="rank-badge">5</div>
+                        <div class="score-badge">71.4</div>
+                    </div>
+                    <div class="token-info">
+                        <div class="token-logo">S</div>
+                        <div>
+                            <div class="token-name">SLERF</div>
+                            <div class="token-address">D2aK2XRtvXjZVQ...</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MC</span>
+                        <div class="mc-progress">
+                            <svg width="60" height="60">
+                                <circle class="bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="98.02"></circle>
+                            </svg>
+                            <span class="value">$380K</span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">VOL</span>
+                        <div class="volume-bar">
+                            <div class="volume-bar-fill" style="width: 38%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">NET</span>
+                        <div class="net-change negative">▼ 8.7%</div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="token-card">
+                    <div class="peak-pill">0.8x</div>
+                    <div class="card-header">
+                        <div class="rank-badge">6</div>
+                        <div class="score-badge">68.9</div>
+                    </div>
+                    <div class="token-info">
+                        <div class="token-logo">R</div>
+                        <div>
+                            <div class="token-name">RENDER</div>
+                            <div class="token-address">9LiL2PWqjFzC5...</div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MC</span>
+                        <div class="mc-progress">
+                            <svg width="60" height="60">
+                                <circle class="bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress" cx="30" cy="30" r="26" stroke-dasharray="163.36" stroke-dashoffset="114.35"></circle>
+                            </svg>
+                            <span class="value">$290K</span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">VOL</span>
+                        <div class="volume-bar">
+                            <div class="volume-bar-fill" style="width: 28%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">NET</span>
+                        <div class="net-change positive">▲ 2.1%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MVP Panel -->
+        <div class="mvp-panel">
+            <div class="mvp-header">/// MVP TOKEN</div>
+
+            <div class="mvp-token-spotlight">
+                <div class="mvp-logo">B</div>
+                <div class="mvp-name">BONK</div>
+                <div class="mvp-score">94.2</div>
+            </div>
+
+            <div class="score-breakdown">
+                <div class="breakdown-title">Score Breakdown</div>
+
+                <div class="breakdown-item">
+                    <div class="breakdown-label">
+                        <span>BUY PRESSURE</span>
+                        <span>78%</span>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill high" style="width: 78%"></div>
+                    </div>
+                </div>
+
+                <div class="breakdown-item">
+                    <div class="breakdown-label">
+                        <span>NET BUY VOL</span>
+                        <span>$245K</span>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill medium" style="width: 65%"></div>
+                    </div>
+                </div>
+
+                <div class="breakdown-item">
+                    <div class="breakdown-label">
+                        <span>TXN VELOCITY</span>
+                        <span>142/5m</span>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill high" style="width: 82%"></div>
+                    </div>
+                </div>
+
+                <div class="breakdown-item">
+                    <div class="breakdown-label">
+                        <span>PRICE MOMENTUM</span>
+                        <span>24.5%</span>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill high" style="width: 88%"></div>
+                    </div>
+                </div>
+
+                <div class="breakdown-item">
+                    <div class="breakdown-label">
+                        <span>SSE MOMENTUM</span>
+                        <span>18.2%</span>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill medium" style="width: 72%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; padding: 12px; background: var(--bg-tertiary); border-radius: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 11px;">
+                    <div style="width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></div>
+                    <span style="color: var(--success);">FRESH DATA</span>
+                </div>
+                <div style="margin-top: 4px; font-size: 10px; color: var(--text-muted);">Last updated: 2s ago</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span>Connected</span>
+        </div>
+        <span>SCANNING 156 TOKENS</span>
+        <span>MODE: DEGEN</span>
+    </div>
+</body>
+</html>

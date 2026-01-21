@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 03: Card-Based</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0c0c12;
+            --bg-card: #15151f;
+            --bg-card-hover: #1a1a28;
+            --orange: #ff4800;
+            --green: #00ff6a;
+            --gray: #5a5a6a;
+            --gray-light: #8a8a9a;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .header-wrapper {
+            padding: 16px 20px;
+            background: linear-gradient(180deg, rgba(21, 21, 31, 0.8) 0%, transparent 100%);
+        }
+
+        .logo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .logo-main {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 32px;
+            letter-spacing: 6px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .logo-main .dexter {
+            color: var(--orange);
+            text-shadow: 0 0 30px rgba(255, 72, 0, 0.4);
+        }
+
+        .logo-main .dot {
+            color: var(--gray);
+            font-size: 20px;
+        }
+
+        .logo-main .tagline {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: var(--gray-light);
+            font-weight: 400;
+        }
+
+        .status-cards {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .status-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-card .icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-card.version .icon { background: var(--orange); }
+        .status-card.network .icon { background: var(--green); }
+        .status-card.mode .icon { background: var(--orange); }
+
+        .status-card .text {
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .status-card.version .text { color: var(--orange); }
+        .status-card.network .text { color: var(--green); }
+        .status-card.mode .text { color: var(--orange); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 12px;
+        }
+
+        .control-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+
+        .control-card:hover {
+            border-color: rgba(255, 72, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(255, 72, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .card-header .label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--orange);
+        }
+
+        .card-header .line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 72, 0, 0.3), transparent);
+        }
+
+        .mode-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-card.active {
+            border-color: var(--orange);
+            background: linear-gradient(135deg, rgba(255, 72, 0, 0.15), transparent);
+        }
+
+        .mode-card .title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .mode-card.active .title { color: var(--orange); }
+        .mode-card:not(.active) .title { color: var(--gray-light); }
+
+        .mode-card .desc {
+            font-size: 9px;
+            color: var(--gray);
+        }
+
+        .timeframe-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .timeframe-btn {
+            padding: 10px 18px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .timeframe-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .timeframe-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .alerts-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .alert-toggle:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .alert-toggle .label-text {
+            font-size: 11px;
+            color: var(--gray-light);
+        }
+
+        .alert-toggle.active .label-text {
+            color: var(--white);
+        }
+
+        .alert-toggle .indicator {
+            width: 36px;
+            height: 20px;
+            background: var(--gray);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .alert-toggle.active .indicator {
+            background: var(--orange);
+        }
+
+        .alert-toggle .indicator::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--white);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .alert-toggle.active .indicator::after {
+            left: 18px;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="logo-row">
+            <div class="logo-main">
+                <span class="dexter">DEXTER</span>
+                <span class="dot">.</span>
+                <span class="tagline">TOKEN HUNTER</span>
+            </div>
+            <div class="status-cards">
+                <div class="status-card version">
+                    <span class="icon"></span>
+                    <span class="text">v1.0.0</span>
+                </div>
+                <div class="status-card network">
+                    <span class="icon"></span>
+                    <span class="text">SOLANA</span>
+                </div>
+                <div class="status-card mode">
+                    <span class="icon"></span>
+                    <span class="text">DEGEN-MODE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="control-card">
+                <div class="card-header">
+                    <span class="label">$ MODE</span>
+                    <span class="line"></span>
+                </div>
+                <div class="mode-cards">
+                    <div class="mode-card active">
+                        <div class="title">DEGEN</div>
+                        <div class="desc">High risk, high reward</div>
+                    </div>
+                    <div class="mode-card">
+                        <div class="title">HOLDER</div>
+                        <div class="desc">Long term focus</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-card">
+                <div class="card-header">
+                    <span class="label">$ TIMEFRAME</span>
+                    <span class="line"></span>
+                </div>
+                <div class="timeframe-card">
+                    <button class="timeframe-btn">5M</button>
+                    <button class="timeframe-btn">30M</button>
+                    <button class="timeframe-btn active">1H</button>
+                    <button class="timeframe-btn">2H</button>
+                    <button class="timeframe-btn">ALL</button>
+                </div>
+            </div>
+
+            <div class="control-card">
+                <div class="card-header">
+                    <span class="label">$ ALERTS</span>
+                    <span class="line"></span>
+                </div>
+                <div class="alerts-card">
+                    <div class="alert-toggle active">
+                        <span class="label-text">Telegram Alerts</span>
+                        <div class="indicator"></div>
+                    </div>
+                    <div class="alert-toggle">
+                        <span class="label-text">Public Channels</span>
+                        <div class="indicator"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.alert-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

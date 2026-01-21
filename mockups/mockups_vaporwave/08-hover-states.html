@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER TOKEN HUNTER - Hover States</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #9d4edd;
+            --chrome-light: #e0e0e0;
+            --chrome-mid: #a0a0a0;
+            --bg-dark: #0a0015;
+            --profit-green: #39ff14;
+            --loss-red: #ff073a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #ff00ff 0%, #9d4edd 15%, #3c096c 30%, #1a0030 50%, #00ffff 85%, #ff00ff 100%);
+            opacity: 0.15;
+            animation: gradientShift 15s ease-in-out infinite;
+            z-index: -3;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(70px); z-index: -1; animation: float 20s ease-in-out infinite; }
+        .orb-1 { width: 350px; height: 350px; background: var(--neon-pink); top: 5%; left: 5%; opacity: 0.3; }
+        .orb-2 { width: 300px; height: 300px; background: var(--neon-cyan); bottom: 5%; right: 5%; opacity: 0.3; animation-delay: -10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+            letter-spacing: 4px;
+            text-align: center;
+        }
+
+        .hover-container {
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Token Row - Normal State */
+        .token-row {
+            display: grid;
+            grid-template-columns: 50px 160px 120px 120px 120px 80px 80px 80px 80px 50px 50px;
+            gap: 10px;
+            padding: 15px 12px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .token-row::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 0;
+            background: linear-gradient(90deg, var(--neon-pink), transparent);
+            transition: width 0.4s;
+        }
+
+        .token-row:hover::before {
+            width: 5px;
+        }
+
+        .token-row:hover {
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 0, 255, 0.15),
+                rgba(0, 255, 255, 0.15),
+                rgba(255, 0, 255, 0.15),
+                transparent);
+            border-left: 3px solid var(--neon-pink);
+            border-right: 3px solid var(--neon-cyan);
+            transform: translateX(8px) scale(1.01);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.05);
+        }
+
+        .rank {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--chrome-light);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            transition: all 0.3s;
+        }
+
+        .token-row:hover .rank {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+            transform: scale(1.2);
+        }
+
+        .token-info { display: flex; flex-direction: column; gap: 4px; }
+
+        .token-symbol {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            transition: all 0.3s;
+        }
+
+        .token-row:hover .token-symbol {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+            letter-spacing: 2px;
+        }
+
+        .token-name {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--chrome-mid);
+            transition: all 0.3s;
+        }
+
+        .token-row:hover .token-name {
+            color: var(--chrome-light);
+        }
+
+        .token-value {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            text-align: center;
+            color: var(--chrome-light);
+            transition: all 0.3s;
+        }
+
+        .token-value.up {
+            color: var(--profit-green);
+            text-shadow: 0 0 10px var(--profit-green);
+        }
+
+        .token-row:hover .token-value.up {
+            text-shadow: 0 0 20px var(--profit-green);
+            transform: scale(1.1);
+        }
+
+        .arrow {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 11px;
+            transition: transform 0.3s;
+        }
+
+        .token-row:hover .arrow {
+            transform: translateY(-3px);
+        }
+
+        .score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px var(--neon-pink);
+            transition: all 0.3s;
+        }
+
+        .token-row:hover .score {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 25px var(--neon-cyan);
+            transform: scale(1.2);
+        }
+
+        .icon-btn {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.4;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            opacity: 1;
+            transform: scale(1.4) rotate(10deg);
+            text-shadow: 0 0 15px currentColor;
+        }
+
+        .icon-btn.active {
+            opacity: 1;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        /* Button Hover Examples */
+        .buttons-section {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .demo-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            padding: 18px 30px;
+            background: linear-gradient(180deg, rgba(0, 255, 255, 0.1), transparent);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.4), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            border-radius: 50%;
+        }
+
+        .demo-btn:hover::before {
+            width: 400px; height: 400px;
+        }
+
+        .demo-btn:hover {
+            background: linear-gradient(180deg, rgba(255, 0, 255, 0.4), rgba(157, 78, 221, 0.3));
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+            box-shadow: 0 0 40px var(--neon-pink);
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .demo-btn.danger {
+            border-color: #ff073a;
+            color: #ff073a;
+            text-shadow: 0 0 10px #ff073a;
+        }
+
+        .demo-btn.danger:hover {
+            background: rgba(255, 7, 58, 0.3);
+            border-color: #ff073a;
+            box-shadow: 0 0 40px #ff073a;
+        }
+
+        .demo-btn.success {
+            border-color: var(--profit-green);
+            color: var(--profit-green);
+            text-shadow: 0 0 10px var(--profit-green);
+        }
+
+        .demo-btn.success:hover {
+            background: rgba(57, 255, 20, 0.3);
+            box-shadow: 0 0 40px var(--profit-green);
+        }
+
+        /* Input Field Hover */
+        .input-demo {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(157, 78, 221, 0.4);
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: var(--chrome-light);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-demo:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .input-demo:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);
+        }
+
+        /* Decorative */
+        .jp-decoration {
+            position: fixed;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 50px;
+            color: var(--neon-pink);
+            opacity: 0.06;
+        }
+
+        .jp-1 { top: 25%; left: 3%; transform: rotate(-15deg); }
+        .jp-2 { bottom: 25%; right: 3%; transform: rotate(15deg); }
+
+        .hover-info {
+            text-align: center;
+            font-size: 12px;
+            color: var(--chrome-mid);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="jp-decoration jp-1">ホバー</div>
+    <div class="jp-decoration jp-2">効果</div>
+
+    <div class="section-title">HOVER INTERACTION STATES</div>
+
+    <div class="hover-container">
+        <!-- Token Row - Hover Example -->
+        <div class="token-row" style="border-bottom: none;">
+            <span class="rank">1</span>
+            <div class="token-info">
+                <span class="token-symbol">PEPE2.0</span>
+                <span class="token-name">Pepe Returns</span>
+            </div>
+            <span class="token-value">$12.5K</span>
+            <span class="token-value up">$287.4K<span class="arrow">▲</span></span>
+            <span class="token-value up">+234%</span>
+            <span class="score">98.7</span>
+            <span class="token-value">2m34s</span>
+            <span class="token-value up">3.42x</span>
+            <span class="icon-btn">◐</span>
+            <span class="icon-btn active">⇡</span>
+        </div>
+
+        <!-- More Token Rows -->
+        <div class="token-row" style="border-bottom: none;">
+            <span class="rank">2</span>
+            <div class="token-info">
+                <span class="token-symbol">WOJAK</span>
+                <span class="token-name">Wojak Coin</span>
+            </div>
+            <span class="token-value">$8.2K</span>
+            <span class="token-value up">$156.8K<span class="arrow">▲</span></span>
+            <span class="token-value up">+89%</span>
+            <span class="score">87.3</span>
+            <span class="token-value">5m12s</span>
+            <span class="token-value up">2.18x</span>
+            <span class="icon-btn">○</span>
+            <span class="icon-btn">○</span>
+        </div>
+
+        <div class="token-row">
+            <span class="rank">3</span>
+            <div class="token-info">
+                <span class="token-symbol">CHAD</span>
+                <span class="token-name">Chad Protocol</span>
+            </div>
+            <span class="token-value">$15.8K</span>
+            <span class="token-value up">$142.3K<span class="arrow">▲</span></span>
+            <span class="token-value up">+67%</span>
+            <span class="score">82.1</span>
+            <span class="token-value">3m45s</span>
+            <span class="token-value up">1.89x</span>
+            <span class="icon-btn">○</span>
+            <span class="icon-btn active">⇡</span>
+        </div>
+
+        <div class="hover-info">Hover over rows and buttons to see interaction effects</div>
+    </div>
+
+    <div class="section-title">BUTTON STATES</div>
+
+    <div class="buttons-section">
+        <button class="demo-btn">DEFAULT</button>
+        <button class="demo-btn danger">DANGER</button>
+        <button class="demo-btn success">SUCCESS</button>
+    </div>
+
+    <div class="section-title">INPUT FIELD</div>
+
+    <input type="text" class="input-demo" placeholder="Hover and focus to see effects...">
+
+    <div class="hover-info">All elements feature smooth cubic-bezier transitions with glow effects</div>
+</body>
+</html>

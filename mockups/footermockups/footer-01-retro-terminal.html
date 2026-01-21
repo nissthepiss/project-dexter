@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 01 - Retro Terminal CRT</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --term-green: #33ff00;
+            --term-dim: #1a8000;
+            --term-bg: #0a0a0a;
+            --term-glow: rgba(51, 255, 0, 0.3);
+            --scanline: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--term-bg);
+            color: var(--term-green);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CRT Overlay Effects */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .crt-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                var(--scanline) 0px,
+                var(--scanline) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
+
+        .crt-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+        }
+
+        .flicker {
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 2px solid var(--term-green);
+            padding: 15px 30px;
+            background: rgba(51, 255, 0, 0.05);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-family: 'VT323', monospace;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 10px var(--term-green);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 0.75rem;
+            color: var(--term-dim);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1rem;
+            padding: 5px 12px;
+            background: transparent;
+            border: 1px solid var(--term-dim);
+            color: var(--term-green);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            border-color: var(--term-green);
+            background: rgba(51, 255, 0, 0.1);
+            box-shadow: 0 0 10px var(--term-glow);
+        }
+
+        .mode-toggle:hover, .timeframe-btn:hover {
+            border-color: var(--term-green);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--term-dim);
+            font-family: 'VT323', monospace;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            color: var(--term-dim);
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(51, 255, 0, 0.1);
+        }
+
+        .token-table tr:hover {
+            background: rgba(51, 255, 0, 0.05);
+        }
+
+        .rank {
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+            color: var(--term-dim);
+        }
+
+        .token-name {
+            font-weight: 600;
+        }
+
+        .token-address {
+            font-size: 0.65rem;
+            color: var(--term-dim);
+        }
+
+        .positive { color: var(--term-green); }
+        .negative { color: #ff3333; }
+        .peak { color: #ffff00; }
+
+        /* RETRO CRT FOOTER - MAIN FEATURE */
+        .crt-footer {
+            position: relative;
+            border-top: 2px solid var(--term-green);
+            background: #050505;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .crt-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--term-green), transparent);
+            animation: scan-across 3s linear infinite;
+        }
+
+        @keyframes scan-across {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 0;
+            min-height: 60px;
+        }
+
+        .footer-prompt {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-right: 1px solid var(--term-dim);
+            background: rgba(51, 255, 0, 0.03);
+            min-width: 280px;
+        }
+
+        .prompt-char {
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            color: var(--term-green);
+            margin-right: 10px;
+            animation: blink-cursor 1s step-end infinite;
+        }
+
+        @keyframes blink-cursor {
+            50% { opacity: 0; }
+        }
+
+        .prompt-text {
+            font-size: 0.8rem;
+            color: var(--term-dim);
+            letter-spacing: 0.05em;
+        }
+
+        .prompt-text span {
+            color: var(--term-green);
+        }
+
+        .footer-data-stream {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+        }
+
+        .data-label {
+            color: var(--term-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .data-value {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: var(--term-green);
+            text-shadow: 0 0 5px var(--term-glow);
+        }
+
+        .stream-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--term-dim) 0px,
+                var(--term-dim) 20px,
+                transparent 20px,
+                transparent 40px
+            );
+            animation: stream-move 2s linear infinite;
+        }
+
+        @keyframes stream-move {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 0; }
+        }
+
+        .footer-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 0 20px;
+            border-left: 1px solid var(--term-dim);
+            min-width: 200px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--term-green);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--term-green);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .status-text {
+            font-size: 0.7rem;
+            color: var(--term-green);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .timestamp {
+            font-family: 'VT323', monospace;
+            font-size: 1rem;
+            color: var(--term-dim);
+        }
+
+        /* Footer scanlines specific */
+        .footer-scanlines {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 1px,
+                rgba(51, 255, 0, 0.02) 1px,
+                rgba(51, 255, 0, 0.02) 2px
+            );
+            pointer-events: none;
+        }
+
+        .blink-text {
+            animation: blink-text 2s step-end infinite;
+        }
+
+        @keyframes blink-text {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="flicker">
+    <div class="crt-overlay"></div>
+
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">&gt; DEXTER.TOKEN HUNTER</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--term-dim);margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>TOKEN</th>
+                    <th>SPOTTED</th>
+                    <th>CURRENT</th>
+                    <th>VOLUME</th>
+                    <th>NET</th>
+                    <th>SCORE</th>
+                    <th>PEAK</th>
+                    <th>TIME</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="rank">01</td>
+                    <td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td>
+                    <td>$15.9K</td>
+                    <td>$29.0K</td>
+                    <td>$175.0K</td>
+                    <td class="positive">+0.0%</td>
+                    <td class="negative">-8.4</td>
+                    <td class="peak">2.11x</td>
+                    <td>42m</td>
+                </tr>
+                <tr>
+                    <td class="rank">02</td>
+                    <td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td>
+                    <td>$22.0K</td>
+                    <td>$25.0K</td>
+                    <td>$199.1K</td>
+                    <td class="negative">-9.1%</td>
+                    <td class="negative">-7.2</td>
+                    <td class="peak">2.43x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">03</td>
+                    <td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td>
+                    <td>$88.7K</td>
+                    <td>$37.9K</td>
+                    <td>$478.6K</td>
+                    <td class="positive">+1.7%</td>
+                    <td class="negative">-5.3</td>
+                    <td class="peak">3.60x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">04</td>
+                    <td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td>
+                    <td>$14.8K</td>
+                    <td>$8.7K</td>
+                    <td>$12.3K</td>
+                    <td class="positive">+9.1%</td>
+                    <td class="negative">-4.8</td>
+                    <td class="peak">1.72x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">05</td>
+                    <td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td>
+                    <td>$90.2K</td>
+                    <td>$167.9K</td>
+                    <td>$243.4K</td>
+                    <td class="positive">+2.0%</td>
+                    <td class="negative">-3.1</td>
+                    <td class="peak">2.33x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">06</td>
+                    <td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td>
+                    <td>$34.9K</td>
+                    <td>$72.3K</td>
+                    <td>$18.6K</td>
+                    <td class="negative">-2.7%</td>
+                    <td class="negative">-2.3</td>
+                    <td class="peak">2.51x</td>
+                    <td>18m</td>
+                </tr>
+                <tr>
+                    <td class="rank">07</td>
+                    <td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td>
+                    <td>$36.3K</td>
+                    <td>$90.4K</td>
+                    <td>$243.7K</td>
+                    <td class="negative">-8.5%</td>
+                    <td class="negative">-1.5</td>
+                    <td class="peak">3.31x</td>
+                    <td>48m</td>
+                </tr>
+                <tr>
+                    <td class="rank">08</td>
+                    <td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td>
+                    <td>$27.1K</td>
+                    <td>$46.8K</td>
+                    <td>$55.6K</td>
+                    <td class="negative">-4.5%</td>
+                    <td>0.3</td>
+                    <td class="peak">1.95x</td>
+                    <td>18m</td>
+                </tr>
+                <tr>
+                    <td class="rank">09</td>
+                    <td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td>
+                    <td>$421.1K</td>
+                    <td>$909.9K</td>
+                    <td>$1.5M</td>
+                    <td class="negative">-3.8%</td>
+                    <td class="positive">2.1</td>
+                    <td class="peak">2.77x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">10</td>
+                    <td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td>
+                    <td>$20.4K</td>
+                    <td>$43.6K</td>
+                    <td>$17.1K</td>
+                    <td class="positive">+4.8%</td>
+                    <td class="positive">5.6</td>
+                    <td class="peak">2.88x</td>
+                    <td>1h</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- RETRO CRT FOOTER -->
+    <footer class="crt-footer">
+        <div class="footer-scanlines"></div>
+        <div class="footer-grid">
+            <div class="footer-prompt">
+                <span class="prompt-char">&gt;</span>
+                <div class="prompt-text">
+                    <span class="blink-text">SYSTEM READY</span> // AWAITING INPUT_
+                </div>
+            </div>
+            <div class="footer-data-stream">
+                <div class="data-item">
+                    <span class="data-label">TOKENS</span>
+                    <span class="data-value">10</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">SCANNED</span>
+                    <span class="data-value">2,847</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">MVP</span>
+                    <span class="data-value" style="color:#ffff00;">GME</span>
+                </div>
+                <div class="stream-line"></div>
+            </div>
+            <div class="footer-status">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">LIVE</span>
+                </div>
+                <span class="timestamp">14:32:08</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

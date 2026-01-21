@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 12 - Brutalist Block</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --brut-black: #000000;
+            --brut-white: #ffffff;
+            --brut-yellow: #ffff00;
+            --brut-red: #ff0000;
+            --brut-blue: #0000ff;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--brut-white);
+            color: var(--brut-black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 4px solid var(--brut-black);
+            padding: 0;
+            background: var(--brut-yellow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            border-bottom: 3px solid var(--brut-black);
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .controls {
+            display: flex;
+            padding: 12px 30px;
+            gap: 0;
+            background: var(--brut-white);
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            padding: 8px 16px;
+            background: var(--brut-white);
+            border: 3px solid var(--brut-black);
+            color: var(--brut-black);
+            cursor: pointer;
+            transition: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: -3px;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: var(--brut-black);
+            color: var(--brut-white);
+        }
+
+        .mode-toggle:hover, .timeframe-btn:hover {
+            background: var(--brut-yellow);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            background: var(--brut-white);
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.8rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background: var(--brut-black);
+            color: var(--brut-white);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 3px solid var(--brut-black);
+        }
+
+        .token-table th:first-child {
+            border-left: 3px solid var(--brut-black);
+        }
+
+        .token-table th:last-child {
+            border-right: 3px solid var(--brut-black);
+        }
+
+        .token-table td {
+            padding: 12px 15px;
+            border: 2px solid var(--brut-black);
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .token-table tr:first-child td {
+            border-top: 2px solid var(--brut-black);
+        }
+
+        .token-table tr:last-child td {
+            border-bottom: 2px solid var(--brut-black);
+        }
+
+        .token-table td:first-child {
+            border-left: 2px solid var(--brut-black);
+        }
+
+        .token-table td:last-child {
+            border-right: 2px solid var(--brut-black);
+        }
+
+        .token-table tr:hover td {
+            background: var(--brut-yellow);
+        }
+
+        .rank {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .token-name {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .token-address {
+            font-size: 0.6rem;
+            opacity: 0.6;
+        }
+
+        .positive {
+            background: var(--brut-blue);
+            color: var(--brut-white);
+            padding: 2px 6px;
+            font-weight: 700;
+        }
+
+        .negative {
+            background: var(--brut-red);
+            color: var(--brut-white);
+            padding: 2px 6px;
+            font-weight: 700;
+        }
+
+        .peak {
+            background: var(--brut-yellow);
+            padding: 2px 6px;
+            font-weight: 700;
+        }
+
+        /* BRUTALIST FOOTER */
+        .brutalist-footer {
+            background: var(--brut-black);
+            color: var(--brut-white);
+            border-top: 6px solid var(--brut-yellow);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 4px solid var(--brut-white);
+        }
+
+        .footer-block {
+            padding: 25px 20px;
+            border-right: 4px solid var(--brut-white);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .footer-block:last-child {
+            border-right: none;
+        }
+
+        .footer-block:nth-child(1) { background: var(--brut-yellow); color: var(--brut-black); }
+        .footer-block:nth-child(2) { background: var(--brut-red); color: var(--brut-white); }
+        .footer-block:nth-child(3) { background: var(--brut-blue); color: var(--brut-white); }
+        .footer-block:nth-child(4) { background: var(--brut-white); color: var(--brut-black); }
+
+        .block-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .block-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .block-sub {
+            font-size: 0.65rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .block-stripe {
+            height: 8px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--brut-black),
+                var(--brut-black) 10px,
+                var(--brut-white) 10px,
+                var(--brut-white) 20px
+            );
+            margin-top: auto;
+        }
+
+        .footer-block:nth-child(3) .block-stripe {
+            background: repeating-linear-gradient(
+                90deg,
+                var(--brut-white),
+                var(--brut-white) 10px,
+                var(--brut-black) 10px,
+                var(--brut-black) 20px
+            );
+        }
+
+        .footer-block:nth-child(4) .block-stripe {
+            background: repeating-linear-gradient(
+                90deg,
+                var(--brut-yellow),
+                var(--brut-yellow) 10px,
+                var(--brut-black) 10px,
+                var(--brut-black) 20px
+            );
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">Dexter Token Hunter</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>//</span>
+                <span>Solana</span>
+                <span>//</span>
+                <span>Degen Mode</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <div style="width:20px;"></div>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>TOKEN</th><th>SPOTTED</th><th>CURRENT</th><th>VOLUME</th><th>NET</th><th>SCORE</th><th>PEAK</th><th>TIME</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td><span class="positive">+0.0%</span></td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td><span class="negative">-9.1%</span></td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td><span class="positive">+1.7%</span></td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td><span class="positive">+9.1%</span></td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td><span class="positive">+2.0%</span></td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td><span class="negative">-2.7%</span></td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td><span class="negative">-8.5%</span></td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td><span class="negative">-4.5%</span></td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td><span class="negative">-3.8%</span></td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td><span class="positive">+4.8%</span></td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="brutalist-footer">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <span class="block-label">SYSTEM STATUS</span>
+                <span class="block-value">ONLINE</span>
+                <span class="block-sub">ALL SYSTEMS OPERATIONAL</span>
+                <div class="block-stripe"></div>
+            </div>
+            <div class="footer-block">
+                <span class="block-label">ACTIVE TOKENS</span>
+                <span class="block-value">10</span>
+                <span class="block-sub">TRACKING IN REAL-TIME</span>
+                <div class="block-stripe"></div>
+            </div>
+            <div class="footer-block">
+                <span class="block-label">MVP TOKEN</span>
+                <span class="block-value">GME</span>
+                <span class="block-sub">SCORE: 5.6 / PEAK: 2.88x</span>
+                <div class="block-stripe"></div>
+            </div>
+            <div class="footer-block">
+                <span class="block-label">LAST UPDATE</span>
+                <span class="block-value">14:32:08</span>
+                <span class="block-sub">LIVE FEED CONNECTED</span>
+                <div class="block-stripe"></div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

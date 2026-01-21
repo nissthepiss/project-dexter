@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 03 - Tactical HUD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --hud-green: #4a9c2d;
+            --hud-bright: #7ed957;
+            --hud-dim: #2d5a1c;
+            --hud-alert: #ff6b35;
+            --bg-dark: #0d1210;
+            --bg-panel: #111a16;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: var(--hud-bright);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hexagonal background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill='none' stroke='%234a9c2d' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 1;
+            border-bottom: 3px solid var(--hud-green);
+            padding: 12px 25px;
+            background: var(--bg-panel);
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--hud-bright);
+            text-shadow: 0 0 10px rgba(74, 156, 45, 0.5);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--hud-green);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            background: transparent;
+            border: 1px solid var(--hud-dim);
+            color: var(--hud-green);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            border-color: var(--hud-bright);
+            background: rgba(126, 217, 87, 0.15);
+            box-shadow: inset 0 0 15px rgba(126, 217, 87, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 20px 25px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--hud-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: var(--hud-green);
+            text-transform: uppercase;
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(74, 156, 45, 0.15);
+        }
+
+        .token-table tr:hover {
+            background: rgba(74, 156, 45, 0.08);
+        }
+
+        .rank {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--hud-dim);
+        }
+
+        .token-name {
+            font-weight: 600;
+            color: var(--hud-bright);
+        }
+
+        .token-address {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--hud-dim);
+        }
+
+        .positive { color: var(--hud-bright); }
+        .negative { color: var(--hud-alert); }
+        .peak { color: #ffd700; }
+
+        /* TACTICAL HUD FOOTER */
+        .tactical-footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-panel);
+            border-top: 3px solid var(--hud-green);
+            clip-path: polygon(0 0, 20px 0, 30px 5px, calc(100% - 30px) 5px, calc(100% - 20px) 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0;
+            min-height: 70px;
+        }
+
+        .footer-zone {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            position: relative;
+        }
+
+        .footer-zone::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--hud-dim), transparent);
+        }
+
+        .footer-zone:first-child::before,
+        .footer-zone:last-child::before {
+            display: none;
+        }
+
+        /* Zone markers */
+        .zone-marker {
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 8px;
+            background: var(--hud-dim);
+            clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+        }
+
+        .zone-marker.left { left: 10px; }
+        .zone-marker.right { right: 10px; transform: rotate(180deg); }
+
+        /* HUD indicators */
+        .hud-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .indicator-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--hud-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .indicator-icon::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: var(--hud-bright);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: indicator-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes indicator-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.8); opacity: 0.7; }
+        }
+
+        .indicator-data {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .indicator-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--hud-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .indicator-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--hud-bright);
+        }
+
+        /* Center zone */
+        .footer-center {
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .tactical-stat {
+            text-align: center;
+        }
+
+        .tactical-stat .stat-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 5px;
+            border: 2px solid var(--hud-dim);
+            position: relative;
+            clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tactical-stat .stat-icon::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: var(--hud-green);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .tactical-stat .stat-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .tactical-stat .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            color: var(--hud-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Right zone */
+        .footer-right {
+            justify-content: flex-end;
+            gap: 20px;
+        }
+
+        .tactical-time {
+            text-align: right;
+        }
+
+        .tactical-time .time-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--hud-bright);
+        }
+
+        .tactical-time .time-label {
+            font-size: 0.6rem;
+            color: var(--hud-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Compass decoration */
+        .compass-deco {
+            position: absolute;
+            right: 20px;
+            bottom: 10px;
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--hud-dim);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .compass-deco::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--hud-dim);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .compass-deco::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 2px;
+            background: var(--hud-bright);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .compass-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--hud-dim);
+        }
+
+        .compass-line.vertical {
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            right: auto;
+            width: 1px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">[ DEXTER TOKEN HUNTER ]</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--hud-dim);margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>TOKEN</th>
+                    <th>SPOTTED</th>
+                    <th>CURRENT</th>
+                    <th>VOLUME</th>
+                    <th>NET</th>
+                    <th>SCORE</th>
+                    <th>PEAK</th>
+                    <th>TIME</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- TACTICAL HUD FOOTER -->
+    <footer class="tactical-footer">
+        <div class="zone-marker left"></div>
+        <div class="zone-marker right"></div>
+        <div class="compass-deco">
+            <div class="compass-line"></div>
+            <div class="compass-line vertical"></div>
+        </div>
+
+        <div class="footer-grid">
+            <div class="footer-zone">
+                <div class="hud-indicator">
+                    <div class="indicator-icon"></div>
+                    <div class="indicator-data">
+                        <span class="indicator-label">Status</span>
+                        <span class="indicator-value">OPERATIONAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-zone footer-center">
+                <div class="tactical-stat">
+                    <div class="stat-icon"></div>
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="tactical-stat">
+                    <div class="stat-icon"></div>
+                    <div class="stat-value">2.8K</div>
+                    <div class="stat-label">Scanned</div>
+                </div>
+                <div class="tactical-stat">
+                    <div class="stat-icon" style="border-color:#ffd700;"></div>
+                    <div class="stat-value" style="color:#ffd700;">GME</div>
+                    <div class="stat-label">MVP</div>
+                </div>
+            </div>
+
+            <div class="footer-zone footer-right">
+                <div class="tactical-time">
+                    <div class="time-value">14:32:08</div>
+                    <div class="time-label">Last Update</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

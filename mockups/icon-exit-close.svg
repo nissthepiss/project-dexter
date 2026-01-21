@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="exitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f87171;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff4500;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow10" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer box/frame -->
+  <rect x="8" y="8" width="48" height="48" rx="4"
+        fill="none"
+        stroke="#2a2a2e"
+        stroke-width="2"/>
+
+  <!-- Corner accents - terminal style -->
+  <g stroke="#ff4500" stroke-width="2" fill="none">
+    <!-- Top left corner -->
+    <path d="M 12,16 L 12,12 L 16,12"/>
+    <!-- Top right corner -->
+    <path d="M 48,16 L 48,12 L 44,12"/>
+    <!-- Bottom left corner -->
+    <path d="M 12,48 L 12,52 L 16,52"/>
+    <!-- Bottom right corner -->
+    <path d="M 48,48 L 48,52 L 44,52"/>
+  </g>
+
+  <!-- X mark - main close indicator -->
+  <g filter="url(#glow10)">
+    <line x1="22" y1="22" x2="42" y2="42"
+          stroke="url(#exitGrad)"
+          stroke-width="4"
+          stroke-linecap="round"/>
+    <line x1="42" y1="22" x2="22" y2="42"
+          stroke="url(#exitGrad)"
+          stroke-width="4"
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Inner detail on X -->
+  <line x1="24" y1="24" x2="40" y2="40"
+        stroke="#ff6b00"
+        stroke-width="1"
+        opacity="0.5"/>
+  <line x1="40" y1="24" x2="24" y2="40"
+        stroke="#ff6b00"
+        stroke-width="1"
+        opacity="0.5"/>
+
+  <!-- Power off symbol overlay hint -->
+  <circle cx="32" cy="32" r="16"
+          fill="none"
+          stroke="#ff4500"
+          stroke-width="1"
+          opacity="0.3"
+          stroke-dasharray="2,2"/>
+
+  <!-- Power line indicator -->
+  <line x1="32" y1="20" x2="32" y2="26"
+        stroke="#ff4500"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.5"/>
+
+  <!-- Termination dots - suggesting system shutdown -->
+  <g fill="#ff4500" opacity="0.6">
+    <circle cx="56" cy="8" r="2">
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="56" cy="56" r="2">
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="8" cy="56" r="2">
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="8" cy="8" r="2">
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Circuit traces being cut -->
+  <g stroke="#ff4500" stroke-width="1" opacity="0.3" fill="none" stroke-dasharray="2,2">
+    <path d="M 4,32 L 20,32"/>
+    <path d="M 44,32 L 60,32"/>
+  </g>
+
+  <!-- Close pulse effect -->
+  <circle cx="32" cy="32" r="20"
+          fill="none"
+          stroke="#ff4500"
+          stroke-width="1"
+          opacity="0.2">
+    <animate attributeName="r" values="20;24;20" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0;0.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Exit text indicator -->
+  <text x="32" y="62"
+        font-family="'JetBrains Mono', monospace"
+        font-size="5"
+        font-weight="bold"
+        fill="#ff4500"
+        text-anchor="middle"
+        opacity="0.5">EXIT</text>
+</svg>

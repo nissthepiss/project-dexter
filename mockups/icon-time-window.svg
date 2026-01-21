@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <filter id="glow5" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Clock face outer ring -->
+  <circle cx="32" cy="32" r="26" fill="none" stroke="#2a2a2e" stroke-width="2"/>
+
+  <!-- Clock face inner detail -->
+  <circle cx="32" cy="32" r="20" fill="#0a0a0a" stroke="#ff6b00" stroke-width="1" opacity="0.3"/>
+
+  <!-- Hour markers -->
+  <g stroke="#ff6b00" stroke-width="2" stroke-linecap="round">
+    <line x1="32" y1="8" x2="32" y2="12"/>
+    <line x1="56" y1="32" x2="52" y2="32"/>
+    <line x1="32" y1="56" x2="32" y2="52"/>
+    <line x1="8" y1="32" x2="12" y2="32"/>
+  </g>
+
+  <!-- Hour hand (shorter) -->
+  <line x1="32" y1="32" x2="42" y2="22"
+        stroke="#ff8c00"
+        stroke-width="3"
+        stroke-linecap="round"
+        opacity="0.7"/>
+
+  <!-- Minute hand (longer) -->
+  <line x1="32" y1="32" x2="32" y2="12"
+        stroke="#ff6b00"
+        stroke-width="2"
+        stroke-linecap="round"
+        filter="url(#glow5)"/>
+
+  <!-- Center pivot -->
+  <circle cx="32" cy="32" r="4" fill="#ff6b00"/>
+  <circle cx="32" cy="32" r="2" fill="#000"/>
+
+  <!-- Time window pills around the clock -->
+  <!-- 5m pill -->
+  <rect x="2" y="28" width="14" height="8" rx="4" fill="#ff6b00" filter="url(#glow5)"/>
+  <text x="9" y="34"
+        font-family="'JetBrains Mono', monospace"
+        font-size="5"
+        font-weight="bold"
+        fill="#000"
+        text-anchor="middle">5m</text>
+
+  <!-- 30m pill -->
+  <rect x="48" y="48" width="16" height="8" rx="4" fill="#2a2a2e" stroke="#ff6b00" stroke-width="1"/>
+  <text x="56" y="54"
+        font-family="'JetBrains Mono', monospace"
+        font-size="5"
+        fill="#ff6b00"
+        text-anchor="middle">30m</text>
+
+  <!-- 1h pill -->
+  <rect x="48" y="8" width="14" height="8" rx="4" fill="#2a2a2e" stroke="#ff6b00" stroke-width="1"/>
+  <text x="55" y="14"
+        font-family="'JetBrains Mono', monospace"
+        font-size="5"
+        fill="#ff6b00"
+        text-anchor="middle">1h</text>
+
+  <!-- 2h pill -->
+  <rect x="2" y="8" width="14" height="8" rx="4" fill="#2a2a2e" stroke="#ff6b00" stroke-width="1"/>
+  <text x="9" y="14"
+        font-family="'JetBrains Mono', monospace"
+        font-size="5"
+        fill="#ff6b00"
+        text-anchor="middle">2h</text>
+
+  <!-- All-time pill (infinity) -->
+  <rect x="2" y="48" width="18" height="8" rx="4" fill="#2a2a2e" stroke="#ff6b00" stroke-width="1"/>
+  <path d="M 5,52 Q 8,49 11,52 T 17,52"
+        fill="none"
+        stroke="#ff6b00"
+        stroke-width="1.5"
+        stroke-linecap="round"/>
+
+  <!-- Time sweep arc showing active window -->
+  <path d="M 32,6 A 26,26 0 0,1 52,14"
+        fill="none"
+        stroke="#ff8c00"
+        stroke-width="3"
+        stroke-linecap="round"
+        filter="url(#glow5)"/>
+
+  <!-- Data points on timeline -->
+  <circle cx="40" cy="12" r="2" fill="#4ade80" opacity="0.8"/>
+  <circle cx="50" cy="20" r="1.5" fill="#ff8c00" opacity="0.6"/>
+</svg>

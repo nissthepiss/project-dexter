@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 08 - Progress Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f0f1a;
+            --bg-panel: #1a1a2e;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-dark);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 15px 30px;
+            background: var(--bg-panel);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-light);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--accent-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--accent);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.05);
+        }
+
+        .token-table tr:hover {
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .rank {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        .token-name {
+            font-weight: 500;
+        }
+
+        .token-address {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--accent);
+            opacity: 0.5;
+        }
+
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+        .peak { color: var(--warning); }
+
+        /* PROGRESS DASHBOARD FOOTER */
+        .dashboard-footer {
+            background: var(--bg-panel);
+            border-top: 2px solid var(--accent);
+            padding: 25px 30px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .dashboard-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .section-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .section-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-light);
+        }
+
+        /* Progress bars */
+        .progress-bar {
+            height: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            border-radius: 4px;
+            position: relative;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-fill.success { background: linear-gradient(90deg, var(--success), #34d399); }
+        .progress-fill.warning { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+        .progress-fill.danger { background: linear-gradient(90deg, var(--danger), #f87171); }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            margin-top: 3px;
+        }
+
+        .progress-label .name {
+            color: #94a3b8;
+        }
+
+        .progress-label .percent {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--accent-light);
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 8px;
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-number {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stat-card .stat-text {
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .stat-card.highlight {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-card.highlight .stat-number {
+            color: var(--success);
+        }
+
+        .stat-card.highlight .stat-text {
+            color: var(--success);
+        }
+
+        /* Time display */
+        .time-section {
+            text-align: right;
+        }
+
+        .time-section .time {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .time-section .label {
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">DEXTER TOKEN HUNTER</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--accent);opacity:0.5;margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>TOKEN</th><th>SPOTTED</th><th>CURRENT</th><th>VOLUME</th><th>NET</th><th>SCORE</th><th>PEAK</th><th>TIME</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="dashboard-footer">
+        <div class="dashboard-grid">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <span class="section-label">Performance Metrics</span>
+                    <span class="section-value">5 / 10 Positive</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill success" style="width: 50%;"></div>
+                </div>
+                <div class="progress-label">
+                    <span class="name">Positive Change</span>
+                    <span class="percent">50%</span>
+                </div>
+
+                <div class="progress-bar" style="margin-top: 8px;">
+                    <div class="progress-fill warning" style="width: 70%;"></div>
+                </div>
+                <div class="progress-label">
+                    <span class="name">Avg Peak Multiplier</span>
+                    <span class="percent">2.54x</span>
+                </div>
+
+                <div class="progress-bar" style="margin-top: 8px;">
+                    <div class="progress-fill" style="width: 85%;"></div>
+                </div>
+                <div class="progress-label">
+                    <span class="name">Scan Coverage</span>
+                    <span class="percent">85%</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-number">10</div>
+                <div class="stat-text">Active</div>
+            </div>
+
+            <div class="stat-card highlight">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-number">GME</div>
+                <div class="stat-text">MVP</div>
+            </div>
+
+            <div class="time-section">
+                <div class="time">14:32:08</div>
+                <div class="label">Last Update</div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

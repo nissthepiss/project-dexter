@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Heatmap Grid Display</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar - Controls */
+        .left-sidebar {
+            width: 200px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--bg-tertiary);
+            padding: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--accent-orange);
+        }
+
+        .control-section {
+            margin-bottom: 24px;
+        }
+
+        .control-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mode-btn {
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--accent-orange);
+        }
+
+        .mode-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .timeframe-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .timeframe-btn {
+            padding: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .timeframe-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* Main Content - Heatmap */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ticker */
+        .ticker-bar {
+            height: 36px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--bg-tertiary);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker-content {
+            display: flex;
+            animation: scroll 20s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 16px;
+            border-right: 1px solid var(--bg-tertiary);
+            font-size: 10px;
+        }
+
+        .ticker-symbol {
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .ticker-value {
+            color: var(--text-secondary);
+        }
+
+        /* Heatmap Grid */
+        .heatmap-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            padding: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .heatmap-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0.8;
+            z-index: 0;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.4);
+        }
+
+        .heatmap-cell.positive {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.4));
+            border: 1px solid var(--success);
+        }
+
+        .heatmap-cell.positive-high {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.4), rgba(74, 222, 128, 0.6));
+            border: 2px solid var(--success);
+        }
+
+        .heatmap-cell.negative {
+            background: linear-gradient(135deg, rgba(248, 113, 113, 0.2), rgba(248, 113, 113, 0.4));
+            border: 1px solid var(--error);
+        }
+
+        .heatmap-cell.negative-high {
+            background: linear-gradient(135deg, rgba(248, 113, 113, 0.4), rgba(248, 113, 113, 0.6));
+            border: 2px solid var(--error);
+        }
+
+        .heatmap-cell.mvp {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.3), rgba(255, 140, 0, 0.5));
+            border: 2px solid var(--accent-orange);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+        }
+
+        .cell-rank {
+            position: relative;
+            z-index: 1;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .cell-center {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cell-symbol {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .cell-score {
+            width: 36px;
+            height: 36px;
+            margin: 4px auto;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .cell-footer {
+            position: relative;
+            z-index: 1;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Detail Popup */
+        .detail-popup {
+            position: fixed;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-orange);
+            border-radius: 8px;
+            padding: 16px;
+            min-width: 220px;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-popup.active {
+            display: block;
+        }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .popup-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .popup-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .popup-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .popup-metric {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .popup-metric-label {
+            color: var(--text-muted);
+        }
+
+        /* Right Sidebar - MVP Panel */
+        .right-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--bg-tertiary);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .mvp-header {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--accent-orange);
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border: 1px solid var(--gold);
+        }
+
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+            border: 1px solid var(--silver);
+        }
+
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+            border: 1px solid var(--bronze);
+        }
+
+        .leader-rank {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            background: var(--bg-primary);
+            border-radius: 6px;
+        }
+
+        .leader-rank.gold { background: var(--gold); color: var(--bg-primary); }
+        .leader-rank.silver { background: var(--silver); color: var(--bg-primary); }
+        .leader-rank.bronze { background: var(--bronze); color: var(--bg-primary); }
+
+        .leader-info {
+            flex: 1;
+        }
+
+        .leader-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .leader-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        /* Selected Token Details */
+        .selected-token {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 3px;
+        }
+
+        .progress-fill.high { background: linear-gradient(90deg, var(--success), #22c55e); }
+        .progress-fill.low { background: linear-gradient(90deg, var(--error), #ef4444); }
+
+        .fresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 6px;
+            font-size: 10px;
+            color: var(--success);
+        }
+
+        .fresh-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 32px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
+            <div class="sidebar-title">/// CONTROLS</div>
+
+            <div class="control-section">
+                <div class="control-label">MODE</div>
+                <div class="mode-buttons">
+                    <button class="mode-btn active">Degen</button>
+                    <button class="mode-btn">Holder</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-label">TIMEFRAME</div>
+                <div class="timeframe-buttons">
+                    <button class="timeframe-btn active">5M</button>
+                    <button class="timeframe-btn">30M</button>
+                    <button class="timeframe-btn">1H</button>
+                    <button class="timeframe-btn">4H</button>
+                    <button class="timeframe-btn">ALL</button>
+                    <button class="timeframe-btn">CUR</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-label">FILTER</div>
+                <div class="mode-buttons">
+                    <button class="mode-btn">All Tokens</button>
+                    <button class="mode-btn">Positive Only</button>
+                    <button class="mode-btn">Negative Only</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Ticker -->
+            <div class="ticker-bar">
+                <div class="ticker-content">
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">BONK</span>
+                        <span class="ticker-value">+24.5%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">WIF</span>
+                        <span class="ticker-value">+18.2%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">MYRO</span>
+                        <span class="ticker-value">+12.8%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">POPCAT</span>
+                        <span class="ticker-value">-3.2%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">SLERF</span>
+                        <span class="ticker-value">-8.7%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">RENDER</span>
+                        <span class="ticker-value">+2.1%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">JUP</span>
+                        <span class="ticker-value">+5.4%</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span class="ticker-symbol">BONK</span>
+                        <span class="ticker-value">+24.5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heatmap Grid -->
+            <div class="heatmap-container">
+                <div class="heatmap-grid">
+                    <div class="heatmap-cell mvp">
+                        <div class="cell-rank">#1</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">B</div>
+                            <div class="cell-score">94.2</div>
+                        </div>
+                        <div class="cell-footer">$1.2M MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive-high">
+                        <div class="cell-rank">#2</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">W</div>
+                            <div class="cell-score">87.6</div>
+                        </div>
+                        <div class="cell-footer">$980K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive-high">
+                        <div class="cell-rank">#3</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">M</div>
+                            <div class="cell-score">81.3</div>
+                        </div>
+                        <div class="cell-footer">$750K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive">
+                        <div class="cell-rank">#4</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">P</div>
+                            <div class="cell-score">76.8</div>
+                        </div>
+                        <div class="cell-footer">$520K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive">
+                        <div class="cell-rank">#5</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">S</div>
+                            <div class="cell-score">71.4</div>
+                        </div>
+                        <div class="cell-footer">$380K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive">
+                        <div class="cell-rank">#6</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">R</div>
+                            <div class="cell-score">68.9</div>
+                        </div>
+                        <div class="cell-footer">$290K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell negative">
+                        <div class="cell-rank">#7</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">J</div>
+                            <div class="cell-score">62.4</div>
+                        </div>
+                        <div class="cell-footer">$180K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell negative">
+                        <div class="cell-rank">#8</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">T</div>
+                            <div class="cell-score">58.7</div>
+                        </div>
+                        <div class="cell-footer">$120K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell negative-high">
+                        <div class="cell-rank">#9</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">A</div>
+                            <div class="cell-score">52.1</div>
+                        </div>
+                        <div class="cell-footer">$85K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive">
+                        <div class="cell-rank">#10</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">K</div>
+                            <div class="cell-score">48.3</div>
+                        </div>
+                        <div class="cell-footer">$65K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell positive">
+                        <div class="cell-rank">#11</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">L</div>
+                            <div class="cell-score">45.6</div>
+                        </div>
+                        <div class="cell-footer">$52K MC</div>
+                    </div>
+
+                    <div class="heatmap-cell negative">
+                        <div class="cell-rank">#12</div>
+                        <div class="cell-center">
+                            <div class="cell-symbol">Z</div>
+                            <div class="cell-score">41.2</div>
+                        </div>
+                        <div class="cell-footer">$38K MC</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fresh-dot"></div>
+                    <span>Connected</span>
+                </div>
+                <span>12 TOKENS DISPLAYED</span>
+                <span>MODE: DEGEN</span>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="mvp-header">/// LEADERBOARD</div>
+
+            <div class="leaderboard">
+                <div class="leaderboard-item rank-1">
+                    <div class="leader-rank gold">1</div>
+                    <div class="leader-info">
+                        <div class="leader-name">BONK</div>
+                        <div class="leader-score">94.2</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item rank-2">
+                    <div class="leader-rank silver">2</div>
+                    <div class="leader-info">
+                        <div class="leader-name">WIF</div>
+                        <div class="leader-score">87.6</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-item rank-3">
+                    <div class="leader-rank bronze">3</div>
+                    <div class="leader-info">
+                        <div class="leader-name">MYRO</div>
+                        <div class="leader-score">81.3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mvp-header">/// SELECTED TOKEN</div>
+
+            <div class="selected-token">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">B</div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700;">BONK</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">DezXAZ8z7Pnrn...</div>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Market Cap</span>
+                    <span>$1.2M</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Volume 24h</span>
+                    <span>$856K</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Net Change</span>
+                    <span style="color: var(--success);">+24.5%</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Peak</span>
+                    <span>5.2x</span>
+                </div>
+
+                <div style="margin-top: 12px;">
+                    <div class="detail-row">
+                        <span class="detail-label">Buy Pressure</span>
+                        <span>78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill high" style="width: 78%"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Txn Velocity</span>
+                        <span>142/5m</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill high" style="width: 82%"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Momentum</span>
+                        <span>24.5%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill high" style="width: 88%"></div>
+                    </div>
+                </div>
+
+                <div class="fresh-indicator">
+                    <div class="fresh-dot"></div>
+                    <span>FRESH DATA - Updated 2s ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Popup -->
+    <div class="detail-popup" style="top: 200px; left: 400px;">
+        <div class="popup-header">
+            <div class="popup-logo">B</div>
+            <div>
+                <div class="popup-name">BONK</div>
+                <div class="popup-score">94.2</div>
+            </div>
+        </div>
+        <div class="popup-metric">
+            <span class="popup-metric-label">Market Cap</span>
+            <span>$1.2M</span>
+        </div>
+        <div class="popup-metric">
+            <span class="popup-metric-label">Volume 24h</span>
+            <span>$856K</span>
+        </div>
+        <div class="popup-metric">
+            <span class="popup-metric-label">Net Change</span>
+            <span style="color: var(--success);">+24.5%</span>
+        </div>
+        <div class="popup-metric">
+            <span class="popup-metric-label">Peak</span>
+            <span>5.2x</span>
+        </div>
+    </div>
+</body>
+</html>

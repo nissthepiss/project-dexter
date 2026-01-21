@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Arrivals - Redesign</title>
+    <style>
+        :root {
+            --terminal-bg: #0a0a0a;
+            --terminal-border: #1a1a1a;
+            --terminal-green: #00ff41;
+            --terminal-green-dim: #00a828;
+            --terminal-text: #e0e0e0;
+            --terminal-text-dim: #666;
+            --degen-pink: #ff6b9d;
+            --holder-blue: #6b9dff;
+            --bg-subtle: #111;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Monaco', monospace;
+            background: var(--terminal-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        /* Main Container */
+        .recent-arrivals-section {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        /* Floating Label */
+        .recent-arrivals-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--terminal-bg);
+            padding: 0 12px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--terminal-text-dim);
+            z-index: 2;
+            font-family: 'Courier New', monospace;
+            border: 1px solid var(--terminal-border);
+            border-radius: 2px;
+        }
+
+        .recent-arrivals-label::before {
+            content: '>';
+            margin-right: 6px;
+            color: var(--terminal-green-dim);
+        }
+
+        /* Main Card */
+        .recent-arrivals-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--terminal-border);
+            padding: 20px 16px 16px;
+            position: relative;
+        }
+
+        /* Decorative corner accents */
+        .recent-arrivals-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 3px;
+            background: var(--terminal-green);
+        }
+
+        .recent-arrivals-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 3px;
+            background: var(--terminal-green);
+        }
+
+        /* Tokens Grid */
+        .tokens-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        /* Token Slot */
+        .token-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        /* Token Icon Container */
+        .token-icon-wrapper {
+            width: 52px;
+            height: 52px;
+            background: var(--terminal-bg);
+            border: 1px solid var(--terminal-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        .token-icon-wrapper:hover {
+            border-color: var(--terminal-green-dim);
+            box-shadow: 0 0 12px rgba(0, 255, 65, 0.1);
+        }
+
+        /* Token Image */
+        .token-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+        }
+
+        /* Multiplier Badge */
+        .multiplier-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--terminal-green);
+            color: var(--terminal-bg);
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 2px;
+            font-family: 'Courier New', monospace;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        /* Mode Badge */
+        .mode-badge {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 2px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+        }
+
+        .mode-badge.degen {
+            background: rgba(255, 107, 157, 0.15);
+            color: var(--degen-pink);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+        }
+
+        .mode-badge.holder {
+            background: rgba(107, 157, 255, 0.15);
+            color: var(--holder-blue);
+            border: 1px solid rgba(107, 157, 255, 0.3);
+        }
+
+        /* Empty Slot */
+        .token-slot.empty .token-icon-wrapper {
+            border-style: dashed;
+            border-color: var(--terminal-border);
+        }
+
+        .token-slot.empty .token-icon {
+            opacity: 0.3;
+        }
+
+        .token-slot.empty .mode-badge {
+            opacity: 0.3;
+        }
+
+        /* Scanline effect for terminal vibe */
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .recent-arrivals-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 255, 65, 0.01) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9px;
+            color: var(--terminal-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--terminal-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .tokens-grid {
+                gap: 8px;
+            }
+            .token-icon-wrapper {
+                width: 44px;
+                height: 44px;
+            }
+            .token-icon {
+                width: 30px;
+                height: 30px;
+            }
+            .mode-badge {
+                font-size: 8px;
+                padding: 2px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recent-arrivals-section">
+        <!-- Floating Label -->
+        <div class="recent-arrivals-label">Recent Arrivals</div>
+
+        <!-- Main Card -->
+        <div class="recent-arrivals-card">
+            <!-- Tokens Grid -->
+            <div class="tokens-grid">
+                <!-- Token 1 - Degen -->
+                <div class="token-slot">
+                    <div class="token-icon-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff6b9d'/%3E%3Cstop offset='100%25' style='stop-color:%23c850c0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g1)'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E" alt="Token" class="token-icon">
+                        <span class="multiplier-badge">3.2x</span>
+                    </div>
+                    <span class="mode-badge degen">Degen</span>
+                </div>
+
+                <!-- Token 2 - Degen -->
+                <div class="token-slot">
+                    <div class="token-icon-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2300ff41'/%3E%3Cstop offset='100%25' style='stop-color:%2300a828'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g2)'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E" alt="Token" class="token-icon">
+                        <span class="multiplier-badge">2.8x</span>
+                    </div>
+                    <span class="mode-badge degen">Degen</span>
+                </div>
+
+                <!-- Token 3 - Holder -->
+                <div class="token-slot">
+                    <div class="token-icon-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236b9dff'/%3E%3Cstop offset='100%25' style='stop-color:%234a7cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g3)'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='35' font-weight='bold' fill='white' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E" alt="Token" class="token-icon">
+                        <span class="multiplier-badge">1.9x</span>
+                    </div>
+                    <span class="mode-badge holder">Holder</span>
+                </div>
+
+                <!-- Token 4 - Degen -->
+                <div class="token-slot">
+                    <div class="token-icon-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ffb347'/%3E%3Cstop offset='100%25' style='stop-color:%23ff8c00'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g4)'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E" alt="Token" class="token-icon">
+                        <span class="multiplier-badge">1.5x</span>
+                    </div>
+                    <span class="mode-badge degen">Degen</span>
+                </div>
+
+                <!-- Token 5 - Empty -->
+                <div class="token-slot empty">
+                    <div class="token-icon-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23333' stroke-width='2' stroke-dasharray='5,5'/%3E%3Ctext x='50' y='58' font-family='monospace' font-size='24' fill='%23333' text-anchor='middle'%3E?%3C/text%3E%3C/svg%3E" alt="Token" class="token-icon">
+                    </div>
+                    <span class="mode-badge degen">--</span>
+                </div>
+            </div>
+
+            <!-- Status Indicator -->
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

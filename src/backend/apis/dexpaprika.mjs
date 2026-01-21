@@ -14,12 +14,53 @@ class SSEManager {
         this.connections = new Map(); // address -> { request, lastPrice, lastUpdate, priceTimestamp }
         this.priceCallbacks = new Map(); // address -> Set of callbacks
         this.globalCallback = null; // Called on any price update
+        this.connectionQueue = []; // Queue for staggered connections
+        this.isProcessingQueue = false;
+        this.failedConnections = new Map(); // address -> { failures, lastAttempt, backoffUntil }
+        this.connectionDelay = 500; // Delay between connections in ms
+    }
+
+    // Check if address is in backoff period (rate limited)
+    _isInBackoff(address) {
+        const failed = this.failedConnections.get(address);
+        if (!failed) return false;
+        return Date.now() < failed.backoffUntil;
+    }
+
+    // Handle connection failure with exponential backoff
+    _handleConnectionFailure(address, statusCode) {
+        const failed = this.failedConnections.get(address) || { failures: 0 };
+        failed.failures = failed.failures + 1;
+        failed.lastAttempt = Date.now();
+
+        // Exponential backoff: 2^failures * 1000ms, max 60 seconds
+        const backoffMs = Math.min(Math.pow(2, failed.failures) * 1000, 60000);
+        failed.backoffUntil = Date.now() + backoffMs;
+
+        this.failedConnections.set(address, failed);
+
+        if (statusCode === 429) {
+            logger.warn(`SSE: Rate limited for ${address.slice(0, 8)}... - backing off ${Math.round(backoffMs/1000)}s`);
+        }
+    }
+
+    // Reset failure state on successful connection
+    _handleConnectionSuccess(address) {
+        this.failedConnections.delete(address);
     }
 
     // Subscribe to real-time price updates for a token
     connect(address) {
         if (this.connections.has(address)) {
             return true; // Already connected
+        }
+
+        // Check if in backoff period
+        if (this._isInBackoff(address)) {
+            const failed = this.failedConnections.get(address);
+            const waitTime = Math.round((failed.backoffUntil - Date.now()) / 1000);
+            logger.debug(`SSE: Skipping ${address.slice(0, 8)}... (in backoff, ${waitTime}s remaining)`);
+            return false;
         }
 
         if (this.connections.size >= this.maxConnections) {
@@ -32,12 +73,14 @@ class SSEManager {
 
         const request = https.get(url, (res) => {
             if (res.statusCode !== 200) {
+                this._handleConnectionFailure(address, res.statusCode);
                 logger.error(`SSE: Failed to connect to ${address.slice(0, 8)}... (status ${res.statusCode})`);
                 this.connections.delete(address);
                 return;
             }
 
-            logger.info(`SSE: Connected to ${address.slice(0, 8)}...`);
+            this._handleConnectionSuccess(address);
+            logger.debug(`SSE: Connected to ${address.slice(0, 8)}...`);
 
             res.on('data', (chunk) => {
                 buffer += chunk.toString();
@@ -75,12 +118,13 @@ class SSEManager {
             });
 
             res.on('error', (err) => {
-                logger.error(`SSE: Stream error for ${address.slice(0, 8)}...: ${err.message}`);
+                logger.debug(`SSE: Stream error for ${address.slice(0, 8)}...: ${err.message}`);
             });
         });
 
         request.on('error', (err) => {
-            logger.error(`SSE: Connection error for ${address.slice(0, 8)}...: ${err.message}`);
+            this._handleConnectionFailure(address, 0);
+            logger.debug(`SSE: Connection error for ${address.slice(0, 8)}...: ${err.message}`);
             this.connections.delete(address);
         });
 
@@ -107,6 +151,30 @@ class SSEManager {
         return false;
     }
 
+    // Process connection queue with staggered delay
+    async _processConnectionQueue() {
+        if (this.isProcessingQueue) return;
+        this.isProcessingQueue = true;
+
+        while (this.connectionQueue.length > 0) {
+            const address = this.connectionQueue.shift();
+
+            // Skip if already connected or in backoff
+            if (this.connections.has(address) || this._isInBackoff(address)) {
+                continue;
+            }
+
+            this.connect(address);
+
+            // Wait before connecting next token (stagger connections)
+            if (this.connectionQueue.length > 0) {
+                await new Promise(resolve => setTimeout(resolve, this.connectionDelay));
+            }
+        }
+
+        this.isProcessingQueue = false;
+    }
+
     // Update which tokens are in the top 10 - connects new ones, disconnects old ones
     updateTop10(addresses) {
         const newSet = new Set(addresses.slice(0, this.maxConnections));
@@ -119,15 +187,25 @@ class SSEManager {
             }
         }
 
-        // Connect new top 10 tokens
+        // Queue new top 10 tokens for staggered connection
+        let newlyQueued = 0;
         for (const addr of newSet) {
-            if (!currentSet.has(addr)) {
-                this.connect(addr);
+            if (!currentSet.has(addr) && !this.connectionQueue.includes(addr)) {
+                this.connectionQueue.push(addr);
+                newlyQueued++;
             }
+        }
+
+        // Start processing queue if there are new tokens
+        if (newlyQueued > 0) {
+            this._processConnectionQueue().catch(err => {
+                logger.error(`SSE queue processing error: ${err.message}`);
+            });
         }
 
         return {
             connected: this.connections.size,
+            queued: this.connectionQueue.length,
             addresses: Array.from(this.connections.keys())
         };
     }

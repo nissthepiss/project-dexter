@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 05 - Data Stream Ticker</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #00f0ff;
+            --secondary: #7000ff;
+            --success: #00ff88;
+            --danger: #ff0055;
+            --bg-dark: #08080c;
+            --bg-panel: #0f0f15;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 15px 30px;
+            background: var(--bg-panel);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--secondary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            background: transparent;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.05);
+        }
+
+        .token-table tr:hover {
+            background: rgba(0, 240, 255, 0.03);
+        }
+
+        .rank {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--secondary);
+        }
+
+        .token-name {
+            font-weight: 500;
+        }
+
+        .token-address {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--secondary);
+        }
+
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+        .peak { color: #ffaa00; }
+
+        /* DATA STREAM TICKER FOOTER */
+        .ticker-footer {
+            background: var(--bg-panel);
+            border-top: 2px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(0, 240, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .ticker-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticker-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink-dot 1s step-end infinite;
+        }
+
+        @keyframes blink-dot {
+            50% { opacity: 0; }
+        }
+
+        .ticker-stats {
+            display: flex;
+            gap: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .ticker-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ticker-stat .label {
+            color: var(--secondary);
+            font-size: 0.65rem;
+        }
+
+        .ticker-stat .value {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Scrolling ticker */
+        .ticker-stream {
+            display: flex;
+            overflow: hidden;
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .ticker-stream::before,
+        .ticker-stream::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100px;
+            z-index: 1;
+        }
+
+        .ticker-stream::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-panel), transparent);
+        }
+
+        .ticker-stream::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-panel), transparent);
+        }
+
+        .ticker-track {
+            display: flex;
+            animation: scroll-ticker 30s linear infinite;
+        }
+
+        @keyframes scroll-ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ticker-item {
+            flex-shrink: 0;
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            border-right: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .ticker-item .token {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .ticker-item .price {
+            color: var(--success);
+        }
+
+        .ticker-item .change {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+        }
+
+        .ticker-item .change.positive {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--success);
+        }
+
+        .ticker-item .change.negative {
+            background: rgba(255, 0, 85, 0.15);
+            color: var(--danger);
+        }
+
+        /* Footer info bar */
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .footer-info .time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--secondary);
+        }
+
+        .footer-info .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        .footer-info .status::before {
+            content: '●';
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">&gt; DEXTER_TOKEN_HUNTER</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--secondary);margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>TOKEN</th><th>SPOTTED</th><th>CURRENT</th><th>VOLUME</th><th>NET</th><th>SCORE</th><th>PEAK</th><th>TIME</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="ticker-footer">
+        <div class="ticker-header">
+            <div class="ticker-title">Live Data Stream</div>
+            <div class="ticker-stats">
+                <div class="ticker-stat">
+                    <span class="label">TOKENS</span>
+                    <span class="value">10</span>
+                </div>
+                <div class="ticker-stat">
+                    <span class="label">SCANNED</span>
+                    <span class="value">2,847</span>
+                </div>
+                <div class="ticker-stat">
+                    <span class="label">MVP</span>
+                    <span class="value" style="color:#ffaa00;">GME</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticker-stream">
+            <div class="ticker-track">
+                <div class="ticker-item"><span class="token">RUST</span><span class="price">$29.0K</span><span class="change positive">+0.0%</span></div>
+                <div class="ticker-item"><span class="token">MOM</span><span class="price">$25.0K</span><span class="change negative">-9.1%</span></div>
+                <div class="ticker-item"><span class="token">BREAD</span><span class="price">$37.9K</span><span class="change positive">+1.7%</span></div>
+                <div class="ticker-item"><span class="token">LINUS</span><span class="price">$8.7K</span><span class="change positive">+9.1%</span></div>
+                <div class="ticker-item"><span class="token">LILTAY</span><span class="price">$167.9K</span><span class="change positive">+2.0%</span></div>
+                <div class="ticker-item"><span class="token">TOWELIE</span><span class="price">$72.3K</span><span class="change negative">-2.7%</span></div>
+                <div class="ticker-item"><span class="token">CHINESE</span><span class="price">$90.4K</span><span class="change negative">-8.5%</span></div>
+                <div class="ticker-item"><span class="token">PAPERCLIP</span><span class="price">$46.8K</span><span class="change negative">-4.5%</span></div>
+                <div class="ticker-item"><span class="token">X</span><span class="price">$909.9K</span><span class="change negative">-3.8%</span></div>
+                <div class="ticker-item"><span class="token">GME</span><span class="price">$43.6K</span><span class="change positive">+4.8%</span></div>
+                <div class="ticker-item"><span class="token">RUST</span><span class="price">$29.0K</span><span class="change positive">+0.0%</span></div>
+                <div class="ticker-item"><span class="token">MOM</span><span class="price">$25.0K</span><span class="change negative">-9.1%</span></div>
+                <div class="ticker-item"><span class="token">BREAD</span><span class="price">$37.9K</span><span class="change positive">+1.7%</span></div>
+                <div class="ticker-item"><span class="token">LINUS</span><span class="price">$8.7K</span><span class="change positive">+9.1%</span></div>
+                <div class="ticker-item"><span class="token">LILTAY</span><span class="price">$167.9K</span><span class="change positive">+2.0%</span></div>
+                <div class="ticker-item"><span class="token">TOWELIE</span><span class="price">$72.3K</span><span class="change negative">-2.7%</span></div>
+                <div class="ticker-item"><span class="token">CHINESE</span><span class="price">$90.4K</span><span class="change negative">-8.5%</span></div>
+                <div class="ticker-item"><span class="token">PAPERCLIP</span><span class="price">$46.8K</span><span class="change negative">-4.5%</span></div>
+                <div class="ticker-item"><span class="token">X</span><span class="price">$909.9K</span><span class="change negative">-3.8%</span></div>
+                <div class="ticker-item"><span class="token">GME</span><span class="price">$43.6K</span><span class="change positive">+4.8%</span></div>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            <span class="time">Last updated: 14:32:08</span>
+            <span class="status">LIVE CONNECTION ACTIVE</span>
+        </div>
+    </footer>
+</body>
+</html>

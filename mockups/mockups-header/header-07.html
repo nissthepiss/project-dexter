@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 07: Icon-Based Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #08080c;
+            --bg-nav: #0f0f18;
+            --orange: #ff2200;
+            --green: #00ff33;
+            --gray: #3d3d48;
+            --gray-light: #6d6d78;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .icon-header {
+            background: var(--bg-nav);
+            border-bottom: 2px solid var(--orange);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--orange), #ff5500);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            color: var(--white);
+            box-shadow: 0 0 20px rgba(255, 34, 0, 0.4);
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .brand-tagline {
+            font-size: 9px;
+            color: var(--gray-light);
+            letter-spacing: 1px;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .nav-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+            color: var(--gray-light);
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--white);
+        }
+
+        .nav-icon.active {
+            background: rgba(255, 34, 0, 0.15);
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .nav-icon .tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-nav);
+            border: 1px solid var(--gray);
+            padding: 4px 8px;
+            font-size: 9px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+
+        .nav-icon:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 8px;
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .status-icon.version {
+            background: rgba(255, 34, 0, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(255, 34, 0, 0.3);
+        }
+
+        .status-icon.network {
+            background: rgba(0, 255, 51, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(0, 255, 51, 0.3);
+        }
+
+        .status-icon.mode {
+            background: rgba(255, 34, 0, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(255, 34, 0, 0.3);
+        }
+
+        .controls-bar {
+            background: var(--bg-primary);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .control-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-right: 16px;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .control-section:last-child {
+            border-right: none;
+            margin-left: auto;
+        }
+
+        .control-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--orange);
+        }
+
+        .icon-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 11px;
+            color: var(--gray-light);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .icon-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .toggle-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .toggle-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .toggle-icon:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
+        }
+
+        .toggle-icon.active {
+            color: var(--white);
+            background: rgba(255, 34, 0, 0.1);
+        }
+
+        .toggle-indicator {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--gray);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .toggle-icon.active .toggle-indicator {
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        .toggle-icon.active .toggle-indicator::after {
+            content: '✓';
+            position: absolute;
+            font-size: 8px;
+            color: var(--white);
+            margin-left: 1px;
+            margin-top: -2px;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="icon-header">
+        <div class="brand-icon">DX</div>
+        <div class="brand-info">
+            <span class="brand-name">DEXTER</span>
+            <span class="brand-tagline">TOKEN HUNTER</span>
+        </div>
+
+        <nav class="nav-icons">
+            <div class="nav-icon active">
+                ⌂
+                <span class="tooltip">Home</span>
+            </div>
+            <div class="nav-icon">
+                ◇
+                <span class="tooltip">Tokens</span>
+            </div>
+            <div class="nav-icon">
+                ⚡
+                <span class="tooltip">Analytics</span>
+            </div>
+            <div class="nav-icon">
+                ⚙
+                <span class="tooltip">Settings</span>
+            </div>
+        </nav>
+
+        <div class="status-icons">
+            <div class="status-icon version">v1</div>
+            <div class="status-icon network">◎</div>
+            <div class="status-icon mode">⚡</div>
+        </div>
+    </header>
+
+    <div class="controls-bar">
+        <div class="control-section">
+            <div class="control-icon">⚔</div>
+            <div class="icon-buttons">
+                <button class="icon-btn active">D</button>
+                <button class="icon-btn">H</button>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="control-icon">⏱</div>
+            <div class="icon-buttons">
+                <button class="icon-btn">5</button>
+                <button class="icon-btn">30</button>
+                <button class="icon-btn active">1H</button>
+                <button class="icon-btn">2H</button>
+                <button class="icon-btn">∞</button>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <div class="toggle-icons">
+                <div class="toggle-icon active">
+                    <div class="toggle-indicator"></div>
+                    <span>telegram</span>
+                </div>
+                <div class="toggle-icon">
+                    <div class="toggle-indicator"></div>
+                    <span>public</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        document.querySelectorAll('.nav-icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
+                icon.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.icon-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const parent = btn.parentElement;
+                parent.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.toggle-icon').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

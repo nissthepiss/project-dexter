@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 02 - Cyberpunk Neon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --neon-pink: #ff006e;
+            --neon-cyan: #00f5ff;
+            --neon-purple: #8b00ff;
+            --neon-yellow: #ffee00;
+            --bg-dark: #0a0a12;
+            --bg-panel: #12121f;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(90deg, rgba(255,0,110,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 1;
+            border-bottom: 2px solid var(--neon-cyan);
+            padding: 15px 30px;
+            background: var(--bg-panel);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 0.75rem;
+            color: var(--neon-cyan);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            padding: 6px 14px;
+            background: transparent;
+            border: 1px solid var(--neon-purple);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            border-color: var(--neon-pink);
+            background: linear-gradient(135deg, rgba(255,0,110,0.2), rgba(139,0,255,0.2));
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.4), inset 0 0 20px rgba(255, 0, 110, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 2px solid var(--neon-purple);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+        }
+
+        .token-table td {
+            padding: 14px 15px;
+            border-bottom: 1px solid rgba(139, 0, 255, 0.2);
+        }
+
+        .token-table tr {
+            transition: all 0.3s;
+        }
+
+        .token-table tr:hover {
+            background: rgba(255, 0, 110, 0.05);
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.1);
+        }
+
+        .rank {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--neon-purple);
+        }
+
+        .token-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .token-address {
+            font-size: 0.65rem;
+            color: var(--neon-cyan);
+            opacity: 0.7;
+        }
+
+        .positive { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
+        .negative { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); }
+        .peak { color: var(--neon-yellow); text-shadow: 0 0 10px var(--neon-yellow); }
+
+        /* CYBERPUNK NEON FOOTER */
+        .cyberpunk-footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-panel);
+            overflow: hidden;
+        }
+
+        .cyberpunk-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                var(--neon-pink) 0%,
+                var(--neon-purple) 25%,
+                var(--neon-cyan) 50%,
+                var(--neon-purple) 75%,
+                var(--neon-pink) 100%);
+            background-size: 200% 100%;
+            animation: gradient-flow 3s linear infinite;
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .footer-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            position: relative;
+        }
+
+        /* Animated corner decorations */
+        .corner-deco {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--neon-cyan);
+            opacity: 0.5;
+        }
+
+        .corner-deco.tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .corner-deco.tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+        .corner-deco.bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+        .corner-deco.br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .footer-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+        }
+
+        .footer-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .footer-value.pink {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
+        }
+
+        .footer-value.cyan {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+        }
+
+        .footer-value.yellow {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 20px var(--neon-yellow), 0 0 40px var(--neon-yellow);
+        }
+
+        .footer-center {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .neon-divider {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, var(--neon-purple), transparent);
+        }
+
+        .stat-group {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-unit {
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+            opacity: 0.7;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid var(--neon-cyan);
+            background: rgba(0, 245, 255, 0.1);
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            animation: neon-pulse 1s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+        }
+
+        @keyframes neon-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            }
+            50% {
+                transform: scale(1.2);
+                box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+            }
+        }
+
+        .status-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--neon-cyan);
+            letter-spacing: 0.1em;
+        }
+
+        .time-display {
+            text-align: right;
+        }
+
+        .time-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        .time-label {
+            font-size: 0.6rem;
+            color: var(--neon-purple);
+            letter-spacing: 0.1em;
+        }
+
+        /* Glitch effect on hover */
+        .glitch-text:hover {
+            animation: glitch 0.3s ease-in-out;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">DEXTER TOKEN HUNTER</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span style="color: var(--neon-pink);">DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--neon-purple);margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>TOKEN</th>
+                    <th>SPOTTED</th>
+                    <th>CURRENT</th>
+                    <th>VOLUME</th>
+                    <th>NET</th>
+                    <th>SCORE</th>
+                    <th>PEAK</th>
+                    <th>TIME</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="rank">01</td>
+                    <td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td>
+                    <td>$15.9K</td>
+                    <td>$29.0K</td>
+                    <td>$175.0K</td>
+                    <td class="positive">+0.0%</td>
+                    <td class="negative">-8.4</td>
+                    <td class="peak">2.11x</td>
+                    <td>42m</td>
+                </tr>
+                <tr>
+                    <td class="rank">02</td>
+                    <td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td>
+                    <td>$22.0K</td>
+                    <td>$25.0K</td>
+                    <td>$199.1K</td>
+                    <td class="negative">-9.1%</td>
+                    <td class="negative">-7.2</td>
+                    <td class="peak">2.43x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">03</td>
+                    <td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td>
+                    <td>$88.7K</td>
+                    <td>$37.9K</td>
+                    <td>$478.6K</td>
+                    <td class="positive">+1.7%</td>
+                    <td class="negative">-5.3</td>
+                    <td class="peak">3.60x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">04</td>
+                    <td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td>
+                    <td>$14.8K</td>
+                    <td>$8.7K</td>
+                    <td>$12.3K</td>
+                    <td class="positive">+9.1%</td>
+                    <td class="negative">-4.8</td>
+                    <td class="peak">1.72x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">05</td>
+                    <td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td>
+                    <td>$90.2K</td>
+                    <td>$167.9K</td>
+                    <td>$243.4K</td>
+                    <td class="positive">+2.0%</td>
+                    <td class="negative">-3.1</td>
+                    <td class="peak">2.33x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">06</td>
+                    <td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td>
+                    <td>$34.9K</td>
+                    <td>$72.3K</td>
+                    <td>$18.6K</td>
+                    <td class="negative">-2.7%</td>
+                    <td class="negative">-2.3</td>
+                    <td class="peak">2.51x</td>
+                    <td>18m</td>
+                </tr>
+                <tr>
+                    <td class="rank">07</td>
+                    <td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td>
+                    <td>$36.3K</td>
+                    <td>$90.4K</td>
+                    <td>$243.7K</td>
+                    <td class="negative">-8.5%</td>
+                    <td class="negative">-1.5</td>
+                    <td class="peak">3.31x</td>
+                    <td>48m</td>
+                </tr>
+                <tr>
+                    <td class="rank">08</td>
+                    <td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td>
+                    <td>$27.1K</td>
+                    <td>$46.8K</td>
+                    <td>$55.6K</td>
+                    <td class="negative">-4.5%</td>
+                    <td>0.3</td>
+                    <td class="peak">1.95x</td>
+                    <td>18m</td>
+                </tr>
+                <tr>
+                    <td class="rank">09</td>
+                    <td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td>
+                    <td>$421.1K</td>
+                    <td>$909.9K</td>
+                    <td>$1.5M</td>
+                    <td class="negative">-3.8%</td>
+                    <td class="positive">2.1</td>
+                    <td class="peak">2.77x</td>
+                    <td>1h</td>
+                </tr>
+                <tr>
+                    <td class="rank">10</td>
+                    <td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td>
+                    <td>$20.4K</td>
+                    <td>$43.6K</td>
+                    <td>$17.1K</td>
+                    <td class="positive">+4.8%</td>
+                    <td class="positive">5.6</td>
+                    <td class="peak">2.88x</td>
+                    <td>1h</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- CYBERPUNK NEON FOOTER -->
+    <footer class="cyberpunk-footer">
+        <div class="corner-deco tl"></div>
+        <div class="corner-deco tr"></div>
+        <div class="corner-deco bl"></div>
+        <div class="corner-deco br"></div>
+
+        <div class="footer-body">
+            <div class="footer-section">
+                <span class="footer-label">System Status</span>
+                <span class="footer-value pink glitch-text">ONLINE</span>
+            </div>
+
+            <div class="footer-center">
+                <div class="footer-section">
+                    <span class="footer-label">Active Tokens</span>
+                    <div class="stat-group">
+                        <span class="stat-value">10</span>
+                        <span class="stat-unit">TRACKING</span>
+                    </div>
+                </div>
+
+                <div class="neon-divider"></div>
+
+                <div class="footer-section">
+                    <span class="footer-label">Top Performer</span>
+                    <span class="footer-value yellow glitch-text">GME</span>
+                </div>
+
+                <div class="neon-divider"></div>
+
+                <div class="footer-section">
+                    <span class="footer-label">Total Scanned</span>
+                    <div class="stat-group">
+                        <span class="stat-value">2.8K</span>
+                        <span class="stat-unit">TOKENS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-right">
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    <span class="status-text">LIVE FEED</span>
+                </div>
+                <div class="time-display">
+                    <div class="time-value">14:32:08</div>
+                    <div class="time-label">LAST UPDATE</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

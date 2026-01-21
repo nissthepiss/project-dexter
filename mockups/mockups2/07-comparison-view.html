@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Comparison View</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .header-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .timeframe-tab {
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace);
+        }
+
+        .timeframe-tab.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .compare-btn {
+            padding: 8px 16px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--accent-orange);
+            border: none;
+            color: var(--bg-primary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 4px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+        }
+
+        /* Left Panel - Token List */
+        .token-list-panel {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--bg-tertiary);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--accent-orange);
+        }
+
+        .token-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .token-list-item:hover {
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-orange);
+        }
+
+        .token-list-item.selected {
+            background: rgba(255, 140, 0, 0.15);
+            border: 1px solid var(--accent-orange);
+        }
+
+        .token-list-rank {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 20px;
+        }
+
+        .token-list-symbol {
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .token-list-score {
+            padding: 4px 8px;
+            background: rgba(255, 140, 0, 0.2);
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-orange);
+        }
+
+        /* Right Panel - Comparison View */
+        .comparison-panel {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .compare-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .compare-card.primary {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.2);
+        }
+
+        /* Token Header */
+        .compare-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .compare-logo {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .compare-logo.logo-2 {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+
+        .compare-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .compare-address {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Score Meter */
+        .score-meter {
+            margin-bottom: 20px;
+        }
+
+        .score-meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .score-meter-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-meter-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .score-meter-bar {
+            height: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .score-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: var(--bg-tertiary);
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .metric-value.positive {
+            color: var(--success);
+        }
+
+        .metric-value.negative {
+            color: var(--error);
+        }
+
+        /* Velocity Gauge */
+        .gauge-container {
+            margin-bottom: 16px;
+        }
+
+        .gauge-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .gauge-bar {
+            height: 20px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--error), var(--accent-orange), var(--success));
+            border-radius: 10px;
+        }
+
+        .gauge-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--text-primary);
+            transform: translateX(-1px);
+        }
+
+        /* Buy Pressure Indicator */
+        .pressure-indicator {
+            margin-bottom: 16px;
+        }
+
+        .pressure-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .pressure-bar {
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pressure-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--error) 0%, var(--accent-orange) 50%, var(--success) 100%);
+            border-radius: 4px;
+        }
+
+        /* Mini Sparkline */
+        .sparkline-container {
+            margin-bottom: 16px;
+        }
+
+        .sparkline-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .sparkline-svg {
+            width: 100%;
+            height: 50px;
+        }
+
+        .sparkline-path {
+            fill: none;
+            stroke: var(--accent-orange);
+            stroke-width: 2;
+        }
+
+        /* Token Selector Slider */
+        .token-selector {
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+
+        .selector-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .selector-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .selector-option {
+            padding: 8px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .selector-option:hover {
+            border-color: var(--accent-orange);
+        }
+
+        .selector-option.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* MVP Overlay */
+        .mvp-overlay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-orange);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .mvp-overlay-title {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mvp-overlay-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mvp-overlay-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 140, 0, 0); }
+        }
+
+        .mvp-overlay-info {
+            flex: 1;
+        }
+
+        .mvp-overlay-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mvp-overlay-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">DEXTHER // COMPARE</div>
+            <div class="header-controls">
+                <div class="mode-toggle">
+                    <button class="mode-btn active">Degen</button>
+                    <button class="mode-btn">Holder</button>
+                </div>
+                <div class="timeframe-tabs">
+                    <button class="timeframe-tab active">5M</button>
+                    <button class="timeframe-tab">30M</button>
+                    <button class="timeframe-tab">1H</button>
+                    <button class="timeframe-tab">4H</button>
+                    <button class="timeframe-tab">ALL</button>
+                </div>
+                <button class="compare-btn">+ ADD TO COMPARE</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Token List Panel -->
+            <div class="token-list-panel">
+                <div class="panel-title">/// TOKENS</div>
+
+                <div class="token-list-item selected">
+                    <div class="token-list-rank">1</div>
+                    <div class="token-list-symbol">BONK</div>
+                    <div class="token-list-score">94.2</div>
+                </div>
+
+                <div class="token-list-item">
+                    <div class="token-list-rank">2</div>
+                    <div class="token-list-symbol">WIF</div>
+                    <div class="token-list-score">87.6</div>
+                </div>
+
+                <div class="token-list-item">
+                    <div class="token-list-rank">3</div>
+                    <div class="token-list-symbol">MYRO</div>
+                    <div class="token-list-score">81.3</div>
+                </div>
+
+                <div class="token-list-item">
+                    <div class="token-list-rank">4</div>
+                    <div class="token-list-symbol">POPCAT</div>
+                    <div class="token-list-score">76.8</div>
+                </div>
+
+                <div class="token-list-item">
+                    <div class="token-list-rank">5</div>
+                    <div class="token-list-symbol">SLERF</div>
+                    <div class="token-list-score">71.4</div>
+                </div>
+
+                <div class="token-list-item">
+                    <div class="token-list-rank">6</div>
+                    <div class="token-list-symbol">RENDER</div>
+                    <div class="token-list-score">68.9</div>
+                </div>
+            </div>
+
+            <!-- Comparison Panel -->
+            <div class="comparison-panel">
+                <div class="comparison-grid">
+                    <!-- Card 1 -->
+                    <div class="compare-card primary">
+                        <div class="compare-header">
+                            <div class="compare-logo">B</div>
+                            <div>
+                                <div class="compare-name">BONK</div>
+                                <div class="compare-address">DezXAZ8z7PnrnRJjkoC6fD3qEiJjqz...</div>
+                            </div>
+                        </div>
+
+                        <div class="score-meter">
+                            <div class="score-meter-header">
+                                <span class="score-meter-label">Momentum Score</span>
+                                <span class="score-meter-value">94.2</span>
+                            </div>
+                            <div class="score-meter-bar">
+                                <div class="score-meter-fill" style="width: 94.2%"></div>
+                            </div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div class="metric-label">Current MC</div>
+                                <div class="metric-value">$1.2M</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Volume 24h</div>
+                                <div class="metric-value">$856K</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Net Change</div>
+                                <div class="metric-value positive">+24.5%</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Peak</div>
+                                <div class="metric-value">5.2x</div>
+                            </div>
+                        </div>
+
+                        <div class="gauge-container">
+                            <div class="gauge-label">
+                                <span>Transaction Velocity</span>
+                                <span>142/5m</span>
+                            </div>
+                            <div class="gauge-bar">
+                                <div class="gauge-fill" style="width: 82%"></div>
+                                <div class="gauge-marker" style="left: 82%"></div>
+                            </div>
+                        </div>
+
+                        <div class="pressure-indicator">
+                            <div class="pressure-header">
+                                <span>Buy Pressure</span>
+                                <span style="color: var(--success);">78%</span>
+                            </div>
+                            <div class="pressure-bar">
+                                <div class="pressure-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+
+                        <div class="sparkline-container">
+                            <div class="sparkline-label">Price Movement (5M)</div>
+                            <svg class="sparkline-svg" viewBox="0 0 200 50">
+                                <path class="sparkline-path" d="M0,40 L20,38 L40,35 L60,32 L80,28 L100,25 L120,22 L140,18 L160,15 L180,12 L200,8"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="compare-card">
+                        <div class="compare-header">
+                            <div class="compare-logo logo-2">W</div>
+                            <div>
+                                <div class="compare-name">WIF</div>
+                                <div class="compare-address">EKpQGSJtjMFqKZ9KL2pwHdJRKwRF...</div>
+                            </div>
+                        </div>
+
+                        <div class="score-meter">
+                            <div class="score-meter-header">
+                                <span class="score-meter-label">Momentum Score</span>
+                                <span class="score-meter-value" style="color: #60a5fa;">87.6</span>
+                            </div>
+                            <div class="score-meter-bar">
+                                <div class="score-meter-fill" style="width: 87.6%; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
+                            </div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div class="metric-label">Current MC</div>
+                                <div class="metric-value">$980K</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Volume 24h</div>
+                                <div class="metric-value">$624K</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Net Change</div>
+                                <div class="metric-value positive">+18.2%</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Peak</div>
+                                <div class="metric-value">3.8x</div>
+                            </div>
+                        </div>
+
+                        <div class="gauge-container">
+                            <div class="gauge-label">
+                                <span>Transaction Velocity</span>
+                                <span>118/5m</span>
+                            </div>
+                            <div class="gauge-bar">
+                                <div class="gauge-fill" style="width: 68%"></div>
+                                <div class="gauge-marker" style="left: 68%"></div>
+                            </div>
+                        </div>
+
+                        <div class="pressure-indicator">
+                            <div class="pressure-header">
+                                <span>Buy Pressure</span>
+                                <span style="color: var(--success);">65%</span>
+                            </div>
+                            <div class="pressure-bar">
+                                <div class="pressure-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+
+                        <div class="sparkline-container">
+                            <div class="sparkline-label">Price Movement (5M)</div>
+                            <svg class="sparkline-svg" viewBox="0 0 200 50">
+                                <path class="sparkline-path" style="stroke: #60a5fa;" d="M0,38 L20,35 L40,32 L60,30 L80,28 L100,25 L120,22 L140,20 L160,18 L180,15 L200,12"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Token Selector -->
+                <div class="token-selector">
+                    <div class="selector-label">SELECT TOKENS TO COMPARE</div>
+                    <div class="selector-options">
+                        <div class="selector-option active">BONK</div>
+                        <div class="selector-option active">WIF</div>
+                        <div class="selector-option">MYRO</div>
+                        <div class="selector-option">POPCAT</div>
+                        <div class="selector-option">SLERF</div>
+                        <div class="selector-option">RENDER</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MVP Overlay -->
+        <div class="mvp-overlay">
+            <div class="mvp-overlay-title">/// CURRENT MVP</div>
+            <div class="mvp-overlay-content">
+                <div class="mvp-overlay-logo">B</div>
+                <div class="mvp-overlay-info">
+                    <div class="mvp-overlay-name">BONK</div>
+                    <div class="mvp-overlay-score">94.2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

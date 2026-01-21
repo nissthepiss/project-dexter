@@ -1,0 +1,60 @@
+HOW TO USE RALPH
+=================
+
+WHAT IS RALPH?
+- Autonomous loop manager that repeatedly calls Claude Code CLI
+- Runs continuously in background until your task is complete
+- Uses Claude API (same LLM as Claude Code)
+
+INSTALL (one-time)
+------------------
+git clone https://github.com/frankbria/ralph-claude-code.git
+cd ralph-claude-code
+./install.sh
+
+SETUP A PROJECT
+---------------
+ralph-setup my-project
+cd my-project
+# Edit PROMPT.md with your task/instructions
+
+RUN RALPH
+---------
+ralph --monitor
+
+WHAT IT DOES
+------------
+1. Reads PROMPT.md (your instructions)
+2. Calls Claude Code CLI repeatedly
+3. Tracks progress in @fix_plan.md
+4. Detects when work is complete
+5. Stops automatically
+
+KEY FILES
+---------
+PROMPT.md          - Your task instructions (edit this)
+@fix_plan.md       - Task list with priorities
+logs/ralph.log     - Execution logs
+.ralph_session     - Session state
+
+MONITORING
+---------
+ralph --monitor    - tmux dashboard (recommended)
+ralph-monitor      - separate terminal dashboard
+ralph --status     - check current status
+tail -f logs/ralph.log - view logs
+
+USEFUL FLAGS
+------------
+--prompt FILE     - Use custom instruction file
+--timeout MIN     - Set execution timeout (default 15 min)
+--calls NUM        - Max API calls per hour (default 100)
+--verbose          - Detailed progress updates
+
+CANCEL
+------
+Ctrl+C (in terminal) or check docs for cancel commands
+
+WINDOWS USERS
+-------------
+Standalone Ralph avoids the Windows path issues with the Claude Code skill

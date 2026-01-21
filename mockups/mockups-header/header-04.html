@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 04: Minimalist with Dropdowns</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #080808;
+            --bg-header: #0f0f0f;
+            --orange: #ff4400;
+            --green: #00ff77;
+            --gray: #555;
+            --gray-light: #888;
+            --white: #fff;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .header-bar {
+            background: var(--bg-header);
+            border-bottom: 1px solid rgba(255, 68, 0, 0.1);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .logo .dexter {
+            color: var(--orange);
+        }
+
+        .logo .dot {
+            color: var(--gray);
+        }
+
+        .logo .tagline {
+            font-size: 11px;
+            color: var(--gray-light);
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .control-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .control-dropdown:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .control-dropdown .label {
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: var(--orange);
+        }
+
+        .control-dropdown .value {
+            font-size: 12px;
+            color: var(--white);
+            min-width: 60px;
+        }
+
+        .control-dropdown .arrow {
+            font-size: 8px;
+            color: var(--gray);
+            transition: transform 0.2s;
+        }
+
+        .control-dropdown.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 8px;
+            background: var(--bg-header);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            min-width: 140px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .control-dropdown.open .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+        }
+
+        .dropdown-item.selected {
+            color: var(--orange);
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-left: 24px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pill .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .status-pill.version .dot { background: var(--orange); }
+        .status-pill.version { color: var(--orange); }
+
+        .status-pill.network .dot { background: var(--green); }
+        .status-pill.network { color: var(--green); }
+
+        .status-pill.mode .dot { background: var(--orange); }
+        .status-pill.mode { color: var(--orange); }
+
+        .quick-bar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quick-info {
+            font-size: 11px;
+            color: var(--gray);
+        }
+
+        .quick-info span {
+            color: var(--orange);
+        }
+
+        .alert-toggles {
+            display: flex;
+            gap: 20px;
+        }
+
+        .alert-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .alert-toggle:hover {
+            color: var(--gray-light);
+        }
+
+        .alert-toggle.active {
+            color: var(--white);
+        }
+
+        .alert-toggle .checkbox {
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--gray);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .alert-toggle.active .checkbox {
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        .alert-toggle .checkbox::after {
+            content: '✓';
+            font-size: 9px;
+            color: var(--white);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .alert-toggle.active .checkbox::after {
+            opacity: 1;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-bar">
+        <div class="logo">
+            <span class="dexter">DEXTER</span>
+            <span class="dot">.</span>
+            <span class="tagline">TOKEN HUNTER</span>
+        </div>
+
+        <div class="header-controls">
+            <div class="control-dropdown open" data-dropdown="mode">
+                <span class="label">MODE</span>
+                <span class="value">DEGEN</span>
+                <span class="arrow">▼</span>
+                <div class="dropdown-menu">
+                    <div class="dropdown-item selected" data-value="DEGEN">DEGEN</div>
+                    <div class="dropdown-item" data-value="HOLDER">HOLDER</div>
+                </div>
+            </div>
+
+            <div class="control-dropdown" data-dropdown="timeframe">
+                <span class="label">TIMEFRAME</span>
+                <span class="value">1H</span>
+                <span class="arrow">▼</span>
+                <div class="dropdown-menu">
+                    <div class="dropdown-item" data-value="5M">5M</div>
+                    <div class="dropdown-item" data-value="30M">30M</div>
+                    <div class="dropdown-item selected" data-value="1H">1H</div>
+                    <div class="dropdown-item" data-value="2H">2H</div>
+                    <div class="dropdown-item" data-value="ALL">ALL</div>
+                </div>
+            </div>
+
+            <div class="header-status">
+                <div class="status-pill version">
+                    <span class="dot"></span>
+                    v1.0.0
+                </div>
+                <div class="status-pill network">
+                    <span class="dot"></span>
+                    SOLANA
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="quick-bar">
+        <div class="quick-info">
+            Active: <span>DEGEN MODE</span> • Timeframe: <span>1H</span> • Scanning top tokens...
+        </div>
+        <div class="alert-toggles">
+            <div class="alert-toggle active" data-alert="telegram">
+                <div class="checkbox"></div>
+                telegram-alerts
+            </div>
+            <div class="alert-toggle" data-alert="public">
+                <div class="checkbox"></div>
+                public-channels
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        document.querySelectorAll('.control-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.control-dropdown').forEach(d => {
+                    if (d !== dropdown) d.classList.remove('open');
+                });
+                dropdown.classList.toggle('open');
+            });
+        });
+
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const dropdown = item.closest('.control-dropdown');
+                const value = dropdown.querySelector('.value');
+                value.textContent = item.dataset.value;
+                dropdown.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                dropdown.classList.remove('open');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.control-dropdown').forEach(d => d.classList.remove('open'));
+        });
+
+        document.querySelectorAll('.alert-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

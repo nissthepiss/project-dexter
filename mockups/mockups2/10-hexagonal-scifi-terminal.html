@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Hexagonal Sci-Fi Terminal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Grid Lines */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 140, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 140, 0, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        /* CRT Scanline */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Hexagon Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Hexagonal Buttons */
+        .hex-group {
+            display: flex;
+            gap: 4px;
+        }
+
+        .hex-btn {
+            padding: 8px 16px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace);
+            clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%);
+            transition: all 0.2s;
+        }
+
+        .hex-btn:hover {
+            background: var(--bg-secondary);
+            transform: scale(1.05);
+        }
+
+        .hex-btn.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* Hexagonal Data Grid */
+        .hex-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Hexagonal Token Card */
+        .hex-card {
+            position: relative;
+            background: var(--bg-secondary);
+            padding: 20px;
+            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
+            transition: all 0.3s;
+        }
+
+        .hex-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid transparent;
+            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
+            transition: all 0.3s;
+        }
+
+        .hex-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.3);
+        }
+
+        .hex-card:hover::before {
+            border-color: var(--accent-orange);
+        }
+
+        .hex-card.mvp {
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.1), var(--bg-secondary));
+        }
+
+        .hex-card.mvp::before {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+        }
+
+        .hex-card.rank-1::before {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .hex-card.rank-2::before {
+            border-color: var(--silver);
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.3);
+        }
+
+        .hex-card.rank-3::before {
+            border-color: var(--bronze);
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.3);
+        }
+
+        /* Hex Rank Indicator */
+        .hex-rank {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            background: var(--bg-tertiary);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            margin-bottom: 12px;
+        }
+
+        .hex-rank.rank-1 {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: var(--bg-primary);
+        }
+
+        .hex-rank.rank-2 {
+            background: linear-gradient(135deg, var(--silver), #a0a0a0);
+            color: var(--bg-primary);
+        }
+
+        .hex-rank.rank-3 {
+            background: linear-gradient(135deg, var(--bronze), #a0522d);
+            color: var(--bg-primary);
+        }
+
+        /* Token Info */
+        .hex-token {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .hex-logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .hex-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .hex-address {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Hex Score Badge */
+        .hex-score-badge {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            margin: 0 auto 16px;
+        }
+
+        .hex-score-badge svg {
+            transform: rotate(-90deg);
+        }
+
+        .hex-score-badge polygon {
+            fill: var(--bg-tertiary);
+        }
+
+        .hex-score-badge polygon.fill {
+            fill: var(--accent-orange);
+        }
+
+        .hex-score-badge .value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Metric Cells with Angular Corners */
+        .metric-cells {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric-cell {
+            padding: 10px;
+            background: var(--bg-tertiary);
+            text-align: center;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .metric-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .metric-value.positive {
+            color: var(--success);
+        }
+
+        .metric-value.negative {
+            color: var(--error);
+        }
+
+        /* Angular Ripple Effect */
+        @keyframes angularRipple {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.4);
+                clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
+            }
+            100% {
+                box-shadow: 0 0 0 20px rgba(255, 140, 0, 0);
+                clip-path: polygon(25px 0, calc(100% - 25px) 0, 100% 25px, 100% calc(100% - 25px), calc(100% - 25px) 100%, 25px 100%, 0 calc(100% - 25px), 0 25px);
+            }
+        }
+
+        .hex-card:active {
+            animation: angularRipple 0.3s ease-out;
+        }
+
+        /* MVP Sidebar - Hexagonal HUD */
+        .mvp-sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--bg-tertiary);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Hexagonal HUD Display */
+        .hex-hud {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 30px;
+        }
+
+        /* Outer Ring */
+        .hud-outer-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-orange);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: rotateRing 30s linear infinite;
+        }
+
+        @keyframes rotateRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Inner Hex */
+        .hud-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.2), var(--bg-tertiary));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hud-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(255, 140, 0, 0); }
+        }
+
+        .hud-score {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .hud-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Satellite Indicators */
+        .satellite {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .satellite:nth-child(2) {
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .satellite:nth-child(3) {
+            top: 50%;
+            right: -25px;
+            transform: translateY(-50%);
+        }
+
+        .satellite:nth-child(4) {
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .satellite:nth-child(5) {
+            top: 50%;
+            left: -25px;
+            transform: translateY(-50%);
+        }
+
+        .satellite-label {
+            font-size: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .satellite-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        /* Status Bar with Hex */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 320px;
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hex-status {
+            width: 16px;
+            height: 16px;
+            background: var(--success);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 16px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%);
+            display: inline-block;
+        }
+
+        /* Metrics Progress Bars */
+        .progress-item {
+            margin-bottom: 14px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .progress-label {
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-primary);
+            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.high {
+            background: linear-gradient(90deg, var(--success), #22c55e);
+        }
+
+        .progress-fill.medium {
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">DEXTHER // HEX TERMINAL</div>
+                <div class="header-controls">
+                    <div class="hex-group">
+                        <button class="hex-btn active">Degen</button>
+                        <button class="hex-btn">Holder</button>
+                    </div>
+                    <div class="hex-group">
+                        <button class="hex-btn active">5M</button>
+                        <button class="hex-btn">30M</button>
+                        <button class="hex-btn">1H</button>
+                        <button class="hex-btn">4H</button>
+                        <button class="hex-btn">ALL</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hex Grid -->
+            <div class="hex-grid">
+                <!-- Card 1 - MVP -->
+                <div class="hex-card mvp rank-1">
+                    <div class="hex-rank rank-1">1</div>
+                    <div class="hex-token">
+                        <div class="hex-logo">B</div>
+                        <div>
+                            <div class="hex-name">BONK</div>
+                            <div class="hex-address">DezXAZ8z7Pnrn...</div>
+                        </div>
+                    </div>
+                    <div class="hex-score-badge">
+                        <svg width="50" height="50" viewBox="0 0 50 50">
+                            <polygon points="25,2 46,14 46,36 25,48 4,36 4,14" fill="none" stroke="#252528" stroke-width="2"/>
+                            <polygon class="fill" points="25,2 46,14 46,36 25,48 25,28" fill-opacity="0.94"/>
+                        </svg>
+                        <span class="value">94.2</span>
+                    </div>
+                    <div class="metric-cells">
+                        <div class="metric-cell">
+                            <div class="metric-label">MC</div>
+                            <div class="metric-value">$1.2M</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">VOL</div>
+                            <div class="metric-value">$856K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">NET</div>
+                            <div class="metric-value positive">+24.5%</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">PEAK</div>
+                            <div class="metric-value">5.2x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="hex-card rank-2">
+                    <div class="hex-rank rank-2">2</div>
+                    <div class="hex-token">
+                        <div class="hex-logo">W</div>
+                        <div>
+                            <div class="hex-name">WIF</div>
+                            <div class="hex-address">EKpQGSJtjMFqK...</div>
+                        </div>
+                    </div>
+                    <div class="hex-score-badge">
+                        <svg width="50" height="50" viewBox="0 0 50 50">
+                            <polygon points="25,2 46,14 46,36 25,48 4,36 4,14" fill="none" stroke="#252528" stroke-width="2"/>
+                            <polygon class="fill" points="25,2 46,14 46,36 25,48 25,28" fill-opacity="0.876"/>
+                        </svg>
+                        <span class="value">87.6</span>
+                    </div>
+                    <div class="metric-cells">
+                        <div class="metric-cell">
+                            <div class="metric-label">MC</div>
+                            <div class="metric-value">$980K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">VOL</div>
+                            <div class="metric-value">$624K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">NET</div>
+                            <div class="metric-value positive">+18.2%</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">PEAK</div>
+                            <div class="metric-value">3.8x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="hex-card rank-3">
+                    <div class="hex-rank rank-3">3</div>
+                    <div class="hex-token">
+                        <div class="hex-logo">M</div>
+                        <div>
+                            <div class="hex-name">MYRO</div>
+                            <div class="hex-address">EQSZqmSbKHVcV...</div>
+                        </div>
+                    </div>
+                    <div class="hex-score-badge">
+                        <svg width="50" height="50" viewBox="0 0 50 50">
+                            <polygon points="25,2 46,14 46,36 25,48 4,36 4,14" fill="none" stroke="#252528" stroke-width="2"/>
+                            <polygon class="fill" points="25,2 46,14 46,36 25,48 25,28" fill-opacity="0.813"/>
+                        </svg>
+                        <span class="value">81.3</span>
+                    </div>
+                    <div class="metric-cells">
+                        <div class="metric-cell">
+                            <div class="metric-label">MC</div>
+                            <div class="metric-value">$750K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">VOL</div>
+                            <div class="metric-value">$485K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">NET</div>
+                            <div class="metric-value positive">+12.8%</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">PEAK</div>
+                            <div class="metric-value">2.9x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="hex-card">
+                    <div class="hex-rank">4</div>
+                    <div class="hex-token">
+                        <div class="hex-logo">P</div>
+                        <div>
+                            <div class="hex-name">POPCAT</div>
+                            <div class="hex-address">7GCihgDB8fe6K...</div>
+                        </div>
+                    </div>
+                    <div class="hex-score-badge">
+                        <svg width="50" height="50" viewBox="0 0 50 50">
+                            <polygon points="25,2 46,14 46,36 25,48 4,36 4,14" fill="none" stroke="#252528" stroke-width="2"/>
+                            <polygon class="fill" points="25,2 46,14 46,36 25,48 25,28" fill-opacity="0.768"/>
+                        </svg>
+                        <span class="value">76.8</span>
+                    </div>
+                    <div class="metric-cells">
+                        <div class="metric-cell">
+                            <div class="metric-label">MC</div>
+                            <div class="metric-value">$520K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">VOL</div>
+                            <div class="metric-value">$312K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">NET</div>
+                            <div class="metric-value negative">-3.2%</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">PEAK</div>
+                            <div class="metric-value">1.5x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="hex-card">
+                    <div class="hex-rank">5</div>
+                    <div class="hex-token">
+                        <div class="hex-logo">S</div>
+                        <div>
+                            <div class="hex-name">SLERF</div>
+                            <div class="hex-address">D2aK2XRtvXjZV...</div>
+                        </div>
+                    </div>
+                    <div class="hex-score-badge">
+                        <svg width="50" height="50" viewBox="0 0 50 50">
+                            <polygon points="25,2 46,14 46,36 25,48 4,36 4,14" fill="none" stroke="#252528" stroke-width="2"/>
+                            <polygon class="fill" points="25,2 46,14 46,36 25,48 25,28" fill-opacity="0.714"/>
+                        </svg>
+                        <span class="value">71.4</span>
+                    </div>
+                    <div class="metric-cells">
+                        <div class="metric-cell">
+                            <div class="metric-label">MC</div>
+                            <div class="metric-value">$380K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">VOL</div>
+                            <div class="metric-value">$245K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">NET</div>
+                            <div class="metric-value negative">-8.7%</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">PEAK</div>
+                            <div class="metric-value">1.2x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="hex-card">
+                    <div class="hex-rank">6</div>
+                    <div class="hex-token">
+                        <div class="hex-logo">R</div>
+                        <div>
+                            <div class="hex-name">RENDER</div>
+                            <div class="hex-address">9LiL2PWqjFzC5...</div>
+                        </div>
+                    </div>
+                    <div class="hex-score-badge">
+                        <svg width="50" height="50" viewBox="0 0 50 50">
+                            <polygon points="25,2 46,14 46,36 25,48 4,36 4,14" fill="none" stroke="#252528" stroke-width="2"/>
+                            <polygon class="fill" points="25,2 46,14 46,36 25,48 25,28" fill-opacity="0.689"/>
+                        </svg>
+                        <span class="value">68.9</span>
+                    </div>
+                    <div class="metric-cells">
+                        <div class="metric-cell">
+                            <div class="metric-label">MC</div>
+                            <div class="metric-value">$290K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">VOL</div>
+                            <div class="metric-value">$182K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">NET</div>
+                            <div class="metric-value positive">+2.1%</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-label">PEAK</div>
+                            <div class="metric-value">0.8x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MVP Sidebar -->
+        <div class="mvp-sidebar">
+            <div class="section-title">/// MVP HUD</div>
+
+            <!-- Hexagonal HUD -->
+            <div class="hex-hud">
+                <div class="hud-outer-ring"></div>
+
+                <div class="satellite">
+                    <span class="satellite-label">PRESSURE</span>
+                    <span class="satellite-value">78%</span>
+                </div>
+                <div class="satellite">
+                    <span class="satellite-label">VELOCITY</span>
+                    <span class="satellite-value">142</span>
+                </div>
+                <div class="satellite">
+                    <span class="satellite-label">MOMENTUM</span>
+                    <span class="satellite-value">24%</span>
+                </div>
+                <div class="satellite">
+                    <span class="satellite-label">SSE</span>
+                    <span class="satellite-value">18%</span>
+                </div>
+
+                <div class="hud-inner">
+                    <div class="hud-logo">B</div>
+                    <div class="hud-score">94.2</div>
+                    <div class="hud-name">BONK</div>
+                </div>
+            </div>
+
+            <div class="section-title">/// COMPONENT SCORES</div>
+
+            <div class="progress-item">
+                <div class="progress-header">
+                    <span class="progress-label">Buy Pressure</span>
+                    <span style="color: var(--success);">78%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill high" style="width: 78%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-header">
+                    <span class="progress-label">Txn Velocity</span>
+                    <span>142/5m</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill high" style="width: 82%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-header">
+                    <span class="progress-label">Price Momentum</span>
+                    <span style="color: var(--success);">24.5%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill high" style="width: 88%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-header">
+                    <span class="progress-label">SSE Momentum</span>
+                    <span>18.2%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill medium" style="width: 72%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="hex-status"></div>
+            <span>Connected</span>
+        </div>
+        <span>SCANNING 156 TOKENS</span>
+        <span>MODE: DEGEN</span>
+    </div>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 06 - Circuit Board</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --circuit-blue: #00d4ff;
+            --circuit-green: #00ff88;
+            --circuit-orange: #ff6b35;
+            --bg-dark: #080c10;
+            --bg-panel: #0a1118;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: #e0e6ed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Circuit pattern background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 1;
+            border-bottom: 2px solid var(--circuit-blue);
+            padding: 12px 25px;
+            background: var(--bg-panel);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--circuit-blue);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.7rem;
+            color: var(--circuit-green);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            background: transparent;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: var(--circuit-blue);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: var(--circuit-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 20px 25px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--circuit-blue);
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.05);
+        }
+
+        .token-table tr:hover {
+            background: rgba(0, 212, 255, 0.03);
+        }
+
+        .rank {
+            font-family: 'Source Code Pro', monospace;
+            color: var(--circuit-blue);
+            opacity: 0.7;
+        }
+
+        .token-name {
+            font-weight: 600;
+        }
+
+        .token-address {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.6rem;
+            color: var(--circuit-green);
+            opacity: 0.7;
+        }
+
+        .positive { color: var(--circuit-green); }
+        .negative { color: var(--circuit-orange); }
+        .peak { color: #ffcc00; }
+
+        /* CIRCUIT BOARD FOOTER */
+        .circuit-footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-panel);
+            border-top: 2px solid var(--circuit-blue);
+            padding: 20px 25px;
+            overflow: hidden;
+        }
+
+        /* Circuit lines SVG */
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .circuit-lines line,
+        .circuit-lines circle {
+            stroke: var(--circuit-blue);
+            stroke-width: 1;
+            fill: none;
+        }
+
+        .circuit-lines circle {
+            fill: var(--circuit-blue);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            position: relative;
+        }
+
+        .circuit-node {
+            padding: 15px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* Node connections */
+        .circuit-node::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, transparent, var(--circuit-blue), transparent);
+            opacity: 0.3;
+        }
+
+        .circuit-node:last-child::after {
+            display: none;
+        }
+
+        /* Connection dots */
+        .circuit-node::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--circuit-blue);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .circuit-node:last-child::before {
+            display: none;
+        }
+
+        .node-label {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            color: var(--circuit-blue);
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+
+        .node-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .node-value.blue {
+            color: var(--circuit-blue);
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .node-value.green {
+            color: var(--circuit-green);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .node-value.orange {
+            color: var(--circuit-orange);
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+        }
+
+        .node-sub {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.65rem;
+            color: var(--circuit-green);
+            opacity: 0.6;
+        }
+
+        /* Animated current flow */
+        .current-flow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--circuit-green), transparent);
+            background-size: 200% 100%;
+            animation: flow-animation 3s linear infinite;
+        }
+
+        @keyframes flow-animation {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* Node icon */
+        .node-icon {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .node-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: var(--circuit-blue);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .node-icon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid var(--circuit-blue);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">[ DEXTER_TOKEN_HUNTER ]</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--circuit-blue);opacity:0.5;margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>TOKEN</th><th>SPOTTED</th><th>CURRENT</th><th>VOLUME</th><th>NET</th><th>SCORE</th><th>PEAK</th><th>TIME</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="circuit-footer">
+        <svg class="circuit-lines" viewBox="0 0 1200 100" preserveAspectRatio="none">
+            <line x1="0" y1="50" x2="1200" y2="50"/>
+            <circle cx="300" cy="50" r="4"/>
+            <circle cx="600" cy="50" r="4"/>
+            <circle cx="900" cy="50" r="4"/>
+            <line x1="300" y1="50" x2="300" y2="20"/>
+            <line x1="600" y1="50" x2="600" y2="20"/>
+            <line x1="900" y1="50" x2="900" y2="20"/>
+        </svg>
+
+        <div class="footer-grid">
+            <div class="circuit-node">
+                <div class="node-icon"></div>
+                <span class="node-label">System Status</span>
+                <span class="node-value green">ACTIVE</span>
+                <span class="node-sub">All circuits operational</span>
+            </div>
+
+            <div class="circuit-node">
+                <div class="node-icon"></div>
+                <span class="node-label">Active Tokens</span>
+                <span class="node-value blue">10</span>
+                <span class="node-sub">Tracking in real-time</span>
+            </div>
+
+            <div class="circuit-node">
+                <div class="node-icon"></div>
+                <span class="node-label">MVP Token</span>
+                <span class="node-value orange">GME</span>
+                <span class="node-sub">Score: 5.6</span>
+            </div>
+
+            <div class="circuit-node">
+                <div class="node-icon"></div>
+                <span class="node-label">Last Update</span>
+                <span class="node-value" style="font-size:1.2rem;">14:32:08</span>
+                <span class="node-sub">Live feed connected</span>
+            </div>
+        </div>
+
+        <div class="current-flow"></div>
+    </footer>
+</body>
+</html>

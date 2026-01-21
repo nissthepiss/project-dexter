@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Accordion Disclosure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Noise Texture & Scanline */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.05) 2px,
+                rgba(0, 0, 0, 0.05) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-width: 700px;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .header-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 16px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .mode-btn {
+            padding: 8px 14px;
+            font-size: 10px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace);
+        }
+
+        .mode-btn.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .timeframe-tab {
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace);
+        }
+
+        .timeframe-tab.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* Accordion List */
+        .accordion-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Accordion Item */
+        .accordion-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .accordion-item:hover {
+            border-color: var(--accent-orange-dark);
+        }
+
+        .accordion-item.expanded {
+            border-color: var(--accent-orange);
+            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.15);
+        }
+
+        .accordion-item.mvp {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.2);
+        }
+
+        /* Collapsed State */
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .accordion-rank {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 40px;
+        }
+
+        .accordion-rank.rank-1 {
+            color: var(--gold);
+        }
+
+        .accordion-rank.rank-2 {
+            color: var(--silver);
+        }
+
+        .accordion-rank.rank-3 {
+            color: var(--bronze);
+        }
+
+        .accordion-token {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .accordion-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .accordion-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .accordion-score {
+            padding: 4px 10px;
+            background: rgba(255, 140, 0, 0.15);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-orange);
+        }
+
+        .accordion-net {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .accordion-net.positive {
+            color: var(--success);
+        }
+
+        .accordion-net.negative {
+            color: var(--error);
+        }
+
+        .accordion-net.neutral {
+            color: var(--text-secondary);
+            animation: colorChange 1s infinite;
+        }
+
+        @keyframes colorChange {
+            0%, 100% { color: var(--text-secondary); }
+            50% { color: var(--accent-orange); }
+        }
+
+        .accordion-expand {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.expanded .accordion-expand {
+            transform: rotate(180deg);
+        }
+
+        /* Expanded Content */
+        .accordion-content {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid var(--bg-tertiary);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .accordion-item.expanded .accordion-content {
+            display: block;
+        }
+
+        /* Token Details Header */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .detail-logo-large {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .detail-info {
+            flex: 1;
+        }
+
+        .detail-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .detail-address {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .detail-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric-box {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .metric-value.positive {
+            color: var(--success);
+        }
+
+        .metric-value.negative {
+            color: var(--error);
+        }
+
+        /* Score Breakdown */
+        .score-breakdown {
+            margin-bottom: 16px;
+        }
+
+        .breakdown-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .breakdown-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .breakdown-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            min-width: 100px;
+        }
+
+        .breakdown-chart {
+            flex: 1;
+        }
+
+        /* Circular Progress */
+        .circular-progress {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .circular-progress svg {
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress circle {
+            fill: none;
+            stroke-width: 4;
+        }
+
+        .circular-progress .bg {
+            stroke: var(--bg-primary);
+        }
+
+        .circular-progress .progress {
+            stroke: var(--accent-orange);
+            stroke-linecap: round;
+        }
+
+        .circular-progress .value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Bar Chart */
+        .bar-chart {
+            height: 20px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 10px;
+        }
+
+        .bar-fill.high {
+            background: linear-gradient(90deg, var(--success), #22c55e);
+        }
+
+        .bar-fill.medium {
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+        }
+
+        .bar-fill.low {
+            background: linear-gradient(90deg, var(--error), #ef4444);
+        }
+
+        /* Line Chart */
+        .line-chart {
+            height: 50px;
+            position: relative;
+        }
+
+        .line-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .line-chart path {
+            fill: none;
+            stroke: var(--accent-orange);
+            stroke-width: 2;
+        }
+
+        .line-chart .area {
+            fill: url(#gradient);
+            opacity: 0.3;
+        }
+
+        /* Holder Metrics */
+        .holder-metrics {
+            display: flex;
+            gap: 12px;
+        }
+
+        .holder-card {
+            flex: 1;
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .holder-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .holder-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* MVP Sidebar */
+        .mvp-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--bg-tertiary);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        /* MVP Spotlight */
+        .mvp-spotlight {
+            text-align: center;
+            padding: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid var(--accent-orange);
+        }
+
+        .mvp-logo-huge {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(255, 140, 0, 0); }
+        }
+
+        .mvp-score-huge {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .mvp-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .fresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid var(--success);
+            border-radius: 20px;
+            font-size: 10px;
+            color: var(--success);
+            margin-top: 12px;
+        }
+
+        .fresh-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .view-breakdown-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--accent-orange);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-primary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 280px;
+            padding: 8px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">DEXTHER</div>
+                <div class="header-controls">
+                    <div class="mode-toggle">
+                        <button class="mode-btn active">Degen</button>
+                        <button class="mode-btn">Holder</button>
+                    </div>
+                    <div class="timeframe-tabs">
+                        <button class="timeframe-tab active">5M</button>
+                        <button class="timeframe-tab">30M</button>
+                        <button class="timeframe-tab">1H</button>
+                        <button class="timeframe-tab">4H</button>
+                        <button class="timeframe-tab">ALL</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordion List -->
+            <div class="accordion-list">
+                <!-- Token 1 - Expanded -->
+                <div class="accordion-item mvp expanded">
+                    <div class="accordion-header">
+                        <span class="accordion-rank rank-1">1</span>
+                        <div class="accordion-token">
+                            <div class="accordion-logo">B</div>
+                            <span class="accordion-name">BONK</span>
+                        </div>
+                        <span class="accordion-score">94.2</span>
+                        <span class="accordion-net positive">+24.5%</span>
+                        <span class="accordion-expand">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="detail-header">
+                            <div class="detail-logo-large">B</div>
+                            <div class="detail-info">
+                                <div class="detail-name">BONK</div>
+                                <div class="detail-address">DezXAZ8z7PnrnRJjkoC6fD3qEiJjqzajikPYMGv9gd</div>
+                            </div>
+                            <div class="detail-score">94.2</div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div class="metric-label">Current MC</div>
+                                <div class="metric-value">$1.2M</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Spotted MC</div>
+                                <div class="metric-value">$890K</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Volume 24h</div>
+                                <div class="metric-value">$856K</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Peak</div>
+                                <div class="metric-value positive">5.2x</div>
+                            </div>
+                        </div>
+
+                        <div class="score-breakdown">
+                            <div class="breakdown-title">/// Score Breakdown</div>
+
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">Buy Pressure</span>
+                                <div class="circular-progress">
+                                    <svg width="40" height="40">
+                                        <circle class="bg" cx="20" cy="20" r="16"></circle>
+                                        <circle class="progress" cx="20" cy="20" r="16" stroke-dasharray="100.48" stroke-dashoffset="22"></circle>
+                                    </svg>
+                                    <span class="value">78%</span>
+                                </div>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">Transaction Velocity</span>
+                                <div class="breakdown-chart">
+                                    <div class="bar-chart">
+                                        <div class="bar-fill high" style="width: 82%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">Price Momentum</span>
+                                <div class="breakdown-chart">
+                                    <div class="line-chart">
+                                        <svg viewBox="0 0 200 50">
+                                            <defs>
+                                                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                    <stop offset="0%" style="stop-color:var(--accent-orange);stop-opacity:0.3" />
+                                                    <stop offset="100%" style="stop-color:var(--accent-orange);stop-opacity:0" />
+                                                </linearGradient>
+                                            </defs>
+                                            <path class="area" d="M0,40 L20,35 L40,32 L60,28 L80,25 L100,22 L120,18 L140,15 L160,12 L180,10 L200,8 L200,50 L0,50 Z"></path>
+                                            <path d="M0,40 L20,35 L40,32 L60,28 L80,25 L100,22 L120,18 L140,15 L160,12 L180,10 L200,8"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">SSE Momentum</span>
+                                <div class="breakdown-chart">
+                                    <div class="bar-chart">
+                                        <div class="bar-fill medium" style="width: 72%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="holder-metrics">
+                            <div class="holder-card">
+                                <div class="holder-label">Total Holders</div>
+                                <div class="holder-value">2,847</div>
+                            </div>
+                            <div class="holder-card">
+                                <div class="holder-label">Top 10%</div>
+                                <div class="holder-value">1,139</div>
+                            </div>
+                            <div class="holder-card">
+                                <div class="holder-label">Whales</div>
+                                <div class="holder-value">427</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Token 2 - Collapsed -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-rank rank-2">2</span>
+                        <div class="accordion-token">
+                            <div class="accordion-logo">W</div>
+                            <span class="accordion-name">WIF</span>
+                        </div>
+                        <span class="accordion-score">87.6</span>
+                        <span class="accordion-net positive">+18.2%</span>
+                        <span class="accordion-expand">▼</span>
+                    </div>
+                </div>
+
+                <!-- Token 3 - Collapsed -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-rank rank-3">3</span>
+                        <div class="accordion-token">
+                            <div class="accordion-logo">M</div>
+                            <span class="accordion-name">MYRO</span>
+                        </div>
+                        <span class="accordion-score">81.3</span>
+                        <span class="accordion-net positive">+12.8%</span>
+                        <span class="accordion-expand">▼</span>
+                    </div>
+                </div>
+
+                <!-- Token 4 - Collapsed -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-rank">4</span>
+                        <div class="accordion-token">
+                            <div class="accordion-logo">P</div>
+                            <span class="accordion-name">POPCAT</span>
+                        </div>
+                        <span class="accordion-score">76.8</span>
+                        <span class="accordion-net negative">-3.2%</span>
+                        <span class="accordion-expand">▼</span>
+                    </div>
+                </div>
+
+                <!-- Token 5 - Collapsed -->
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-rank">5</span>
+                        <div class="accordion-token">
+                            <div class="accordion-logo">S</div>
+                            <span class="accordion-name">SLERF</span>
+                        </div>
+                        <span class="accordion-score">71.4</span>
+                        <span class="accordion-net negative">-8.7%</span>
+                        <span class="accordion-expand">▼</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MVP Sidebar -->
+        <div class="mvp-sidebar">
+            <div class="sidebar-title">/// CURRENT MVP</div>
+
+            <div class="mvp-spotlight">
+                <div class="mvp-logo-huge">B</div>
+                <div class="mvp-score-huge">94.2</div>
+                <div class="mvp-name">BONK</div>
+                <div class="fresh-indicator">
+                    <div class="fresh-dot"></div>
+                    <span>FRESH DATA</span>
+                </div>
+                <button class="view-breakdown-btn">View Breakdown</button>
+            </div>
+
+            <div class="sidebar-title" style="margin-top: 24px;">/// TOP CONTENDERS</div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-tertiary); border-radius: 6px;">
+                    <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--silver), #a0a0a0); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">2</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 12px; font-weight: 600;">WIF</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Score: 87.6</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-tertiary); border-radius: 6px;">
+                    <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--bronze), #a0522d); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">3</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 12px; font-weight: 600;">MYRO</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Score: 81.3</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-tertiary); border-radius: 6px;">
+                    <div style="width: 28px; height: 28px; background: var(--bg-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--text-muted);">4</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 12px; font-weight: 600;">POPCAT</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Score: 76.8</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="status-dot"></div>
+            <span>Connected</span>
+        </div>
+        <span>SCANNING 156 TOKENS</span>
+        <span>MODE: DEGEN</span>
+    </div>
+</body>
+</html>

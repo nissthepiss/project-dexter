@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="degenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff8c00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b00;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="holderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6347;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff4500;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow7" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Toggle base frame -->
+  <rect x="4" y="4" width="56" height="56" rx="28" fill="#0a0a0a" stroke="#2a2a2e" stroke-width="2"/>
+
+  <!-- Divider line -->
+  <line x1="32" y1="12" x2="32" y2="52" stroke="#2a2a2e" stroke-width="1"/>
+
+  <!-- DEGEN side (left) - Active state -->
+  <g>
+    <!-- Active background -->
+    <path d="M 32,8 A 24,24 0 0,0 8,32 L 8,32 A 24,24 0 0,0 32,56 L 32,52 A 20,20 0 0,1 12,32 L 12,32 A 20,20 0 0,1 32,12 Z"
+          fill="url(#degenGrad)"
+          filter="url(#glow7)"/>
+
+    <!-- Degen icon - flame/diamond -->
+    <g transform="translate(20, 32)">
+      <!-- Diamond shape representing quick gains -->
+      <polygon points="0,-8 6,0 0,8 -6,0"
+               fill="#000"
+               stroke="#ff8c00"
+               stroke-width="1.5"/>
+      <!-- Inner spark -->
+      <polygon points="0,-4 3,0 0,4 -3,0"
+               fill="#ff8c00"/>
+    </g>
+
+    <!-- DEGEN text -->
+    <text x="20" y="54"
+          font-family="'Bebas Neue', sans-serif"
+          font-size="8"
+          font-weight="bold"
+          fill="#ff6b00"
+          text-anchor="middle"
+          letter-spacing="1">DEGEN</text>
+  </g>
+
+  <!-- HOLDER side (right) - Inactive state -->
+  <g opacity="0.5">
+    <!-- Inactive icon - hand/grip -->
+    <g transform="translate(44, 32)">
+      <!-- Hand/fist shape representing holding -->
+      <rect x="-6" y="-8" width="12" height="16" rx="2"
+            fill="none"
+            stroke="#ff4500"
+            stroke-width="1.5"/>
+      <!-- Grip lines -->
+      <line x1="-2" y1="-4" x2="2" y2="-4" stroke="#ff4500" stroke-width="1"/>
+      <line x1="-2" y1="0" x2="2" y2="0" stroke="#ff4500" stroke-width="1"/>
+      <line x1="-2" y1="4" x2="2" y2="4" stroke="#ff4500" stroke-width="1"/>
+    </g>
+
+    <!-- HOLDER text -->
+    <text x="44" y="54"
+          font-family="'Bebas Neue', sans-serif"
+          font-size="7"
+          font-weight="bold"
+          fill="#ff4500"
+          text-anchor="middle"
+          letter-spacing="0.5">HOLDER</text>
+  </g>
+
+  <!-- Toggle indicator - showing Degen is active -->
+  <circle cx="20" cy="20" r="4" fill="#ff6b00" filter="url(#glow7)"/>
+  <circle cx="20" cy="20" r="2" fill="#000"/>
+
+  <!-- Circuit accent - connecting the modes -->
+  <path d="M 28,32 L 36,32" stroke="#2a2a2e" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <!-- Mode transition arrow hint -->
+  <path d="M 34,28 L 38,32 L 34,36"
+        fill="none"
+        stroke="#4a4a4e"
+        stroke-width="1"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- Status indicators -->
+  <circle cx="8" cy="32" r="2" fill="#4ade80">
+    <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="56" cy="32" r="2" fill="#4a4a4e"/>
+</svg>

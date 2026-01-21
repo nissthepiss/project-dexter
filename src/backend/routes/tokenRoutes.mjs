@@ -1,6 +1,6 @@
 import express from 'express';
 
-export function createTokenRoutes({ tokenManager, logger }) {
+export function createTokenRoutes({ tokenManager, logger, dataCollector }) {
   const router = express.Router();
 
   router.get('/top', async (req, res) => {
@@ -9,7 +9,7 @@ export function createTokenRoutes({ tokenManager, logger }) {
       const top10 = tokenManager.getTop10(viewMode);
       const mvpData = tokenManager.getMVP(viewMode);
 
-      res.json({
+      const responseData = {
         top10: top10.map((token, index) => {
           let netPercent = 0;
           if (token.mcTenSecondsAgo !== null && token.mcTenSecondsAgo > 0) {
@@ -98,18 +98,28 @@ export function createTokenRoutes({ tokenManager, logger }) {
             volume: parseFloat((mvpData.acceleration.volumeAcceleration * 100).toFixed(2))
           } : null,
           currentMc: mvpData.token.currentMc,
+          spottedMc: mvpData.token.spottedMc,
           peakMc: mvpData.token.peakMc,
+          peakMultiplier: mvpData.token.peakMultiplier,
           volume24h: mvpData.token.volume24h,
           logoUrl: mvpData.token.logoUrl,
           contractAddress: mvpData.token.contractAddress,
           hasData: mvpData.hasData,
           dataPoints: mvpData.dataPoints,
-          metricsFresh: mvpData.metricsFresh
+          metricsFresh: mvpData.metricsFresh,
+          mvpSince: mvpData.mvpSince
         } : null,
         monitoringCount: tokenManager.trackedTokens.size,
         tierInfo: tokenManager.alertTiers,
         viewMode: viewMode
-      });
+      };
+
+      // Record data for analysis
+      if (dataCollector) {
+        dataCollector.recordTop10(responseData.top10, viewMode, responseData.mvp);
+      }
+
+      res.json(responseData);
     } catch (error) {
       logger.error('GET /api/tokens/top failed', error);
       res.status(500).json({ error: error.message });
@@ -159,9 +169,20 @@ export function createTokenRoutes({ tokenManager, logger }) {
   router.get('/holder', async (req, res) => {
     try {
       const holderTokens = tokenManager.getHolderTokens();
-      const holderMVP = tokenManager.getHolderMVP();
 
-      res.json({
+      let holderMVP = null;
+
+      // Only compute MVP if we have holder tokens
+      if (holderTokens.length > 0) {
+        try {
+          holderMVP = tokenManager.getHolderMVP();
+        } catch (mvpError) {
+          logger.error('Failed to compute holder MVP, continuing without it', mvpError);
+          // Continue without MVP - tokens should still be displayed
+        }
+      }
+
+      const responseData = {
         tokens: holderTokens.map((token) => {
           const holderSpottedMc = token.holderSpottedMc || token.spottedMc || 1;
           const holderPeakMult = token.holderPeakMultiplier || token.peakMultiplier || 1.0;
@@ -173,6 +194,9 @@ export function createTokenRoutes({ tokenManager, logger }) {
             netPercent = ((token.currentMc - token.mcTenMinutesAgo) / token.mcTenMinutesAgo) * 100;
           }
 
+          // Calculate holder score for this token
+          const scoreData = tokenManager.getScoreForHolderToken(token);
+
           return {
             ...token,
             rank: token.holderRank,
@@ -183,7 +207,8 @@ export function createTokenRoutes({ tokenManager, logger }) {
             currentMultiplier: currentMultiplier.toFixed(2) + 'x',
             peakMultiplierFormatted: holderPeakMult.toFixed(2) + 'x',
             netPercent: parseFloat(netPercent.toFixed(2)),
-            isMVP: isHolderMVP
+            isMVP: isHolderMVP,
+            score: parseFloat(scoreData.total.toFixed(2))
           };
         }),
         mvp: holderMVP ? {
@@ -225,9 +250,34 @@ export function createTokenRoutes({ tokenManager, logger }) {
         } : null,
         holderCount: holderTokens.length,
         mode: 'holder'
-      });
+      };
+
+      // Record data for analysis
+      if (dataCollector) {
+        dataCollector.recordHolderTokens(responseData.tokens, 'current', responseData.mvp);
+      }
+
+      res.json(responseData);
     } catch (error) {
       logger.error('GET /api/tokens/holder failed', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get token counts by source type (degen vs holder)
+  router.get('/counts', (req, res) => {
+    try {
+      const allTokens = Array.from(tokenManager.trackedTokens.values());
+      const degenCount = allTokens.filter(t => t.source === 'degen').length;
+      const holderCount = allTokens.filter(t => t.source === 'holder' || t.source === 'ex-holder').length;
+
+      res.json({
+        degen: degenCount,
+        holder: holderCount,
+        total: tokenManager.trackedTokens.size
+      });
+    } catch (error) {
+      logger.error('GET /api/tokens/counts failed', error);
       res.status(500).json({ error: error.message });
     }
   });

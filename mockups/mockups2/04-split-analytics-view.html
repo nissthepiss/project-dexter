@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Split Analytics View</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Grid Pattern Background */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 140, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 140, 0, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--accent-orange-dark);
+        }
+
+        .header-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Physical Toggle Switch */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-tertiary);
+            padding: 6px;
+            border-radius: 20px;
+            border: 1px solid var(--bg-secondary);
+        }
+
+        .toggle-switch-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .toggle-switch-track {
+            width: 60px;
+            height: 24px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid var(--bg-tertiary);
+        }
+
+        .toggle-switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .toggle-switch.active .toggle-switch-thumb {
+            transform: translateX(36px);
+        }
+
+        /* Segment Control */
+        .segment-control {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 3px;
+        }
+
+        .segment-btn {
+            padding: 6px 14px;
+            font-size: 10px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .segment-btn.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* Main Content - Split View */
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Panel - Token List */
+        .token-list-panel {
+            flex: 0 0 65%;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .data-grid {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-grid th {
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .data-grid td {
+            padding: 12px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            font-size: 12px;
+        }
+
+        .data-grid tbody tr {
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .data-grid tbody tr:hover {
+            background: var(--bg-secondary);
+            border-left-color: var(--accent-orange);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.15);
+        }
+
+        .data-grid tbody tr.selected {
+            background: rgba(255, 140, 0, 0.15);
+            border-left-color: var(--accent-orange);
+        }
+
+        .token-cell-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .token-logo-mini {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .delta-indicator {
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        .delta-indicator.positive { color: var(--success); }
+        .delta-indicator.negative { color: var(--error); }
+
+        .action-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            border-radius: 4px;
+            margin-right: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .action-icon:hover {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+            border-color: var(--accent-orange);
+        }
+
+        /* Right Panel - Token Detail */
+        .token-detail-panel {
+            flex: 0 0 35%;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--bg-tertiary);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .detail-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .token-art-large {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: 700;
+            box-shadow: 0 0 40px rgba(255, 140, 0, 0.3);
+        }
+
+        .detail-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .detail-address {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Price Sparkline */
+        .price-chart {
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .chart-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sparkline-svg {
+            width: 100%;
+            height: 60px;
+        }
+
+        .sparkline-path {
+            fill: none;
+            stroke: var(--accent-orange);
+            stroke-width: 2;
+        }
+
+        .sparkline-area {
+            fill: url(#gradient);
+            opacity: 0.3;
+        }
+
+        /* Donut Charts */
+        .donut-section {
+            margin-bottom: 20px;
+        }
+
+        .donut-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .donut-chart {
+            flex: 1;
+            text-align: center;
+        }
+
+        .donut-svg {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 8px;
+        }
+
+        .donut-circle-bg {
+            fill: none;
+            stroke: var(--bg-primary);
+            stroke-width: 8;
+        }
+
+        .donut-circle-fill {
+            fill: none;
+            stroke: var(--accent-orange);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+        }
+
+        .donut-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .donut-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Pie Chart */
+        .pie-chart-container {
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .pie-chart {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--accent-orange) 0deg 144deg,
+                var(--success) 144deg 234deg,
+                var(--accent-orange-dark) 234deg 306deg,
+                var(--bg-tertiary) 306deg 360deg
+            );
+            position: relative;
+        }
+
+        .pie-hole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pie-hole span {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pie-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+            font-size: 10px;
+        }
+
+        .pie-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pie-legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* Transaction Timeline */
+        .timeline-section {
+            margin-top: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .timeline-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            min-width: 50px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-type {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .timeline-type.buy { color: var(--success); }
+        .timeline-type.sell { color: var(--error); }
+
+        .timeline-detail {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-orange-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">DEXTHER // ANALYTICS</div>
+            <div class="header-controls">
+                <div class="toggle-switch active">
+                    <span class="toggle-switch-label">DEGEN</span>
+                    <div class="toggle-switch-track">
+                        <div class="toggle-switch-thumb"></div>
+                    </div>
+                    <span class="toggle-switch-label">HOLDER</span>
+                </div>
+                <div class="segment-control">
+                    <button class="segment-btn active">5M</button>
+                    <button class="segment-btn">30M</button>
+                    <button class="segment-btn">1H</button>
+                    <button class="segment-btn">4H</button>
+                    <button class="segment-btn">ALL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Token List Panel -->
+            <div class="token-list-panel">
+                <table class="data-grid">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th>TOKEN</th>
+                            <th>MC</th>
+                            <th>VOL 24H</th>
+                            <th>NET %</th>
+                            <th>SCORE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="selected">
+                            <td><span style="color: #ffd700; font-weight: 700;">1</span></td>
+                            <td>
+                                <div class="token-cell-mini">
+                                    <div class="token-logo-mini">B</div>
+                                    <div>
+                                        <div style="font-weight: 600;">BONK</div>
+                                        <div style="font-size: 9px; color: var(--text-muted);">DezXAZ8...</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>$1.2M <span class="delta-indicator positive">▲</span></td>
+                            <td>$856K</td>
+                            <td style="color: var(--success);">+24.5%</td>
+                            <td style="color: var(--accent-orange); font-weight: 700;">94.2</td>
+                            <td>
+                                <span class="action-icon">BL</span>
+                                <span class="action-icon">TG</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span style="color: #c0c0c0; font-weight: 700;">2</span></td>
+                            <td>
+                                <div class="token-cell-mini">
+                                    <div class="token-logo-mini">W</div>
+                                    <div>
+                                        <div style="font-weight: 600;">WIF</div>
+                                        <div style="font-size: 9px; color: var(--text-muted);">EKpQGSJ...</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>$980K <span class="delta-indicator positive">▲</span></td>
+                            <td>$624K</td>
+                            <td style="color: var(--success);">+18.2%</td>
+                            <td style="color: var(--accent-orange); font-weight: 700;">87.6</td>
+                            <td>
+                                <span class="action-icon">BL</span>
+                                <span class="action-icon">TG</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span style="color: #cd7f32; font-weight: 700;">3</span></td>
+                            <td>
+                                <div class="token-cell-mini">
+                                    <div class="token-logo-mini">M</div>
+                                    <div>
+                                        <div style="font-weight: 600;">MYRO</div>
+                                        <div style="font-size: 9px; color: var(--text-muted);">EQSZqmS...</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>$750K <span class="delta-indicator positive">▲</span></td>
+                            <td>$485K</td>
+                            <td style="color: var(--success);">+12.8%</td>
+                            <td style="color: var(--accent-orange); font-weight: 700;">81.3</td>
+                            <td>
+                                <span class="action-icon">BL</span>
+                                <span class="action-icon">TG</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>
+                                <div class="token-cell-mini">
+                                    <div class="token-logo-mini">P</div>
+                                    <div>
+                                        <div style="font-weight: 600;">POPCAT</div>
+                                        <div style="font-size: 9px; color: var(--text-muted);">7GCihgD...</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>$520K <span class="delta-indicator negative">▼</span></td>
+                            <td>$312K</td>
+                            <td style="color: var(--error);">-3.2%</td>
+                            <td style="color: var(--accent-orange); font-weight: 700;">76.8</td>
+                            <td>
+                                <span class="action-icon">BL</span>
+                                <span class="action-icon">TG</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>
+                                <div class="token-cell-mini">
+                                    <div class="token-logo-mini">S</div>
+                                    <div>
+                                        <div style="font-weight: 600;">SLERF</div>
+                                        <div style="font-size: 9px; color: var(--text-muted);">D2aK2XR...</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>$380K <span class="delta-indicator negative">▼</span></td>
+                            <td>$245K</td>
+                            <td style="color: var(--error);">-8.7%</td>
+                            <td style="color: var(--accent-orange); font-weight: 700;">71.4</td>
+                            <td>
+                                <span class="action-icon">BL</span>
+                                <span class="action-icon">TG</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Token Detail Panel -->
+            <div class="token-detail-panel">
+                <div class="detail-header">
+                    <div class="token-art-large">B</div>
+                    <div class="detail-name">BONK</div>
+                    <div class="detail-address">DezXAZ8z7PnrnRJjkoC6fD3qEiJjqzajikPYMGv9gd</div>
+                </div>
+
+                <!-- Price Sparkline -->
+                <div class="price-chart">
+                    <div class="chart-label">Price Movement (5M)</div>
+                    <svg class="sparkline-svg" viewBox="0 0 300 60">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--accent-orange);stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:var(--accent-orange);stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                        <path class="sparkline-area" d="M0,45 L25,42 L50,38 L75,35 L100,30 L125,25 L150,28 L175,22 L200,18 L225,15 L250,12 L275,10 L300,8 L300,60 L0,60 Z"></path>
+                        <path class="sparkline-path" d="M0,45 L25,42 L50,38 L75,35 L100,30 L125,25 L150,28 L175,22 L200,18 L225,15 L250,12 L275,10 L300,8"></path>
+                    </svg>
+                </div>
+
+                <!-- Donut Charts -->
+                <div class="donut-section">
+                    <div class="chart-label">Score Breakdown</div>
+                    <div class="donut-row">
+                        <div class="donut-chart">
+                            <svg class="donut-svg" viewBox="0 0 80 80">
+                                <circle class="donut-circle-bg" cx="40" cy="40" r="32"></circle>
+                                <circle class="donut-circle-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="44"></circle>
+                            </svg>
+                            <div class="donut-value">78%</div>
+                            <div class="donut-label">Buy Pressure</div>
+                        </div>
+                        <div class="donut-chart">
+                            <svg class="donut-svg" viewBox="0 0 80 80">
+                                <circle class="donut-circle-bg" cx="40" cy="40" r="32"></circle>
+                                <circle class="donut-circle-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="70"></circle>
+                            </svg>
+                            <div class="donut-value">65%</div>
+                            <div class="donut-label">Velocity</div>
+                        </div>
+                        <div class="donut-chart">
+                            <svg class="donut-svg" viewBox="0 0 80 80">
+                                <circle class="donut-circle-bg" cx="40" cy="40" r="32"></circle>
+                                <circle class="donut-circle-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="24"></circle>
+                            </svg>
+                            <div class="donut-value">88%</div>
+                            <div class="donut-label">Momentum</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holder Distribution Pie -->
+                <div class="pie-chart-container">
+                    <div class="chart-label">Holder Distribution</div>
+                    <div class="pie-chart">
+                        <div class="pie-hole">
+                            <span>2,847</span>
+                        </div>
+                    </div>
+                    <div class="pie-legend">
+                        <div class="pie-legend-item">
+                            <div class="pie-legend-color" style="background: var(--accent-orange);"></div>
+                            <span>Top 10% (40%)</span>
+                        </div>
+                        <div class="pie-legend-item">
+                            <div class="pie-legend-color" style="background: var(--success);"></div>
+                            <span>11-50% (25%)</span>
+                        </div>
+                        <div class="pie-legend-item">
+                            <div class="pie-legend-color" style="background: var(--accent-orange-dark);"></div>
+                            <span>51-100% (20%)</span>
+                        </div>
+                        <div class="pie-legend-item">
+                            <div class="pie-legend-color" style="background: var(--bg-tertiary);"></div>
+                            <span>Whales (15%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Timeline -->
+                <div class="timeline-section">
+                    <div class="chart-label">Recent Transactions</div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">2s ago</div>
+                        <div class="timeline-content">
+                            <div class="timeline-type buy">BUY $12,500</div>
+                            <div class="timeline-detail">0x7f3a...9c2d • 2.5M BONK</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">8s ago</div>
+                        <div class="timeline-content">
+                            <div class="timeline-type buy">BUY $8,200</div>
+                            <div class="timeline-detail">0x4e8b...1a7f • 1.6M BONK</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">15s ago</div>
+                        <div class="timeline-content">
+                            <div class="timeline-type sell">SELL $5,100</div>
+                            <div class="timeline-detail">0x9c2d...3e8b • 1.0M BONK</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">22s ago</div>
+                        <div class="timeline-content">
+                            <div class="timeline-type buy">BUY $15,800</div>
+                            <div class="timeline-detail">0x1a7f...7f3a • 3.1M BONK</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="status-dot"></div>
+                <span>Connected</span>
+            </div>
+            <span>SCANNING 156 TOKENS</span>
+            <span>MODE: DEGEN</span>
+        </div>
+    </div>
+</body>
+</html>

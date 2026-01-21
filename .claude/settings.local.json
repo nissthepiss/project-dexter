@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(frontend-design:frontend-design)",
+      "mcp__zread__get_repo_structure",
+      "Skill(glm-plan-usage:usage-query)",
+      "Skill(glm-plan-usage:usage-query-skill)",
+      "mcp__zread__read_file",
+      "mcp__web-reader__webReader",
+      "Bash(wreckit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(gh auth:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git config:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh repo sync:*)",
+      "Bash(gh git-credential-approve:*)",
+      "Bash(gh api:*)",
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(winget install:*)",
+      "Bash(jq:*)"
+    ]
+  }
+}

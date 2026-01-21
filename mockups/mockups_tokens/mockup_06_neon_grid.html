@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Leaderboard - Neon Grid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-blue: #0066ff;
+            --neon-purple: #9d00ff;
+            --neon-green: #00ff88;
+            --bg-dark: #0a0a0f;
+            --grid-line: rgba(0, 243, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        .grid-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 50%, rgba(157, 0, 255, 0.1) 0%, transparent 50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            animation: scan 4s linear infinite;
+            z-index: 100;
+            opacity: 0.5;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-shadow:
+                0 0 10px var(--neon-cyan),
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan),
+                0 0 80px var(--neon-blue);
+            margin-bottom: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            95% { opacity: 0.9; }
+            96% { opacity: 1; }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 25px;
+        }
+
+        .neon-card {
+            position: relative;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 0;
+            padding: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: cardAppear 0.5s ease-out backwards;
+        }
+
+        .neon-card:nth-child(1) { animation-delay: 0.1s; }
+        .neon-card:nth-child(2) { animation-delay: 0.2s; }
+        .neon-card:nth-child(3) { animation-delay: 0.3s; }
+        .neon-card:nth-child(4) { animation-delay: 0.4s; }
+        .neon-card:nth-child(5) { animation-delay: 0.5s; }
+        .neon-card:nth-child(6) { animation-delay: 0.6s; }
+        .neon-card:nth-child(7) { animation-delay: 0.7s; }
+        .neon-card:nth-child(8) { animation-delay: 0.8s; }
+        .neon-card:nth-child(9) { animation-delay: 0.9s; }
+        .neon-card:nth-child(10) { animation-delay: 1s; }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .neon-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .neon-card:hover::before {
+            left: 100%;
+        }
+
+        .neon-card:hover {
+            box-shadow:
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan),
+                inset 0 0 20px rgba(0, 243, 255, 0.1);
+            border-color: var(--neon-pink);
+            transform: translateY(-5px);
+        }
+
+        .card-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-cyan);
+        }
+
+        .card-corner.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .card-corner.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .card-corner.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .card-corner.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--grid-line);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 2px solid var(--neon-cyan);
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .token-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .token-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .token-address {
+            font-family: 'Rajdhani', monospace;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+            opacity: 0.7;
+            letter-spacing: 0.1em;
+        }
+
+        .score-display {
+            text-align: right;
+        }
+
+        .score-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .score-label {
+            font-size: 0.65rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            padding: 12px 15px;
+            position: relative;
+        }
+
+        .metric::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--neon-cyan);
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .metric-value.positive {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .metric-value.negative {
+            color: #ff0044;
+            text-shadow: 0 0 10px #ff0044;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid var(--grid-line);
+        }
+
+        .peak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid var(--neon-pink);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--neon-pink);
+            text-shadow: 0 0 8px var(--neon-pink);
+        }
+
+        .time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            font-family: 'Rajdhani', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+        }
+
+        .time-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    <div class="grid-glow"></div>
+    <div class="scanline"></div>
+
+    <div class="container">
+        <header>
+            <h1>Neon Grid // Tokens</h1>
+            <p class="subtitle">System Online // Data Stream Active</p>
+        </header>
+
+        <div class="grid-layout">
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">01</span>
+                        <div class="token-info">
+                            <h3 class="token-name">RUST</h3>
+                            <p class="token-address">9VLP...BAGS</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-8.4</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$15.9K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$29.0K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$175.0K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value">+0.0%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 2.11x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 42m</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">02</span>
+                        <div class="token-info">
+                            <h3 class="token-name">Mom Coin</h3>
+                            <p class="token-address">62g4...pump</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-7.2</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$22.0K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$25.0K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$199.1K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value negative">-9.1%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 2.43x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 1h</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">03</span>
+                        <div class="token-info">
+                            <h3 class="token-name">Bread</h3>
+                            <p class="token-address">puvZ...pump</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-5.3</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$88.7K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$37.9K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$478.6K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value positive">+1.7%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 3.60x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 1h</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">04</span>
+                        <div class="token-info">
+                            <h3 class="token-name">LINUS</h3>
+                            <p class="token-address">AvxF...BAGS</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-4.8</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$14.8K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$8.7K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$12.3K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value positive">+9.1%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 1.72x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 1h</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">05</span>
+                        <div class="token-info">
+                            <h3 class="token-name">LILTAY</h3>
+                            <p class="token-address">DgPK...pump</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-3.1</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$90.2K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$167.9K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$243.4K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value positive">+2.0%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 2.33x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 1h</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">06</span>
+                        <div class="token-info">
+                            <h3 class="token-name">ToweLie</h3>
+                            <p class="token-address">9Cxm...pump</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-2.3</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$34.9K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$72.3K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$18.6K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value negative">-2.7%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 2.51x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 18m</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">07</span>
+                        <div class="token-info">
+                            <h3 class="token-name">CHINESE</h3>
+                            <p class="token-address">C3Po...pump</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">-1.5</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$36.3K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$90.4K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$243.7K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value negative">-8.5%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 3.31x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 48m</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">08</span>
+                        <div class="token-info">
+                            <h3 class="token-name">Paperclip</h3>
+                            <p class="token-address">87mq...pump</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">0.3</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$27.1K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$46.8K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$55.6K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value negative">-4.5%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 1.95x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 18m</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">09</span>
+                        <div class="token-info">
+                            <h3 class="token-name">X</h3>
+                            <p class="token-address">2KMV...BAGS</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">2.1</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$421.1K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$909.9K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$1.5M</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value negative">-3.8%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 2.77x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 1h</span>
+                </div>
+            </article>
+
+            <article class="neon-card">
+                <div class="card-corner tl"></div>
+                <div class="card-corner tr"></div>
+                <div class="card-corner bl"></div>
+                <div class="card-corner br"></div>
+                <div class="card-header">
+                    <div style="display: flex; align-items: flex-start;">
+                        <span class="rank-badge">10</span>
+                        <div class="token-info">
+                            <h3 class="token-name">GME</h3>
+                            <p class="token-address">3Dpm...BAGS</p>
+                        </div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-value">5.6</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Spotted</span>
+                        <span class="metric-value">$20.4K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current</span>
+                        <span class="metric-value">$43.6K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Volume</span>
+                        <span class="metric-value">$17.1K</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net</span>
+                        <span class="metric-value positive">+4.8%</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="peak-badge">⚡ 2.88x PEAK</span>
+                    <span class="time-badge"><span class="time-dot"></span> 1h</span>
+                </div>
+            </article>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER TOKEN HUNTER - Header Focus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #9d4edd;
+            --chrome-light: #e0e0e0;
+            --chrome-mid: #a0a0a0;
+            --bg-dark: #0a0015;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #ff00ff 0%, #9d4edd 15%, #3c096c 30%, #1a0030 50%, #00ffff 85%, #ff00ff 100%);
+            opacity: 0.2;
+            animation: gradientShift 15s ease-in-out infinite;
+            z-index: -3;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 { width: 500px; height: 500px; background: var(--neon-pink); top: -150px; left: -150px; opacity: 0.4; }
+        .orb-2 { width: 400px; height: 400px; background: var(--neon-cyan); bottom: -100px; right: -100px; opacity: 0.4; animation-delay: -10s; }
+        .orb-3 { width: 300px; height: 300px; background: var(--neon-purple); top: 50%; right: 10%; opacity: 0.3; animation-delay: -5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        /* Grid Pattern */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(255, 0, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(600px) rotateX(70deg);
+            transform-origin: center 40%;
+            z-index: -2;
+        }
+
+        /* Header Container */
+        .header-showcase {
+            width: 95%;
+            max-width: 1400px;
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.95), rgba(26, 0, 48, 0.98));
+            border: 3px solid var(--neon-pink);
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow:
+                0 0 50px var(--neon-pink),
+                0 0 100px rgba(255, 0, 255, 0.4),
+                inset 0 0 80px rgba(255, 0, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: headerFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes headerFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .header-showcase::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 200%; height: 5px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan), transparent);
+            animation: headerGlow 3s linear infinite;
+        }
+
+        @keyframes headerGlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50%); }
+        }
+
+        .header-showcase::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: -100%; width: 200%; height: 5px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-pink), var(--neon-cyan), transparent);
+            animation: headerGlow 3s linear infinite reverse;
+        }
+
+        /* Top Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-purple);
+            border-radius: 8px;
+        }
+
+        .status-dot {
+            width: 10px; height: 10px;
+            background: var(--profit-green, #39ff14);
+            border-radius: 50%;
+            animation: dotPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--profit-green, #39ff14);
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .status-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--chrome-mid);
+            letter-spacing: 2px;
+        }
+
+        .status-text.accent {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 72px;
+            font-weight: 900;
+            background: linear-gradient(180deg, var(--chrome-light) 0%, var(--neon-cyan) 30%, var(--neon-pink) 70%, var(--neon-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            letter-spacing: 15px;
+            filter: drop-shadow(0 0 30px var(--neon-cyan)) drop-shadow(0 0 60px var(--neon-pink));
+            animation: logoGlow 3s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 30px var(--neon-cyan)) drop-shadow(0 0 60px var(--neon-pink)); }
+            50% { filter: drop-shadow(0 0 50px var(--neon-cyan)) drop-shadow(0 0 100px var(--neon-pink)) drop-shadow(0 0 150px var(--neon-purple)); }
+        }
+
+        .logo-bg-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; height: 150px;
+            background: radial-gradient(ellipse, rgba(0, 255, 255, 0.3), transparent 70%);
+            z-index: 1;
+            animation: bgGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes bgGlow {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .tagline {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            color: var(--neon-pink);
+            letter-spacing: 8px;
+            text-shadow: 0 0 20px var(--neon-pink);
+            margin-top: 15px;
+            animation: taglineGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes taglineGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 30px var(--neon-pink); }
+        }
+
+        /* Controls Container */
+        .controls-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+            letter-spacing: 3px;
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid var(--neon-purple);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+        }
+
+        .mode-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            padding: 18px 30px;
+            background: transparent;
+            border: none;
+            color: var(--chrome-mid);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            text-shadow: 0 0 5px var(--chrome-mid);
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--neon-cyan);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .mode-btn.active {
+            color: var(--neon-pink);
+            background: linear-gradient(180deg, rgba(255, 0, 255, 0.3), rgba(157, 78, 221, 0.2));
+            text-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .mode-btn.active::before {
+            transform: scaleX(1);
+        }
+
+        .mode-btn:hover:not(.active) {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        /* Timeframe Buttons */
+        .timeframe-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timeframe-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            padding: 18px 22px;
+            background: linear-gradient(180deg, rgba(0, 255, 255, 0.1), transparent);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px var(--neon-cyan);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+
+        .timeframe-btn:hover,
+        .timeframe-btn.active {
+            background: linear-gradient(180deg, rgba(255, 0, 255, 0.4), rgba(157, 78, 221, 0.3));
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+            box-shadow: 0 0 30px var(--neon-pink);
+            transform: translateY(-3px);
+        }
+
+        /* Decorative Elements */
+        .corner-decoration {
+            position: absolute;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 80px;
+            color: var(--neon-pink);
+            opacity: 0.1;
+            text-shadow: 0 0 30px var(--neon-pink);
+        }
+
+        .corner-1 { top: -20px; left: -10px; transform: rotate(-15deg); }
+        .corner-2 { bottom: -20px; right: -10px; transform: rotate(15deg); }
+
+        .jp-text {
+            position: absolute;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 50px;
+            color: var(--neon-cyan);
+            opacity: 0.08;
+        }
+
+        .jp-1 { top: 30%; left: 2%; transform: rotate(-20deg); }
+        .jp-2 { bottom: 25%; right: 2%; transform: rotate(20deg); }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-bg"></div>
+    <div class="corner-decoration corner-1">◢</div>
+    <div class="corner-decoration corner-2">◣</div>
+    <div class="jp-text jp-1">未来</div>
+    <div class="jp-text jp-2">電網</div>
+
+    <div class="header-showcase">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span class="status-text">v1.0.0</span>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span class="status-text">SOLANA</span>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span class="status-text accent">DEGEN MODE</span>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span class="status-text">🔒 ADMIN</span>
+            </div>
+        </div>
+
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <div class="logo-wrapper">
+                <div class="logo-bg-glow"></div>
+                <div class="logo">DEXTER</div>
+            </div>
+            <div class="tagline">TOKEN HUNTER</div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-container">
+            <div class="control-group">
+                <span class="control-label">$ MODE</span>
+                <div class="mode-toggle">
+                    <button class="mode-btn active">DEGEN</button>
+                    <button class="mode-btn">HOLDER</button>
+                    <button class="mode-btn">RADAR</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="control-label">$ TIMEFRAME</span>
+                <div class="timeframe-buttons">
+                    <button class="timeframe-btn">5M</button>
+                    <button class="timeframe-btn">30M</button>
+                    <button class="timeframe-btn">1H</button>
+                    <button class="timeframe-btn">2H</button>
+                    <button class="timeframe-btn active">ALL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

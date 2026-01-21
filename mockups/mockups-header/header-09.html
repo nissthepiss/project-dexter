@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 09: Tab-Based Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Anonymous+Pro&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #09090d;
+            --bg-tab: #0d0d14;
+            --bg-tab-active: #141420;
+            --orange: #ff0a00;
+            --green: #00ff0a;
+            --gray: #383842;
+            --gray-light: #686872;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Anonymous Pro', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .tab-header {
+            background: var(--bg-tab);
+            border-bottom: 1px solid rgba(255, 10, 0, 0.15);
+        }
+
+        .top-row {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .logo .dexter {
+            color: var(--orange);
+            text-shadow: 0 0 25px rgba(255, 10, 0, 0.5);
+        }
+
+        .logo .dot {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .logo .tagline {
+            font-family: 'Anonymous Pro', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--gray-light);
+            font-weight: 400;
+        }
+
+        .status-pills {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .pill .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .pill.version .dot { background: var(--orange); }
+        .pill.version { color: var(--orange); }
+
+        .pill.network .dot { background: var(--green); }
+        .pill.network { color: var(--green); }
+
+        .pill.mode .dot { background: var(--orange); }
+        .pill.mode { color: var(--orange); }
+
+        .tab-navigation {
+            display: flex;
+            background: var(--bg-tab);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 14px 24px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: var(--gray-light);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Anonymous Pro', monospace;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab.active {
+            color: var(--white);
+            background: var(--bg-tab-active);
+            border-bottom-color: var(--orange);
+        }
+
+        .tab .badge {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: var(--orange);
+            color: var(--white);
+            font-size: 8px;
+            padding: 2px 5px;
+            border-radius: 10px;
+        }
+
+        .tab-content {
+            background: var(--bg-tab-active);
+            padding: 20px 24px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-controls {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .control-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--orange);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            font-size: 11px;
+            color: var(--gray-light);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Anonymous Pro', monospace;
+        }
+
+        .tab-btn:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        .tab-toggles {
+            display: flex;
+            gap: 16px;
+        }
+
+        .tab-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .tab-toggle:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-toggle.active {
+            color: var(--white);
+        }
+
+        .tab-toggle .check {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--gray);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .tab-toggle.active .check {
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        .tab-toggle .check::after {
+            content: '✓';
+            font-size: 10px;
+            color: var(--white);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tab-toggle.active .check::after {
+            opacity: 1;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="tab-header">
+        <div class="top-row">
+            <div class="logo">
+                <span class="dexter">DEXTER</span>
+                <span class="dot">.</span>
+                <span class="tagline">TOKEN HUNTER</span>
+            </div>
+            <div class="status-pills">
+                <div class="pill version">
+                    <span class="dot"></span>
+                    v1.0.0
+                </div>
+                <div class="pill network">
+                    <span class="dot"></span>
+                    SOLANA
+                </div>
+                <div class="pill mode">
+                    <span class="dot"></span>
+                    DEGEN-MODE
+                </div>
+            </div>
+        </div>
+
+        <nav class="tab-navigation">
+            <button class="tab active" data-tab="dashboard">
+                DASHBOARD
+            </button>
+            <button class="tab" data-tab="mode">
+                MODE SETTINGS
+                <span class="badge">2</span>
+            </button>
+            <button class="tab" data-tab="timeframe">
+                TIMEFRAME
+                <span class="badge">5</span>
+            </button>
+            <button class="tab" data-tab="alerts">
+                ALERTS
+                <span class="badge">2</span>
+            </button>
+            <button class="tab" data-tab="analytics">
+                ANALYTICS
+            </button>
+        </nav>
+
+        <div class="tab-content active" data-content="dashboard">
+            <div style="color: var(--gray-light); font-size: 12px;">
+                Dashboard view - token hunting interface
+            </div>
+        </div>
+
+        <div class="tab-content" data-content="mode">
+            <div class="tab-controls">
+                <div class="control-section">
+                    <span class="section-label">SELECT MODE</span>
+                    <div class="tab-buttons">
+                        <button class="tab-btn active">DEGEN</button>
+                        <button class="tab-btn">HOLDER</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" data-content="timeframe">
+            <div class="tab-controls">
+                <div class="control-section">
+                    <span class="section-label">TIMEFRAME</span>
+                    <div class="tab-buttons">
+                        <button class="tab-btn">5M</button>
+                        <button class="tab-btn">30M</button>
+                        <button class="tab-btn active">1H</button>
+                        <button class="tab-btn">2H</button>
+                        <button class="tab-btn">ALL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" data-content="alerts">
+            <div class="tab-controls">
+                <div class="control-section">
+                    <span class="section-label">ALERT SETTINGS</span>
+                    <div class="tab-toggles">
+                        <div class="tab-toggle active">
+                            <div class="check"></div>
+                            telegram-alerts
+                        </div>
+                        <div class="tab-toggle">
+                            <div class="check"></div>
+                            public-channels
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" data-content="analytics">
+            <div style="color: var(--gray-light); font-size: 12px;">
+                Analytics and reporting interface
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.querySelector(`[data-content="${tabId}"]`).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const parent = btn.parentElement;
+                parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.tab-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

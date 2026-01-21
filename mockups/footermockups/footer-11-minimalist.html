@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 11 - Minimalist Clean</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --min-text: #1a1a1a;
+            --min-subtext: #6b7280;
+            --min-accent: #2563eb;
+            --min-bg: #ffffff;
+            --min-border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--min-bg);
+            color: var(--min-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid var(--min-border);
+            padding: 16px 32px;
+            background: #fafafa;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--min-text);
+            letter-spacing: -0.02em;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--min-subtext);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            background: transparent;
+            border: 1px solid var(--min-border);
+            color: var(--min-subtext);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: var(--min-text);
+            border-color: var(--min-text);
+            color: #fff;
+        }
+
+        .mode-toggle:hover, .timeframe-btn:hover {
+            border-color: var(--min-text);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--min-border);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--min-subtext);
+            text-transform: uppercase;
+        }
+
+        .token-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--min-border);
+        }
+
+        .token-table tr:hover {
+            background: #fafafa;
+        }
+
+        .rank {
+            font-family: 'DM Mono', monospace;
+            color: var(--min-subtext);
+            font-weight: 500;
+        }
+
+        .token-name {
+            font-weight: 500;
+        }
+
+        .token-address {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--min-subtext);
+        }
+
+        .positive { color: #059669; }
+        .negative { color: #dc2626; }
+        .peak { color: #d97706; }
+
+        /* MINIMALIST FOOTER */
+        .minimal-footer {
+            background: #fafafa;
+            border-top: 1px solid var(--min-border);
+            padding: 20px 32px;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .footer-label {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--min-subtext);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .footer-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--min-text);
+        }
+
+        .footer-value.accent {
+            color: var(--min-accent);
+        }
+
+        .footer-divider {
+            width: 1px;
+            height: 30px;
+            background: var(--min-border);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .status-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot .dot {
+            width: 6px;
+            height: 6px;
+            background: #059669;
+            border-radius: 50%;
+        }
+
+        .status-dot .text {
+            font-size: 0.75rem;
+            color: var(--min-subtext);
+        }
+
+        .time-display {
+            text-align: right;
+        }
+
+        .time-display .time {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--min-text);
+        }
+
+        .time-display .label {
+            font-size: 0.65rem;
+            color: var(--min-subtext);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">Dexter Token Hunter</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>Solana</span>
+                <span>Degen Mode</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">Degen</button>
+            <button class="mode-toggle">Holder</button>
+            <button class="mode-toggle">Radar</button>
+            <span style="color:var(--min-border);margin:0 12px;">/</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">All</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>Token</th><th>Spotted</th><th>Current</th><th>Volume</th><th>Net</th><th>Score</th><th>Peak</th><th>Time</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="minimal-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-section">
+                    <span class="footer-label">Status</span>
+                    <span class="footer-value">Connected</span>
+                </div>
+                <div class="footer-divider"></div>
+                <div class="footer-section">
+                    <span class="footer-label">Tokens</span>
+                    <span class="footer-value accent">10 active</span>
+                </div>
+                <div class="footer-divider"></div>
+                <div class="footer-section">
+                    <span class="footer-label">MVP</span>
+                    <span class="footer-value">GME</span>
+                </div>
+            </div>
+
+            <div class="footer-right">
+                <div class="status-dot">
+                    <span class="dot"></span>
+                    <span class="text">Live</span>
+                </div>
+                <div class="time-display">
+                    <div class="time">14:32:08</div>
+                    <div class="label">Updated</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

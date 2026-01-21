@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Leaderboard - Cyberpunk Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --matrix-green: #00ff41;
+            --matrix-dark: #003b00;
+            --matrix-bright: #39ff14;
+            --matrix-dim: #008f11;
+            --terminal-bg: #0d0d0d;
+            --scan-line: rgba(0, 255, 65, 0.03);
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--terminal-bg);
+            min-height: 100vh;
+            color: var(--matrix-green);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .scanlines {
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            width: 100%;
+            height: 100%;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+        }
+
+        .flicker {
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .rain-column {
+            position: absolute;
+            top: -100%;
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            color: var(--matrix-dim);
+            animation: rain 8s linear infinite;
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        @keyframes rain {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(300vh); }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .terminal-header {
+            border: 2px solid var(--matrix-green);
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            background: rgba(0, 255, 65, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--matrix-green);
+            animation: progress 2s ease-out;
+        }
+
+        @keyframes progress {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .terminal-title {
+            font-family: 'VT323', monospace;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 10px var(--matrix-green), 0 0 20px var(--matrix-green), 0 0 30px var(--matrix-green);
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--matrix-green), 0 0 20px var(--matrix-green); }
+            to { text-shadow: 0 0 20px var(--matrix-bright), 0 0 30px var(--matrix-green), 0 0 40px var(--matrix-green); }
+        }
+
+        .terminal-subtitle {
+            font-size: 0.9rem;
+            color: var(--matrix-dim);
+            margin-top: 8px;
+        }
+
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .status-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(0, 255, 65, 0.08);
+            border: 1px solid var(--matrix-dark);
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
+            gap: 15px;
+        }
+
+        .token-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px 120px 120px 120px 80px 120px 100px;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            background: rgba(0, 255, 65, 0.02);
+            border: 1px solid var(--matrix-dark);
+            position: relative;
+            transition: all 0.2s ease;
+            animation: slideIn 0.3s ease-out backwards;
+        }
+
+        .token-row:nth-child(1) { animation-delay: 0.05s; }
+        .token-row:nth-child(2) { animation-delay: 0.1s; }
+        .token-row:nth-child(3) { animation-delay: 0.15s; }
+        .token-row:nth-child(4) { animation-delay: 0.2s; }
+        .token-row:nth-child(5) { animation-delay: 0.25s; }
+        .token-row:nth-child(6) { animation-delay: 0.3s; }
+        .token-row:nth-child(7) { animation-delay: 0.35s; }
+        .token-row:nth-child(8) { animation-delay: 0.4s; }
+        .token-row:nth-child(9) { animation-delay: 0.45s; }
+        .token-row:nth-child(10) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .token-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--matrix-dim);
+            transition: all 0.2s ease;
+        }
+
+        .token-row:hover {
+            background: rgba(0, 255, 65, 0.08);
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2), inset 0 0 20px rgba(0, 255, 65, 0.05);
+        }
+
+        .token-row:hover::before {
+            background: var(--matrix-green);
+            width: 5px;
+        }
+
+        .rank {
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--matrix-green);
+            text-align: center;
+        }
+
+        .token-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .token-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--matrix-bright);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .token-address {
+            font-family: 'VT323', monospace;
+            font-size: 0.85rem;
+            color: var(--matrix-dim);
+            letter-spacing: 0.1em;
+        }
+
+        .metric {
+            font-size: 0.95rem;
+            text-align: right;
+        }
+
+        .metric .label {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--matrix-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2px;
+        }
+
+        .metric .value {
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+            color: var(--matrix-green);
+        }
+
+        .metric .value.positive {
+            color: var(--matrix-bright);
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .metric .value.negative {
+            color: #ff3333;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        .score {
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--matrix-bright);
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .score.positive {
+            color: #39ff14;
+            text-shadow: 0 0 15px #00ff41;
+        }
+
+        .score.negative {
+            color: #ff3333;
+            text-shadow: 0 0 15px #ff0000;
+        }
+
+        .time {
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            color: var(--matrix-dim);
+            text-align: center;
+        }
+
+        .peak {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            color: #ffff00;
+            text-align: center;
+            text-shadow: 0 0 8px #ffaa00;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px 120px 120px 120px 80px 120px 100px;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid var(--matrix-green);
+            margin-bottom: 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--matrix-bright);
+        }
+
+        .terminal-footer {
+            margin-top: 40px;
+            padding: 20px;
+            border: 1px solid var(--matrix-dark);
+            background: rgba(0, 255, 65, 0.03);
+            font-size: 0.8rem;
+            color: var(--matrix-dim);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: var(--matrix-green);
+            animation: blink 0.8s step-end infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 1400px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .token-row, .table-header {
+                grid-template-columns: 50px 1fr 80px 100px 100px 100px 70px 100px 90px;
+                gap: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .token-row, .table-header {
+                grid-template-columns: 40px 1fr 70px 80px 80px 80px 60px 80px 70px;
+                gap: 8px;
+                padding: 12px 15px;
+            }
+            .terminal-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="flicker">
+    <div class="crt-overlay">
+        <div class="scanlines"></div>
+    </div>
+    <div class="vignette"></div>
+    <div class="rain" id="rain"></div>
+
+    <div class="container">
+        <header class="terminal-header">
+            <h1 class="terminal-title">&gt; DISCOVERED_TOKENS.EXE</h1>
+            <p class="terminal-subtitle">[ MATRIX DATA STREAM // QUANTUM_LEDER_V2.0 ]<span class="blink">_</span></p>
+        </header>
+
+        <div class="status-line">
+            <span>[ SYSTEM: ONLINE ]</span>
+            <span>[ NODE: ALPHA-7 ]</span>
+            <span>[ LATENCY: 12ms ]</span>
+            <span>[ UPTIME: 99.97% ]</span>
+            <span><span class="blink">●</span> LIVE FEED</span>
+        </div>
+
+        <div class="table-header">
+            <span style="text-align: center;">#</span>
+            <span>TOKEN</span>
+            <span style="text-align: right;">SPOTTED</span>
+            <span style="text-align: right;">CURRENT</span>
+            <span style="text-align: right;">VOLUME</span>
+            <span style="text-align: right;">NET</span>
+            <span style="text-align: center;">SCORE</span>
+            <span style="text-align: right;">PEAK</span>
+            <span style="text-align: center;">TIME</span>
+        </div>
+
+        <div class="grid">
+            <div class="token-row">
+                <span class="rank">01</span>
+                <div class="token-info">
+                    <span class="token-name">RUST</span>
+                    <span class="token-address">9VLP...BAGS</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$15.9K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$29.0K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$175.0K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value">+0.0%</span>
+                </div>
+                <span class="score negative">-8.4</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">2.11x</span>
+                </div>
+                <span class="time">42m</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">02</span>
+                <div class="token-info">
+                    <span class="token-name">Mom Coin</span>
+                    <span class="token-address">62g4...pump</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$22.0K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$25.0K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$199.1K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value negative">-9.1%</span>
+                </div>
+                <span class="score negative">-7.2</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">2.43x</span>
+                </div>
+                <span class="time">1h</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">03</span>
+                <div class="token-info">
+                    <span class="token-name">Bread</span>
+                    <span class="token-address">puvZ...pump</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$88.7K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$37.9K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$478.6K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value positive">+1.7%</span>
+                </div>
+                <span class="score negative">-5.3</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">3.60x</span>
+                </div>
+                <span class="time">1h</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">04</span>
+                <div class="token-info">
+                    <span class="token-name">LINUS</span>
+                    <span class="token-address">AvxF...BAGS</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$14.8K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$8.7K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$12.3K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value positive">+9.1%</span>
+                </div>
+                <span class="score negative">-4.8</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">1.72x</span>
+                </div>
+                <span class="time">1h</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">05</span>
+                <div class="token-info">
+                    <span class="token-name">LILTAY</span>
+                    <span class="token-address">DgPK...pump</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$90.2K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$167.9K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$243.4K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value positive">+2.0%</span>
+                </div>
+                <span class="score negative">-3.1</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">2.33x</span>
+                </div>
+                <span class="time">1h</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">06</span>
+                <div class="token-info">
+                    <span class="token-name">ToweLie</span>
+                    <span class="token-address">9Cxm...pump</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$34.9K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$72.3K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$18.6K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value negative">-2.7%</span>
+                </div>
+                <span class="score negative">-2.3</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">2.51x</span>
+                </div>
+                <span class="time">18m</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">07</span>
+                <div class="token-info">
+                    <span class="token-name">CHINESE</span>
+                    <span class="token-address">C3Po...pump</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$36.3K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$90.4K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$243.7K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value negative">-8.5%</span>
+                </div>
+                <span class="score negative">-1.5</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">3.31x</span>
+                </div>
+                <span class="time">48m</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">08</span>
+                <div class="token-info">
+                    <span class="token-name">Paperclip</span>
+                    <span class="token-address">87mq...pump</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$27.1K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$46.8K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$55.6K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value negative">-4.5%</span>
+                </div>
+                <span class="score">0.3</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">1.95x</span>
+                </div>
+                <span class="time">18m</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">09</span>
+                <div class="token-info">
+                    <span class="token-name">X</span>
+                    <span class="token-address">2KMV...BAGS</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$421.1K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$909.9K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$1.5M</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value negative">-3.8%</span>
+                </div>
+                <span class="score positive">2.1</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">2.77x</span>
+                </div>
+                <span class="time">1h</span>
+            </div>
+
+            <div class="token-row">
+                <span class="rank">10</span>
+                <div class="token-info">
+                    <span class="token-name">GME</span>
+                    <span class="token-address">3Dpm...BAGS</span>
+                </div>
+                <div class="metric">
+                    <span class="label">SPOTTED</span>
+                    <span class="value">$20.4K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">CURRENT</span>
+                    <span class="value">$43.6K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">VOLUME</span>
+                    <span class="value">$17.1K</span>
+                </div>
+                <div class="metric">
+                    <span class="label">NET</span>
+                    <span class="value positive">+4.8%</span>
+                </div>
+                <span class="score positive">5.6</span>
+                <div class="metric">
+                    <span class="label">PEAK</span>
+                    <span class="value peak">2.88x</span>
+                </div>
+                <span class="time">1h</span>
+            </div>
+        </div>
+
+        <footer class="terminal-footer">
+            &gt; END OF STREAM // PRESS ANY KEY TO REFRESH <span class="cursor"></span>
+        </footer>
+    </div>
+
+    <script>
+        // Create rain effect
+        const rain = document.getElementById('rain');
+        const columns = 30;
+        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+
+        for (let i = 0; i < columns; i++) {
+            const column = document.createElement('div');
+            column.className = 'rain-column';
+            column.style.left = `${(i / columns) * 100}%`;
+            column.style.animationDelay = `${Math.random() * 8}s`;
+            column.style.animationDuration = `${5 + Math.random() * 5}s`;
+
+            let text = '';
+            for (let j = 0; j < 50; j++) {
+                text += chars[Math.floor(Math.random() * chars.length)] + '<br>';
+            }
+            column.innerHTML = text;
+            rain.appendChild(column);
+        }
+    </script>
+</body>
+</html>

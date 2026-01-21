@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Vertical Stack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #111111;
+            --bg-light: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #555;
+            --text-medium: #777;
+            --text-bright: #999;
+            --white: #bbb;
+            --orange: #ff6b00;
+            --orange-fade: rgba(255, 107, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* LEFT SIDEBAR */
+        .sidebar {
+            width: 80px;
+            background: var(--bg-light);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0;
+        }
+
+        .logo-mark {
+            width: 40px;
+            height: 40px;
+            background: var(--orange);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            width: 48px;
+            height: 48px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+            color: var(--text-medium);
+            font-size: 18px;
+        }
+
+        .nav-item:hover {
+            background: var(--border);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background: var(--orange-fade);
+            color: var(--orange);
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--orange);
+            border-radius: 50%;
+        }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .top-bar {
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-bright);
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-medium);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .control-btn:hover {
+            color: var(--white);
+        }
+
+        .control-btn.active {
+            background: var(--bg);
+            color: var(--orange);
+        }
+
+        /* CONTENT STACK */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* MVP CARD */
+        .mvp-banner {
+            background: linear-gradient(135deg, var(--bg-light), var(--bg));
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--orange);
+            border-radius: 12px;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .mvp-icon-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--orange), #cc5500);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 10px 40px rgba(255, 107, 0, 0.2);
+        }
+
+        .mvp-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mvp-badge {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--orange);
+        }
+
+        .mvp-symbol-large {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .mvp-name-text {
+            font-size: 12px;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mvp-score-block {
+            text-align: center;
+        }
+
+        .mvp-score-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-medium);
+            margin-bottom: 8px;
+        }
+
+        .mvp-score-big {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--orange);
+        }
+
+        .mvp-health-text {
+            font-size: 11px;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .mvp-metric {
+            text-align: center;
+        }
+
+        .mvp-metric-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .mvp-metric-value {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--white);
+        }
+
+        /* TOKEN STACK */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-bright);
+        }
+
+        .section-count {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        .token-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .token-row {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 24px;
+            display: grid;
+            grid-template-columns: 50px 180px 100px 100px 90px 80px 80px 70px 100px 70px 50px;
+            gap: 16px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .token-row:hover {
+            border-color: var(--orange);
+            transform: translateX(4px);
+        }
+
+        .token-row.mvp-token {
+            border-color: var(--orange);
+            background: var(--orange-fade);
+        }
+
+        .rank {
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 700;
+            color: var(--orange);
+        }
+
+        .token-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .token-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .token-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .token-sym {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .token-nm {
+            font-size: 10px;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-val {
+            font-family: 'Roboto Mono', monospace;
+            color: var(--text-bright);
+        }
+
+        .data-val.green {
+            color: #4ade80;
+        }
+
+        .score-val {
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 700;
+            color: var(--orange);
+        }
+
+        .flags-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .flag-pill {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .flag-pill.bl {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .flag-pill.tg {
+            background: var(--orange-fade);
+            color: var(--orange);
+        }
+
+        /* BREAKDOWN PANEL */
+        .breakdown-panel {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 8px;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+        }
+
+        .breakdown-col {
+            text-align: center;
+        }
+
+        .breakdown-col-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .breakdown-col-value {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .breakdown-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .breakdown-fill {
+            height: 100%;
+            background: var(--orange);
+            border-radius: 2px;
+        }
+
+        /* FOOTER */
+        .footer {
+            padding: 16px 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-stat span {
+            color: var(--orange);
+        }
+
+        .footer-time {
+            color: var(--text);
+        }
+
+        .content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="logo-mark"></div>
+            <button class="nav-item active">●</button>
+            <button class="nav-item">◐</button>
+            <button class="nav-item">◑</button>
+            <button class="nav-item">◆</button>
+            <div class="spacer"></div>
+            <div class="status-indicator"></div>
+        </aside>
+
+        <main class="main">
+            <div class="top-bar">
+                <span class="page-title">Dexter Token Hunter</span>
+                <div class="controls">
+                    <div class="control-group">
+                        <button class="control-btn active">Degen</button>
+                        <button class="control-btn">Holder</button>
+                    </div>
+                    <div class="control-group">
+                        <button class="control-btn active">5M</button>
+                        <button class="control-btn">30M</button>
+                        <button class="control-btn">1H</button>
+                        <button class="control-btn">4H</button>
+                        <button class="control-btn">ALL</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="stack">
+                    <div class="mvp-banner">
+                        <div class="mvp-icon-large">B</div>
+                        <div class="mvp-details">
+                            <span class="mvp-badge">Most Valuable Performer</span>
+                            <span class="mvp-symbol-large">BONK</span>
+                            <span class="mvp-name-text">Bonk Inu Protocol</span>
+                        </div>
+                        <div class="mvp-score-block">
+                            <div class="mvp-score-label">Total Score</div>
+                            <div class="mvp-score-big">94.2</div>
+                            <div class="mvp-health-text">Health: 87%</div>
+                        </div>
+                        <div class="mvp-metric">
+                            <div class="mvp-metric-label">Market Cap</div>
+                            <div class="mvp-metric-value">$2.8M</div>
+                        </div>
+                        <div class="mvp-metric">
+                            <div class="mvp-metric-label">Volume 24h</div>
+                            <div class="mvp-metric-value">$840K</div>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-panel">
+                        <div class="breakdown-grid">
+                            <div class="breakdown-col">
+                                <div class="breakdown-col-label">Buy Pressure</div>
+                                <div class="breakdown-col-value">18.4</div>
+                                <div class="breakdown-bar"><div class="breakdown-fill" style="width: 92%"></div></div>
+                            </div>
+                            <div class="breakdown-col">
+                                <div class="breakdown-col-label">Net Buy Vol</div>
+                                <div class="breakdown-col-value">19.2</div>
+                                <div class="breakdown-bar"><div class="breakdown-fill" style="width: 96%"></div></div>
+                            </div>
+                            <div class="breakdown-col">
+                                <div class="breakdown-col-label">Txns Velocity</div>
+                                <div class="breakdown-col-value">17.8</div>
+                                <div class="breakdown-bar"><div class="breakdown-fill" style="width: 89%"></div></div>
+                            </div>
+                            <div class="breakdown-col">
+                                <div class="breakdown-col-label">Price Mom.</div>
+                                <div class="breakdown-col-value">20.1</div>
+                                <div class="breakdown-bar"><div class="breakdown-fill" style="width: 100%"></div></div>
+                            </div>
+                            <div class="breakdown-col">
+                                <div class="breakdown-col-label">SSE Mom.</div>
+                                <div class="breakdown-col-value">18.7</div>
+                                <div class="breakdown-bar"><div class="breakdown-fill" style="width: 93%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">
+                        <span class="section-title">Top Tokens</span>
+                        <span class="section-count">24 Active</span>
+                    </div>
+
+                    <div class="token-stack">
+                        <div class="token-row mvp-token">
+                            <span class="rank">01</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">BONK</span>
+                                    <span class="token-nm">Bonk Inu</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$1.2M</span>
+                            <span class="data-val">$2.8M</span>
+                            <span class="data-val">$840K</span>
+                            <span class="data-val green">+133%</span>
+                            <span class="score-val">94.2</span>
+                            <span class="data-val">2h 14m</span>
+                            <span class="data-val">$3.1M</span>
+                            <div class="flags-row"><span class="flag-pill tg">TG</span></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">02</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">WIF</span>
+                                    <span class="token-nm">dogwifhat</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$890K</span>
+                            <span class="data-val">$2.1M</span>
+                            <span class="data-val">$620K</span>
+                            <span class="data-val green">+136%</span>
+                            <span class="score-val">91.8</span>
+                            <span class="data-val">1h 47m</span>
+                            <span class="data-val">$2.4M</span>
+                            <div class="flags-row"><span class="flag-pill tg">TG</span></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">03</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">POPCAT</span>
+                                    <span class="token-nm">Popcat</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$650K</span>
+                            <span class="data-val">$1.4M</span>
+                            <span class="data-val">$380K</span>
+                            <span class="data-val green">+115%</span>
+                            <span class="score-val">88.4</span>
+                            <span class="data-val">3h 02m</span>
+                            <span class="data-val">$1.8M</span>
+                            <div class="flags-row"></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">04</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">MYRO</span>
+                                    <span class="token-nm">Myro</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$420K</span>
+                            <span class="data-val">$980K</span>
+                            <span class="data-val">$290K</span>
+                            <span class="data-val green">+133%</span>
+                            <span class="score-val">85.1</span>
+                            <span class="data-val">1h 33m</span>
+                            <span class="data-val">$1.2M</span>
+                            <div class="flags-row"><span class="flag-pill tg">TG</span></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">05</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">SEAL</span>
+                                    <span class="token-nm">Sealana</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$380K</span>
+                            <span class="data-val">$760K</span>
+                            <span class="data-val">$180K</span>
+                            <span class="data-val green">+100%</span>
+                            <span class="score-val">82.3</span>
+                            <span class="data-val">2h 51m</span>
+                            <span class="data-val">$920K</span>
+                            <div class="flags-row"></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">06</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">MONG</span>
+                                    <span class="token-nm">Mong</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$290K</span>
+                            <span class="data-val">$540K</span>
+                            <span class="data-val">$140K</span>
+                            <span class="data-val green">+86%</span>
+                            <span class="score-val">78.9</span>
+                            <span class="data-val">4h 17m</span>
+                            <span class="data-val">$680K</span>
+                            <div class="flags-row"></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">07</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">SLERF</span>
+                                    <span class="token-nm">Slerf</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$240K</span>
+                            <span class="data-val">$410K</span>
+                            <span class="data-val">$120K</span>
+                            <span class="data-val green">+71%</span>
+                            <span class="score-val">75.6</span>
+                            <span class="data-val">1h 09m</span>
+                            <span class="data-val">$520K</span>
+                            <div class="flags-row"><span class="flag-pill bl">BL</span></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">08</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">WEN</span>
+                                    <span class="token-nm">Wen</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$180K</span>
+                            <span class="data-val">$320K</span>
+                            <span class="data-val">$95K</span>
+                            <span class="data-val green">+78%</span>
+                            <span class="score-val">72.1</span>
+                            <span class="data-val">2h 44m</span>
+                            <span class="data-val">$410K</span>
+                            <div class="flags-row"></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">09</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">MOODENG</span>
+                                    <span class="token-nm">Moo Deng</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$150K</span>
+                            <span class="data-val">$240K</span>
+                            <span class="data-val">$78K</span>
+                            <span class="data-val green">+60%</span>
+                            <span class="score-val">68.4</span>
+                            <span class="data-val">3h 28m</span>
+                            <span class="data-val">$310K</span>
+                            <div class="flags-row"></div>
+                        </div>
+                        <div class="token-row">
+                            <span class="rank">10</span>
+                            <div class="token-main">
+                                <div class="token-avatar"></div>
+                                <div class="token-info">
+                                    <span class="token-sym">BODEN</span>
+                                    <span class="token-nm">Boden</span>
+                                </div>
+                            </div>
+                            <span class="data-val">$120K</span>
+                            <span class="data-val">$190K</span>
+                            <span class="data-val">$62K</span>
+                            <span class="data-val green">+58%</span>
+                            <span class="score-val">64.7</span>
+                            <span class="data-val">1h 55m</span>
+                            <span class="data-val">$240K</span>
+                            <div class="flags-row"><span class="flag-pill tg">TG</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="footer-stats">
+                    <span class="footer-stat">Tokens: <span>24</span></span>
+                    <span class="footer-stat">Alerts: <span>7</span></span>
+                    <span class="footer-stat">Ignored: <span>3</span></span>
+                </div>
+                <div class="footer-time">14:32:07 UTC</div>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>

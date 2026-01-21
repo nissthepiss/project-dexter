@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 08: Progressive Disclosure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0e;
+            --bg-expand: #12121a;
+            --orange: #ff1a00;
+            --green: #00ff1a;
+            --gray: #40404a;
+            --gray-light: #70707a;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .compact-header {
+            background: var(--bg-expand);
+            border-bottom: 1px solid rgba(255, 26, 0, 0.2);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Russo One', sans-serif;
+            font-size: 24px;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .logo .dexter {
+            color: var(--orange);
+        }
+
+        .logo .dot {
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        .logo .tagline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--gray-light);
+            font-weight: 400;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .quick-status {
+            display: flex;
+            gap: 12px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .status-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-text .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .status-text.version .dot { background: var(--orange); }
+        .status-text.version { color: var(--orange); }
+
+        .status-text.network .dot { background: var(--green); }
+        .status-text.network { color: var(--green); }
+
+        .status-text.mode .dot { background: var(--orange); }
+        .status-text.mode { color: var(--orange); }
+
+        .expand-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 26, 0, 0.1);
+            border: 1px solid var(--orange);
+            border-radius: 6px;
+            color: var(--orange);
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .expand-btn:hover {
+            background: rgba(255, 26, 0, 0.2);
+        }
+
+        .expand-btn .icon {
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        .expand-btn.expanded .icon {
+            transform: rotate(180deg);
+        }
+
+        .expandable-panel {
+            background: var(--bg-expand);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            border-bottom: 1px solid transparent;
+        }
+
+        .expandable-panel.expanded {
+            max-height: 200px;
+            border-bottom-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-content {
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .panel-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 14px;
+            color: var(--orange);
+        }
+
+        .section-title {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--orange);
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 26, 0, 0.3), transparent);
+        }
+
+        .mode-cards {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mode-card {
+            flex: 1;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .mode-card.active {
+            border-color: var(--orange);
+            background: rgba(255, 26, 0, 0.1);
+        }
+
+        .mode-card .name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .mode-card.active .name { color: var(--orange); }
+        .mode-card:not(.active) .name { color: var(--gray-light); }
+
+        .mode-card .info {
+            font-size: 9px;
+            color: var(--gray);
+        }
+
+        .timeframe-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        .timeframe-btn {
+            padding: 10px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--gray-light);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .timeframe-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .timeframe-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .alert-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .alert-toggle:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .alert-toggle .label {
+            font-size: 11px;
+            color: var(--gray-light);
+        }
+
+        .alert-toggle.active .label {
+            color: var(--white);
+        }
+
+        .alert-toggle .switch {
+            width: 36px;
+            height: 20px;
+            background: var(--gray);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .alert-toggle.active .switch {
+            background: var(--orange);
+        }
+
+        .alert-toggle .switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--white);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .alert-toggle.active .switch::after {
+            left: 18px;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="compact-header">
+        <div class="logo">
+            <span class="dexter">DEXTER</span>
+            <span class="dot">.</span>
+            <span class="tagline">TOKEN HUNTER</span>
+        </div>
+
+        <div class="header-right">
+            <div class="quick-status">
+                <div class="status-text version">
+                    <span class="dot"></span>
+                    v1.0.0
+                </div>
+                <div class="status-text network">
+                    <span class="dot"></span>
+                    SOLANA
+                </div>
+                <div class="status-text mode">
+                    <span class="dot"></span>
+                    DEGEN
+                </div>
+            </div>
+
+            <button class="expand-btn" id="expandBtn">
+                <span>CONTROLS</span>
+                <span class="icon">▼</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="expandable-panel" id="expandPanel">
+        <div class="panel-content">
+            <div class="panel-section">
+                <div class="section-header">
+                    <span class="section-icon">⚔</span>
+                    <span class="section-title">MODE</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="mode-cards">
+                    <div class="mode-card active">
+                        <div class="name">DEGEN</div>
+                        <div class="info">High risk hunting</div>
+                    </div>
+                    <div class="mode-card">
+                        <div class="name">HOLDER</div>
+                        <div class="info">Long term focus</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-header">
+                    <span class="section-icon">⏱</span>
+                    <span class="section-title">TIMEFRAME</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="timeframe-grid">
+                    <button class="timeframe-btn">5M</button>
+                    <button class="timeframe-btn">30M</button>
+                    <button class="timeframe-btn active">1H</button>
+                    <button class="timeframe-btn">2H</button>
+                    <button class="timeframe-btn">ALL</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="section-header">
+                    <span class="section-icon">🔔</span>
+                    <span class="section-title">ALERTS</span>
+                    <span class="section-line"></span>
+                </div>
+                <div class="alert-toggles">
+                    <div class="alert-toggle active">
+                        <span class="label">Telegram Alerts</span>
+                        <div class="switch"></div>
+                    </div>
+                    <div class="alert-toggle">
+                        <span class="label">Public Channels</span>
+                        <div class="switch"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        const expandBtn = document.getElementById('expandBtn');
+        const expandPanel = document.getElementById('expandPanel');
+
+        expandBtn.addEventListener('click', () => {
+            expandBtn.classList.toggle('expanded');
+            expandPanel.classList.toggle('expanded');
+        });
+
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.alert-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

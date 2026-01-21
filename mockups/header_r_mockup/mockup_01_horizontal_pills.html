@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Mockup 01: Horizontal Pills</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #000000;
+            --bg-dark: #030303;
+            --bg-panel: #080808;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9a9a9e;
+            --text-muted: #6a6a6e;
+            --accent-primary: #ff6b00;
+            --accent-glow: rgba(255, 107, 0, 0.40);
+            --accent-dim: rgba(255, 107, 0, 0.15);
+            --accent-bright: #ff8c00;
+            --sol-purple: #9945FF;
+            --sol-cyan: #14F195;
+            --sol-green: #00D26A;
+            --status-green: #4ade80;
+            --status-red: #f87171;
+            --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            --font-display: 'Bebas Neue', sans-serif;
+        }
+
+        body {
+            background: var(--bg-deep);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            gap: 60px;
+        }
+
+        /* Header Styles */
+        .header-container {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .top-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(8, 8, 9, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .status-badge.network .status-dot { background: var(--sol-green); }
+        .status-badge.mode .status-dot { background: var(--sol-purple); }
+
+        .logo-section {
+            margin-bottom: 24px;
+        }
+
+        .logo-main {
+            font-family: var(--font-display);
+            font-size: 48px;
+            letter-spacing: 2px;
+        }
+
+        .dexter {
+            color: var(--text-primary);
+        }
+
+        .dot {
+            color: var(--accent-primary);
+        }
+
+        /* Footer / New Arrivals Section */
+        .status-bar {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(5, 5, 6, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 2px solid var(--accent-dim);
+            border-radius: 6px;
+            font-size: 11px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), 0 0 20px var(--accent-dim);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-prompt {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .status-message {
+            color: var(--text-secondary);
+        }
+
+        .status-center {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .update-time {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        /* ==========================================
+           MOCKUP 01: HORIZONTAL SCROLLING PILLS
+           ========================================== */
+
+        .new-arrivals-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .arrivals-divider {
+            width: 1px;
+            height: 32px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .arrivals-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .arrivals-label-icon {
+            font-size: 10px;
+            color: var(--sol-cyan);
+        }
+
+        .arrivals-label-text {
+            font-size: 8px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .arrivals-pills-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mode-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mode-badge {
+            font-size: 8px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .mode-badge.degen {
+            background: rgba(255, 107, 0, 0.15);
+            color: var(--accent-primary);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+        }
+
+        .mode-badge.holder {
+            background: rgba(153, 69, 255, 0.15);
+            color: var(--sol-purple);
+            border: 1px solid rgba(153, 69, 255, 0.3);
+        }
+
+        .token-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .token-pill:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .token-pill.degen:hover {
+            border-color: rgba(255, 107, 0, 0.3);
+            box-shadow: 0 0 12px var(--accent-dim);
+        }
+
+        .token-pill.holder:hover {
+            border-color: rgba(153, 69, 255, 0.3);
+            box-shadow: 0 0 12px rgba(153, 69, 255, 0.2);
+        }
+
+        .pill-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-bright));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--bg-deep);
+            flex-shrink: 0;
+        }
+
+        .token-pill.holder .pill-icon {
+            background: linear-gradient(135deg, var(--sol-purple), #c77dff);
+        }
+
+        .pill-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .pill-symbol {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .pill-mc {
+            font-size: 8px;
+            color: var(--text-muted);
+        }
+
+        .pill-change {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .pill-change.positive {
+            color: var(--status-green);
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .pill-change.negative {
+            color: var(--status-red);
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        .pill-change-arrow {
+            font-size: 8px;
+        }
+
+        .pill-more {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pill-more:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-container">
+        <div class="top-bar">
+            <div class="status-badge version">
+                <span class="status-dot"></span>
+                v1.0.0
+            </div>
+            <div class="status-badge network">
+                <span class="status-dot"></span>
+                SOLANA
+            </div>
+            <div class="status-badge mode">
+                <span class="status-dot"></span>
+                DEGEN MODE
+            </div>
+        </div>
+
+        <div class="logo-section">
+            <div class="logo-main">
+                <span class="dexter">DEXTER</span>
+                <span class="dot">.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with New Arrivals - Mockup 01 -->
+    <footer class="status-bar">
+        <div class="status-left">
+            <span class="status-prompt">»</span>
+            <span class="status-message">System ready</span>
+        </div>
+
+        <div class="status-center">
+            <span class="stat-item">
+                <span class="stat-label">TOKENS</span>
+                <span class="stat-value">247</span>
+            </span>
+        </div>
+
+        <!-- NEW ARRIVALS - MOCKUP 01: Horizontal Pills -->
+        <div class="status-right">
+            <div class="new-arrivals-section">
+                <div class="arrivals-divider"></div>
+
+                <div class="arrivals-label">
+                    <span class="arrivals-label-icon">◈</span>
+                    <span class="arrivals-label-text">NEW</span>
+                </div>
+
+                <!-- Degen Tokens -->
+                <div class="mode-section">
+                    <span class="mode-badge degen">D</span>
+
+                    <div class="arrivals-pills-container">
+                        <div class="token-pill degen">
+                            <div class="pill-icon">B</div>
+                            <div class="pill-info">
+                                <span class="pill-symbol">BONK</span>
+                                <span class="pill-mc">$1.2M</span>
+                            </div>
+                            <div class="pill-change positive">
+                                <span class="pill-change-arrow">▲</span>
+                                +12%
+                            </div>
+                        </div>
+
+                        <div class="token-pill degen">
+                            <div class="pill-icon">W</div>
+                            <div class="pill-info">
+                                <span class="pill-symbol">WIF</span>
+                                <span class="pill-mc">$890K</span>
+                            </div>
+                            <div class="pill-change positive">
+                                <span class="pill-change-arrow">▲</span>
+                                +8%
+                            </div>
+                        </div>
+
+                        <div class="token-pill degen">
+                            <div class="pill-icon">P</div>
+                            <div class="pill-info">
+                                <span class="pill-symbol">PEPE</span>
+                                <span class="pill-mc">$2.1M</span>
+                            </div>
+                            <div class="pill-change negative">
+                                <span class="pill-change-arrow">▼</span>
+                                -3%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holder Tokens -->
+                <div class="mode-section">
+                    <span class="mode-badge holder">H</span>
+
+                    <div class="arrivals-pills-container">
+                        <div class="token-pill holder">
+                            <div class="pill-icon">S</div>
+                            <div class="pill-info">
+                                <span class="pill-symbol">SOL</span>
+                                <span class="pill-mc">$4.5M</span>
+                            </div>
+                            <div class="pill-change positive">
+                                <span class="pill-change-arrow">▲</span>
+                                +5%
+                            </div>
+                        </div>
+
+                        <div class="token-pill holder">
+                            <div class="pill-icon">R</div>
+                            <div class="pill-info">
+                                <span class="pill-symbol">RAY</span>
+                                <span class="pill-mc">$1.8M</span>
+                            </div>
+                            <div class="pill-change positive">
+                                <span class="pill-change-arrow">▲</span>
+                                +2%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill-more">+</div>
+            </div>
+
+            <span class="update-time">14:23:47</span>
+        </div>
+    </footer>
+</body>
+</html>

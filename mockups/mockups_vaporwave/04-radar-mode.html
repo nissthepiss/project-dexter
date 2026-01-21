@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER TOKEN HUNTER - Radar Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #9d4edd;
+            --chrome-light: #e0e0e0;
+            --chrome-mid: #a0a0a0;
+            --bg-dark: #0a0015;
+            --grid-color: rgba(255, 0, 255, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #ff00ff 0%, #9d4edd 15%, #3c096c 30%, #1a0030 50%, #00ffff 85%, #ff00ff 100%);
+            opacity: 0.15;
+            animation: gradientShift 15s ease-in-out infinite;
+            z-index: -3;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center top;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top;
+            z-index: -2;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(60px); z-index: -1; animation: float 20s ease-in-out infinite; }
+        .orb-1 { width: 400px; height: 400px; background: var(--neon-pink); top: -100px; left: -100px; opacity: 0.3; }
+        .orb-2 { width: 300px; height: 300px; background: var(--neon-cyan); bottom: -50px; right: -50px; opacity: 0.3; animation-delay: -10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        .vaporwave-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-pink);
+            border-radius: 5px;
+            padding: 15px 20px;
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; background: linear-gradient(180deg, var(--chrome-light), var(--neon-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px var(--neon-cyan); letter-spacing: 8px; text-align: center; }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .mode-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            padding: 15px 25px;
+            background: linear-gradient(180deg, rgba(0, 255, 255, 0.1), transparent);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(180deg, rgba(255, 0, 255, 0.3), rgba(157, 78, 221, 0.2));
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px var(--neon-pink);
+            box-shadow: 0 0 30px var(--neon-pink);
+        }
+
+        /* Radar View */
+        .radar-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .radar-panel {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radar-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan), var(--neon-purple), var(--neon-cyan), var(--neon-pink));
+            background-size: 200% 100%;
+            animation: panelGlow 4s linear infinite;
+        }
+
+        @keyframes panelGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .radar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+        }
+
+        .radar-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+            letter-spacing: 3px;
+        }
+
+        .radar-badge {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 0, 255, 0.2);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        /* Radar Display */
+        .radar-display {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .radar-grid-bg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; height: 300px;
+        }
+
+        .radar-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
+        .radar-circle:nth-child(1) { width: 60px; height: 60px; }
+        .radar-circle:nth-child(2) { width: 120px; height: 120px; }
+        .radar-circle:nth-child(3) { width: 180px; height: 180px; }
+        .radar-circle:nth-child(4) { width: 240px; height: 240px; }
+        .radar-circle:nth-child(5) { width: 300px; height: 300px; }
+
+        .radar-line {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 150px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.5), transparent);
+            transform-origin: left center;
+            animation: radarScan 4s linear infinite;
+        }
+
+        @keyframes radarScan {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Radar Blips */
+        .radar-blip {
+            position: absolute;
+            width: 12px; height: 12px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
+            animation: blipPulse 1.5s ease-in-out infinite;
+        }
+
+        .radar-blip::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px; height: 20px;
+            border: 1px solid var(--neon-pink);
+            border-radius: 50%;
+            animation: blipRipple 1.5s ease-out infinite;
+        }
+
+        @keyframes blipPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        @keyframes blipRipple {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        .blip-1 { top: 30%; left: 60%; animation-delay: 0s; }
+        .blip-2 { top: 55%; left: 35%; animation-delay: 0.3s; background: var(--neon-cyan); box-shadow: 0 0 20px var(--neon-cyan); }
+        .blip-2::after { border-color: var(--neon-cyan); }
+        .blip-3 { top: 70%; left: 65%; animation-delay: 0.6s; }
+        .blip-4 { top: 40%; left: 45%; animation-delay: 0.9s; background: var(--neon-cyan); box-shadow: 0 0 20px var(--neon-cyan); }
+        .blip-4::after { border-color: var(--neon-cyan); }
+        .blip-5 { top: 25%; left: 40%; animation-delay: 1.2s; }
+
+        /* Radar Center Token */
+        .radar-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .radar-center-token {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+            margin-bottom: 5px;
+        }
+
+        .radar-center-score {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        /* Radar Log */
+        .radar-log {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 5px;
+            padding: 12px;
+            height: 150px;
+            overflow-y: auto;
+        }
+
+        .radar-log::-webkit-scrollbar { width: 6px; }
+        .radar-log::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        .radar-log::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 3px; }
+
+        .log-entry {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 0, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-entry:last-child { border-bottom: none; }
+
+        .log-time {
+            color: var(--chrome-mid);
+            font-size: 10px;
+        }
+
+        .log-token {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        .log-score {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .log-arrow {
+            color: var(--profit-green, #39ff14);
+        }
+
+        .log-arrow.down {
+            color: var(--loss-red, #ff073a);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-purple);
+            border-radius: 5px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .jp-decoration {
+            position: fixed;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 60px;
+            color: var(--neon-pink);
+            opacity: 0.08;
+        }
+
+        .jp-1 { top: 20%; left: 3%; transform: rotate(-20deg); }
+        .jp-2 { bottom: 20%; right: 3%; transform: rotate(20deg); }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="jp-decoration jp-1">レーダー</div>
+    <div class="jp-decoration jp-2">探知</div>
+
+    <div class="vaporwave-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">DEXTER</div>
+            <div class="mode-toggle">
+                <button class="mode-btn">DEGEN</button>
+                <button class="mode-btn">HOLDER</button>
+                <button class="mode-btn active">RADAR</button>
+            </div>
+        </header>
+
+        <!-- Radar View -->
+        <main class="radar-view">
+            <!-- Degen Radar -->
+            <div class="radar-panel">
+                <div class="radar-header">
+                    <span class="radar-title">» DEGEN RADAR</span>
+                    <span class="radar-badge">ALL-TIME</span>
+                </div>
+                <div class="radar-display">
+                    <div class="radar-grid-bg">
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-line"></div>
+                    </div>
+                    <div class="radar-blip blip-1"></div>
+                    <div class="radar-blip blip-2"></div>
+                    <div class="radar-blip blip-3"></div>
+                    <div class="radar-center">
+                        <div class="radar-center-token">PEPE2.0</div>
+                        <div class="radar-center-score">98.7</div>
+                    </div>
+                </div>
+                <div class="radar-log">
+                    <div class="log-entry">
+                        <span class="log-time">14:32:15</span>
+                        <span class="log-token">PEPE2.0</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">98.7</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:12</span>
+                        <span class="log-token">WOJAK</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">87.3</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:08</span>
+                        <span class="log-token">CHAD</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">82.1</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:05</span>
+                        <span class="log-token">MOON</span>
+                        <span class="log-arrow down">▼</span>
+                        <span class="log-score">76.5</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:01</span>
+                        <span class="log-token">BASED</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">71.8</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MVP Radar -->
+            <div class="radar-panel">
+                <div class="radar-header">
+                    <span class="radar-title">» MVP RADAR</span>
+                    <span class="radar-badge">🏆</span>
+                </div>
+                <div class="radar-display">
+                    <div class="radar-grid-bg">
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-circle"></div>
+                        <div class="radar-line"></div>
+                    </div>
+                    <div class="radar-blip blip-4"></div>
+                    <div class="radar-blip blip-5"></div>
+                    <div class="radar-center">
+                        <div class="radar-center-token">PEPE2.0</div>
+                        <div class="radar-center-score">98.7</div>
+                    </div>
+                </div>
+                <div class="radar-log">
+                    <div class="log-entry">
+                        <span class="log-time">14:32:15</span>
+                        <span class="log-token">PEPE2.0</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">98.7</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:10</span>
+                        <span class="log-token">WOJAK</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">87.3</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:06</span>
+                        <span class="log-token">CHAD</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">82.1</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:32:02</span>
+                        <span class="log-token">NEW_TOKEN</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">65.4</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:31:58</span>
+                        <span class="log-token">GEMHUNT</span>
+                        <span class="log-arrow">▲</span>
+                        <span class="log-score">58.9</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div></div>
+            <div class="footer-time">14:32:18</div>
+        </footer>
+    </div>
+</body>
+</html>

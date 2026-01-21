@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 06: Split Layout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0b0b10;
+            --bg-panel: #111118;
+            --orange: #ff3300;
+            --green: #00ff44;
+            --gray: #4a4a55;
+            --gray-light: #7a7a85;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .split-header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0;
+            border-bottom: 1px solid rgba(255, 51, 0, 0.15);
+        }
+
+        .header-left {
+            background: linear-gradient(90deg, var(--bg-panel) 0%, transparent 100%);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Audiowide', cursive;
+            font-size: 22px;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .logo .dexter {
+            color: var(--orange);
+        }
+
+        .logo .dot {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .logo .tagline {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--gray-light);
+            font-weight: 400;
+        }
+
+        .header-center {
+            background: var(--bg-panel);
+            padding: 16px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .center-logo {
+            font-family: 'Audiowide', cursive;
+            font-size: 36px;
+            letter-spacing: 8px;
+            color: var(--white);
+            text-shadow: 0 0 40px rgba(255, 51, 0, 0.5);
+        }
+
+        .center-logo span {
+            color: var(--orange);
+        }
+
+        .status-line {
+            display: flex;
+            gap: 20px;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-item .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .status-item.version .dot { background: var(--orange); }
+        .status-item.version { color: var(--orange); }
+
+        .status-item.network .dot { background: var(--green); }
+        .status-item.network { color: var(--green); }
+
+        .status-item.mode .dot { background: var(--orange); }
+        .status-item.mode { color: var(--orange); }
+
+        .header-right {
+            background: linear-gradient(270deg, var(--bg-panel) 0%, transparent 100%);
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--orange);
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .mode-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .timeframe-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .timeframe-btn {
+            padding: 6px 10px;
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .timeframe-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .toggle-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .toggle-item:hover {
+            color: var(--white);
+        }
+
+        .toggle-item.active {
+            color: var(--white);
+        }
+
+        .toggle-checkbox {
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--gray);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .toggle-item.active .toggle-checkbox {
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+        .toggle-checkbox::after {
+            content: '✓';
+            font-size: 9px;
+            color: var(--white);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toggle-item.active .toggle-checkbox::after {
+            opacity: 1;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="split-header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="dexter">DEXTER</span>
+                <span class="dot">.</span>
+                <span class="tagline">TOKEN HUNTER</span>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <div class="center-logo">
+                <span>DE</span>XTER
+            </div>
+            <div class="status-line">
+                <div class="status-item version">
+                    <span class="dot"></span>
+                    v1.0.0
+                </div>
+                <div class="status-item network">
+                    <span class="dot"></span>
+                    SOLANA
+                </div>
+                <div class="status-item mode">
+                    <span class="dot"></span>
+                    DEGEN
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="control-group">
+                <span class="control-label">$ MODE</span>
+                <div class="mode-buttons">
+                    <button class="mode-btn active">DEGEN</button>
+                    <button class="mode-btn">HOLDER</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">$ TIMEFRAME</span>
+                <div class="timeframe-buttons">
+                    <button class="timeframe-btn">5M</button>
+                    <button class="timeframe-btn">30M</button>
+                    <button class="timeframe-btn active">1H</button>
+                    <button class="timeframe-btn">2H</button>
+                    <button class="timeframe-btn">ALL</button>
+                </div>
+            </div>
+
+            <div class="toggle-row">
+                <div class="toggle-item active">
+                    <div class="toggle-checkbox"></div>
+                    telegram-alerts
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-checkbox"></div>
+                    public-channels
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.toggle-item').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

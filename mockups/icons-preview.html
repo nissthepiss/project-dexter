@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dexter - Icon Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1e;
+            min-height: 100vh;
+            font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #ff6b00;
+            font-size: 2rem;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .header p {
+            color: #9a9a9e;
+            font-size: 0.9rem;
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .icon-card {
+            background: #0e0e0e;
+            border: 1px solid #2a2a2e;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .icon-card:hover {
+            border-color: #ff6b00;
+            box-shadow: 0 0 24px rgba(255, 107, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .icon-card svg {
+            width: 64px;
+            height: 64px;
+        }
+
+        .icon-card .name {
+            color: #e8e8ea;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .icon-card .filename {
+            color: #6a6a6e;
+            font-size: 0.7rem;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #2a2a2e;
+        }
+
+        .footer p {
+            color: #4a4a4e;
+            font-size: 0.8rem;
+        }
+
+        /* Dark/light mode toggle area hint */
+        .mode-demo {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .mode-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .mode-degen {
+            background: #ff6b00;
+            color: #000;
+        }
+
+        .mode-holder {
+            background: #2a2a2e;
+            color: #ff4500;
+            border: 1px solid #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PROJECT DEXTER</h1>
+        <p>Icon Set Preview — Terminal/Cyberpunk Theme</p>
+        <div class="mode-demo">
+            <span class="mode-badge mode-degen">DEGEN</span>
+            <span class="mode-badge mode-holder">HOLDER</span>
+        </div>
+    </div>
+
+    <div class="icons-grid">
+        <div class="icon-card">
+            <img src="icon-token-discovery.svg" alt="Token Discovery">
+            <div class="name">Token / Discovery</div>
+            <div class="filename">icon-token-discovery.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-momentum-score.svg" alt="Momentum Score">
+            <div class="name">Momentum / Score</div>
+            <div class="filename">icon-momentum-score.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-market-cap.svg" alt="Market Cap">
+            <div class="name">Market Cap</div>
+            <div class="filename">icon-market-cap.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-volume-trading.svg" alt="Volume Trading">
+            <div class="name">Volume / Trading</div>
+            <div class="filename">icon-volume-trading.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-time-window.svg" alt="Time Window">
+            <div class="name">Time Window Selector</div>
+            <div class="filename">icon-time-window.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-alert-bell.svg" alt="Alert Bell">
+            <div class="name">Alert / Bell</div>
+            <div class="filename">icon-alert-bell.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-mode-toggle.svg" alt="Mode Toggle">
+            <div class="name">Mode Toggle</div>
+            <div class="filename">icon-mode-toggle.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-refresh.svg" alt="Refresh">
+            <div class="name">Refresh / Update</div>
+            <div class="filename">icon-refresh.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-settings.svg" alt="Settings">
+            <div class="name">Settings / Config</div>
+            <div class="filename">icon-settings.svg</div>
+        </div>
+
+        <div class="icon-card">
+            <img src="icon-exit-close.svg" alt="Exit Close">
+            <div class="name">Exit / Close</div>
+            <div class="filename">icon-exit-close.svg</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>10 SVG Icons • 64×64px • Terminal Aesthetic</p>
+        <p style="margin-top: 8px; color: #ff6b00;">Project Dexter — Solana Token Hunter</p>
+    </div>
+</body>
+</html>

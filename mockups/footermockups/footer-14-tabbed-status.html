@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 14 - Tabbed System Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Menlo&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --tab-blue: #3b82f6;
+            --tab-green: #22c55e;
+            --tab-amber: #f59e0b;
+            --tab-slate: #64748b;
+            --bg-dark: #0c0c0e;
+            --bg-panel: #141419;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 15px 30px;
+            background: var(--bg-panel);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--tab-blue);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-family: 'Menlo', monospace;
+            font-size: 0.7rem;
+            color: var(--tab-slate);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--tab-blue);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--tab-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--tab-blue);
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.05);
+        }
+
+        .token-table tr:hover {
+            background: rgba(59, 130, 246, 0.03);
+        }
+
+        .rank {
+            font-family: 'Menlo', monospace;
+            color: var(--tab-slate);
+        }
+
+        .token-name {
+            font-weight: 500;
+        }
+
+        .token-address {
+            font-family: 'Menlo', monospace;
+            font-size: 0.6rem;
+            color: var(--tab-slate);
+        }
+
+        .positive { color: var(--tab-green); }
+        .negative { color: #ef4444; }
+        .peak { color: var(--tab-amber); }
+
+        /* TABBED STATUS FOOTER */
+        .tabbed-footer {
+            background: var(--bg-panel);
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--tab-slate);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            color: var(--tab-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--tab-blue);
+            border-bottom-color: var(--tab-blue);
+        }
+
+        .tab-content {
+            padding: 20px 30px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .stat-box .icon {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-box .label {
+            font-size: 0.65rem;
+            color: var(--tab-slate);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-box .value {
+            font-family: 'Menlo', monospace;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stat-box .subtext {
+            font-size: 0.65rem;
+            color: var(--tab-slate);
+            margin-top: 4px;
+        }
+
+        .stat-box.success {
+            background: rgba(34, 197, 94, 0.05);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .stat-box.success .value {
+            color: var(--tab-green);
+        }
+
+        .stat-box.warning {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .stat-box.warning .value {
+            color: var(--tab-amber);
+        }
+
+        /* Footer bar */
+        .footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer-info {
+            display: flex;
+            gap: 20px;
+            font-size: 0.7rem;
+            color: var(--tab-slate);
+        }
+
+        .footer-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-info .dot {
+            width: 5px;
+            height: 5px;
+            background: var(--tab-green);
+            border-radius: 50%;
+        }
+
+        .footer-time {
+            font-family: 'Menlo', monospace;
+            font-size: 0.75rem;
+            color: var(--tab-blue);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">Dexter Token Hunter</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--tab-slate);margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>TOKEN</th><th>SPOTTED</th><th>CURRENT</th><th>VOLUME</th><th>NET</th><th>SCORE</th><th>PEAK</th><th>TIME</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="tabbed-footer">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab(0)">Overview</button>
+            <button class="tab-btn" onclick="switchTab(1)">Performance</button>
+            <button class="tab-btn" onclick="switchTab(2)">Network</button>
+            <button class="tab-btn" onclick="switchTab(3)">System</button>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-panel active">
+                <div class="stat-box">
+                    <div class="icon">📊</div>
+                    <div class="label">Active Tokens</div>
+                    <div class="value">10</div>
+                    <div class="subtext">Tracking live</div>
+                </div>
+                <div class="stat-box success">
+                    <div class="icon">🏆</div>
+                    <div class="label">MVP Token</div>
+                    <div class="value">GME</div>
+                    <div class="subtext">Score: 5.6</div>
+                </div>
+                <div class="stat-box">
+                    <div class="icon">🔍</div>
+                    <div class="label">Total Scanned</div>
+                    <div class="value">2,847</div>
+                    <div class="subtext">+127 new</div>
+                </div>
+                <div class="stat-box warning">
+                    <div class="icon">📈</div>
+                    <div class="label">Positive Change</div>
+                    <div class="value">50%</div>
+                    <div class="subtext">5 of 10 tokens</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bar">
+            <div class="footer-info">
+                <span><i class="dot"></i> Live feed active</span>
+                <span>Solana Mainnet</span>
+                <span>Latency: 12ms</span>
+            </div>
+            <div class="footer-time">Updated: 14:32:08</div>
+        </div>
+    </footer>
+
+    <script>
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panels = document.querySelectorAll('.tab-panel');
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            if (panels[0]) {
+                panels[0].classList.toggle('active', index === 0);
+            }
+        }
+    </script>
+</body>
+</html>

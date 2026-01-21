@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Data Card Grid</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #1a1a1c;
+            --bg-tertiary: #252528;
+            --accent-orange: #ff8c00;
+            --accent-orange-bright: #ffa500;
+            --accent-orange-dark: #cc7000;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9ca3af;
+            --text-muted: #4a4a4e;
+            --success: #4ade80;
+            --error: #f87171;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Grid Pattern & CRT Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 140, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 140, 0, 0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .header-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .mode-btn {
+            padding: 8px 14px;
+            font-size: 10px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .timeframe-tab {
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace);
+        }
+
+        .timeframe-tab.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* Data Card Grid */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Data Card */
+        .data-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .data-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
+            border-color: var(--accent-orange-dark);
+        }
+
+        .data-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .data-card.mvp {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.25);
+        }
+
+        .data-card.mvp::before {
+            transform: scaleX(1);
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-rank {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+        }
+
+        .card-rank.rank-1 {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: var(--bg-primary);
+        }
+
+        .card-rank.rank-2 {
+            background: linear-gradient(135deg, var(--silver), #a0a0a0);
+            color: var(--bg-primary);
+        }
+
+        .card-rank.rank-3 {
+            background: linear-gradient(135deg, var(--bronze), #a0522d);
+            color: var(--bg-primary);
+        }
+
+        /* Token Logo */
+        .card-token {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .card-logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .card-address {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Score Display */
+        .card-score {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .score-number {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-orange), #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Mini Charts */
+        .card-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .metric-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 45px;
+        }
+
+        /* MC Sparkline */
+        .mc-sparkline {
+            flex: 1;
+            height: 20px;
+            position: relative;
+        }
+
+        .mc-sparkline svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .mc-sparkline path {
+            fill: none;
+            stroke: var(--accent-orange);
+            stroke-width: 1.5;
+        }
+
+        /* Volume Bar */
+        .vol-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .vol-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 3px;
+        }
+
+        /* Net Change */
+        .net-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .net-change.positive {
+            color: var(--success);
+        }
+
+        .net-change.negative {
+            color: var(--error);
+        }
+
+        /* Peak Badge */
+        .peak-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 8px;
+            font-size: 9px;
+            font-weight: 600;
+            background: rgba(255, 140, 0, 0.15);
+            border: 1px solid var(--accent-orange-dark);
+            border-radius: 10px;
+            color: var(--accent-orange);
+        }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--bg-tertiary);
+        }
+
+        .card-time {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .card-action-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .card-action-btn:hover {
+            background: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        /* MVP Sidebar */
+        .mvp-sidebar {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--bg-tertiary);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        /* Podium Display */
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            padding: 20px 0;
+        }
+
+        .podium-item {
+            text-align: center;
+        }
+
+        .podium-item.place-1 {
+            order: 2;
+        }
+
+        .podium-item.place-2 {
+            order: 1;
+        }
+
+        .podium-item.place-3 {
+            order: 3;
+        }
+
+        .podium-rank {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .podium-logo {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 6px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .podium-logo.place-1 {
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+        }
+
+        .podium-logo.place-2 {
+            background: linear-gradient(135deg, var(--silver), #a0a0a0);
+        }
+
+        .podium-logo.place-3 {
+            background: linear-gradient(135deg, var(--bronze), #a0522d);
+        }
+
+        .podium-name {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .podium-score {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .podium-score.place-1 {
+            font-size: 18px;
+            color: var(--gold);
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--bg-secondary);
+        }
+
+        .detail-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .detail-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .detail-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        /* Progress Bars */
+        .progress-item {
+            margin-bottom: 14px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .progress-label {
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+            border-radius: 4px;
+            animation: fillBar 0.5s ease-out;
+        }
+
+        .progress-fill.high {
+            background: linear-gradient(90deg, var(--success), #22c55e);
+        }
+
+        .progress-fill.medium {
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-orange-bright));
+        }
+
+        .progress-fill.low {
+            background: linear-gradient(90deg, var(--error), #ef4444);
+        }
+
+        @keyframes fillBar {
+            from { width: 0; }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 300px;
+            padding: 8px 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">DEXTHER // ANALYTICS</div>
+                <div class="header-controls">
+                    <div class="mode-toggle">
+                        <button class="mode-btn active">Degen</button>
+                        <button class="mode-btn">Holder</button>
+                    </div>
+                    <div class="timeframe-tabs">
+                        <button class="timeframe-tab active">5M</button>
+                        <button class="timeframe-tab">30M</button>
+                        <button class="timeframe-tab">1H</button>
+                        <button class="timeframe-tab">4H</button>
+                        <button class="timeframe-tab">ALL</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Grid -->
+            <div class="data-grid">
+                <!-- Card 1 - MVP -->
+                <div class="data-card mvp">
+                    <div class="peak-badge">5.2x</div>
+                    <div class="card-header">
+                        <div class="card-rank rank-1">1</div>
+                    </div>
+                    <div class="card-token">
+                        <div class="card-logo">B</div>
+                        <div>
+                            <div class="card-name">BONK</div>
+                            <div class="card-address">DezXAZ8z7Pnrn...</div>
+                        </div>
+                    </div>
+                    <div class="card-score">
+                        <div class="score-number">94.2</div>
+                        <div class="score-label">Momentum Score</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-label">MC</span>
+                            <div class="mc-sparkline">
+                                <svg viewBox="0 0 100 20">
+                                    <path d="M0,15 L15,12 L30,10 L45,8 L60,6 L75,5 L90,3 L100,2"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">VOL</span>
+                            <div class="vol-bar">
+                                <div class="vol-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">NET</span>
+                            <div class="net-change positive">
+                                <span>▲</span>
+                                <span>24.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">2m ago</span>
+                        <div class="card-actions">
+                            <button class="card-action-btn">BL</button>
+                            <button class="card-action-btn">TG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="data-card">
+                    <div class="peak-badge">3.8x</div>
+                    <div class="card-header">
+                        <div class="card-rank rank-2">2</div>
+                    </div>
+                    <div class="card-token">
+                        <div class="card-logo">W</div>
+                        <div>
+                            <div class="card-name">WIF</div>
+                            <div class="card-address">EKpQGSJtjMFqK...</div>
+                        </div>
+                    </div>
+                    <div class="card-score">
+                        <div class="score-number">87.6</div>
+                        <div class="score-label">Momentum Score</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-label">MC</span>
+                            <div class="mc-sparkline">
+                                <svg viewBox="0 0 100 20">
+                                    <path d="M0,14 L15,12 L30,11 L45,9 L60,8 L75,7 L90,6 L100,5"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">VOL</span>
+                            <div class="vol-bar">
+                                <div class="vol-fill" style="width: 72%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">NET</span>
+                            <div class="net-change positive">
+                                <span>▲</span>
+                                <span>18.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">5m ago</span>
+                        <div class="card-actions">
+                            <button class="card-action-btn">BL</button>
+                            <button class="card-action-btn">TG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="data-card">
+                    <div class="peak-badge">2.9x</div>
+                    <div class="card-header">
+                        <div class="card-rank rank-3">3</div>
+                    </div>
+                    <div class="card-token">
+                        <div class="card-logo">M</div>
+                        <div>
+                            <div class="card-name">MYRO</div>
+                            <div class="card-address">EQSZqmSbKHVcV...</div>
+                        </div>
+                    </div>
+                    <div class="card-score">
+                        <div class="score-number">81.3</div>
+                        <div class="score-label">Momentum Score</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-label">MC</span>
+                            <div class="mc-sparkline">
+                                <svg viewBox="0 0 100 20">
+                                    <path d="M0,16 L15,14 L30,13 L45,11 L60,10 L75,9 L90,8 L100,7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">VOL</span>
+                            <div class="vol-bar">
+                                <div class="vol-fill" style="width: 58%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">NET</span>
+                            <div class="net-change positive">
+                                <span>▲</span>
+                                <span>12.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">8m ago</span>
+                        <div class="card-actions">
+                            <button class="card-action-btn">BL</button>
+                            <button class="card-action-btn">TG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="data-card">
+                    <div class="peak-badge">1.5x</div>
+                    <div class="card-header">
+                        <div class="card-rank">4</div>
+                    </div>
+                    <div class="card-token">
+                        <div class="card-logo">P</div>
+                        <div>
+                            <div class="card-name">POPCAT</div>
+                            <div class="card-address">7GCihgDB8fe6K...</div>
+                        </div>
+                    </div>
+                    <div class="card-score">
+                        <div class="score-number">76.8</div>
+                        <div class="score-label">Momentum Score</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-label">MC</span>
+                            <div class="mc-sparkline">
+                                <svg viewBox="0 0 100 20">
+                                    <path d="M0,12 L15,13 L30,14 L45,12 L60,11 L75,12 L90,13 L100,14"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">VOL</span>
+                            <div class="vol-bar">
+                                <div class="vol-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">NET</span>
+                            <div class="net-change negative">
+                                <span>▼</span>
+                                <span>3.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">12m ago</span>
+                        <div class="card-actions">
+                            <button class="card-action-btn">BL</button>
+                            <button class="card-action-btn">TG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="data-card">
+                    <div class="peak-badge">1.2x</div>
+                    <div class="card-header">
+                        <div class="card-rank">5</div>
+                    </div>
+                    <div class="card-token">
+                        <div class="card-logo">S</div>
+                        <div>
+                            <div class="card-name">SLERF</div>
+                            <div class="card-address">D2aK2XRtvXjZV...</div>
+                        </div>
+                    </div>
+                    <div class="card-score">
+                        <div class="score-number">71.4</div>
+                        <div class="score-label">Momentum Score</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-label">MC</span>
+                            <div class="mc-sparkline">
+                                <svg viewBox="0 0 100 20">
+                                    <path d="M0,10 L15,12 L30,14 L45,13 L60,15 L75,16 L90,17 L100,18"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">VOL</span>
+                            <div class="vol-bar">
+                                <div class="vol-fill" style="width: 38%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">NET</span>
+                            <div class="net-change negative">
+                                <span>▼</span>
+                                <span>8.7%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">18m ago</span>
+                        <div class="card-actions">
+                            <button class="card-action-btn">BL</button>
+                            <button class="card-action-btn">TG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="data-card">
+                    <div class="peak-badge">0.8x</div>
+                    <div class="card-header">
+                        <div class="card-rank">6</div>
+                    </div>
+                    <div class="card-token">
+                        <div class="card-logo">R</div>
+                        <div>
+                            <div class="card-name">RENDER</div>
+                            <div class="card-address">9LiL2PWqjFzC5...</div>
+                        </div>
+                    </div>
+                    <div class="card-score">
+                        <div class="score-number">68.9</div>
+                        <div class="score-label">Momentum Score</div>
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-mini">
+                            <span class="metric-label">MC</span>
+                            <div class="mc-sparkline">
+                                <svg viewBox="0 0 100 20">
+                                    <path d="M0,14 L15,13 L30,12 L45,11 L60,10 L75,9 L90,10 L100,9"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">VOL</span>
+                            <div class="vol-bar">
+                                <div class="vol-fill" style="width: 28%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-mini">
+                            <span class="metric-label">NET</span>
+                            <div class="net-change positive">
+                                <span>▲</span>
+                                <span>2.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-time">25m ago</span>
+                        <div class="card-actions">
+                            <button class="card-action-btn">BL</button>
+                            <button class="card-action-btn">TG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MVP Sidebar -->
+        <div class="mvp-sidebar">
+            <div class="sidebar-title">/// TOP 5 LEADERBOARD</div>
+
+            <div class="podium">
+                <div class="podium-item place-2">
+                    <div class="podium-rank">#2</div>
+                    <div class="podium-logo place-2">W</div>
+                    <div class="podium-name">WIF</div>
+                    <div class="podium-score">87.6</div>
+                </div>
+                <div class="podium-item place-1">
+                    <div class="podium-rank">#1</div>
+                    <div class="podium-logo place-1">B</div>
+                    <div class="podium-name">BONK</div>
+                    <div class="podium-score place-1">94.2</div>
+                </div>
+                <div class="podium-item place-3">
+                    <div class="podium-rank">#3</div>
+                    <div class="podium-logo place-3">M</div>
+                    <div class="podium-name">MYRO</div>
+                    <div class="podium-score">81.3</div>
+                </div>
+            </div>
+
+            <div class="sidebar-title" style="margin-top: 24px;">/// SELECTED TOKEN</div>
+
+            <div class="detail-panel">
+                <div class="detail-header">
+                    <div class="detail-logo">B</div>
+                    <div>
+                        <div class="detail-name">BONK</div>
+                        <div class="detail-score">94.2</div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Buy Pressure</span>
+                        <span style="color: var(--success);">78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill high" style="width: 78%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Transaction Velocity</span>
+                        <span>142/5m</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill high" style="width: 82%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Price Momentum</span>
+                        <span style="color: var(--success);">24.5%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill high" style="width: 88%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">SSE Momentum</span>
+                        <span>18.2%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill medium" style="width: 72%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="status-dot"></div>
+            <span>Connected</span>
+        </div>
+        <span>SCANNING 156 TOKENS</span>
+        <span>MODE: DEGEN</span>
+    </div>
+</body>
+</html>

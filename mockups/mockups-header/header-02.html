@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 02: Sidebar Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-sidebar: #0f0f1a;
+            --orange: #ff5e00;
+            --green: #00ff9d;
+            --gray: #4a4a5a;
+            --gray-light: #7a7a8a;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid rgba(255, 94, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--orange), transparent);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .logo-vertical .dexter {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            letter-spacing: 4px;
+            color: var(--orange);
+            text-shadow: 0 0 20px rgba(255, 94, 0, 0.5);
+        }
+
+        .logo-vertical .tagline {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--gray-light);
+            margin-left: 2px;
+        }
+
+        .status-section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+        }
+
+        .status-row .label {
+            color: var(--gray);
+        }
+
+        .status-row .value {
+            color: var(--green);
+        }
+
+        .status-row .value.mode {
+            color: var(--orange);
+        }
+
+        .nav-section {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 6px;
+            color: var(--gray-light);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 94, 0, 0.1);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(255, 94, 0, 0.2), transparent);
+            color: var(--orange);
+            border-left: 2px solid var(--orange);
+        }
+
+        .nav-item .icon {
+            font-size: 14px;
+        }
+
+        .controls-section {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: var(--orange);
+        }
+
+        .mode-options {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .mode-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .timeframe-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .timeframe-btn {
+            padding: 8px 4px;
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .timeframe-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--white);
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .toggle-switch {
+            width: 32px;
+            height: 18px;
+            background: var(--gray);
+            border-radius: 9px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .toggle-row.active .toggle-switch {
+            background: var(--orange);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--white);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-row.active .toggle-switch::after {
+            left: 16px;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-vertical">
+                <span class="dexter">DEXTER</span>
+                <span class="tagline">TOKEN HUNTER</span>
+            </div>
+        </div>
+
+        <div class="status-section">
+            <div class="status-row">
+                <span class="label">VERSION</span>
+                <span class="value">v1.0.0</span>
+            </div>
+            <div class="status-row">
+                <span class="label">NETWORK</span>
+                <span class="value">SOLANA</span>
+            </div>
+            <div class="status-row">
+                <span class="label">MODE</span>
+                <span class="value mode">DEGEN</span>
+            </div>
+        </div>
+
+        <nav class="nav-section">
+            <div class="nav-label">NAVIGATION</div>
+            <div class="nav-item active">
+                <span class="icon">▸</span>
+                Dashboard
+            </div>
+            <div class="nav-item">
+                <span class="icon">◇</span>
+                Tokens
+            </div>
+            <div class="nav-item">
+                <span class="icon">◈</span>
+                Analytics
+            </div>
+            <div class="nav-item">
+                <span class="icon">⚙</span>
+                Settings
+            </div>
+        </nav>
+
+        <div class="controls-section">
+            <div class="control-group">
+                <span class="control-label">MODE</span>
+                <div class="mode-options">
+                    <button class="mode-btn active">DEGEN</button>
+                    <button class="mode-btn">HOLDER</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">TIMEFRAME</span>
+                <div class="timeframe-grid">
+                    <button class="timeframe-btn">5M</button>
+                    <button class="timeframe-btn">30M</button>
+                    <button class="timeframe-btn active">1H</button>
+                    <button class="timeframe-btn">2H</button>
+                    <button class="timeframe-btn">ALL</button>
+                </div>
+            </div>
+
+            <div class="toggle-row active" data-toggle="telegram">
+                <span>Telegram Alerts</span>
+                <div class="toggle-switch"></div>
+            </div>
+            <div class="toggle-row" data-toggle="public">
+                <span>Public Channels</span>
+                <div class="toggle-switch"></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        [ Rest of your UI remains the same ]
+    </main>
+
+    <script>
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.toggle-row').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

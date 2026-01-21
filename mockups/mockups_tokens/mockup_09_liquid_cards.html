@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Leaderboard - Liquid Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: blobFloat 20s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            top: 50%;
+            right: 10%;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            bottom: 10%;
+            left: 30%;
+            animation-delay: -10s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+            50% {
+                transform: translate(-30px, 30px) scale(0.95);
+            }
+            75% {
+                transform: translate(40px, 40px) scale(1.05);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-family: 'Comfortaa', cursive;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a8edea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: titleShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+
+        .liquid-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 30px;
+        }
+
+        .liquid-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: liquidAppear 0.8s ease-out backwards;
+        }
+
+        .liquid-card:nth-child(1) { animation-delay: 0.1s; }
+        .liquid-card:nth-child(2) { animation-delay: 0.2s; }
+        .liquid-card:nth-child(3) { animation-delay: 0.3s; }
+        .liquid-card:nth-child(4) { animation-delay: 0.4s; }
+        .liquid-card:nth-child(5) { animation-delay: 0.5s; }
+        .liquid-card:nth-child(6) { animation-delay: 0.6s; }
+        .liquid-card:nth-child(7) { animation-delay: 0.7s; }
+        .liquid-card:nth-child(8) { animation-delay: 0.8s; }
+        .liquid-card:nth-child(9) { animation-delay: 0.9s; }
+        .liquid-card:nth-child(10) { animation-delay: 1s; }
+
+        @keyframes liquidAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .liquid-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(102, 126, 234, 0.1) 90deg,
+                transparent 180deg,
+                rgba(240, 147, 251, 0.1) 270deg,
+                transparent 360deg
+            );
+            animation: rotate 10s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .liquid-card:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .liquid-card::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 28px;
+            z-index: 0;
+        }
+
+        .liquid-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .rank-bubble {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rank-bubble::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2));
+            border-radius: inherit;
+        }
+
+        .token-info {
+            flex: 1;
+            margin-left: 18px;
+        }
+
+        .token-name {
+            font-family: 'Comfortaa', cursive;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .token-address {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .score-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.2), rgba(245, 87, 108, 0.2));
+            border: 2px solid rgba(240, 147, 251, 0.4);
+        }
+
+        .score-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .score-value.positive { color: #00ff88; }
+        .score-value.negative { color: #ff6b6b; }
+
+        .score-label {
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metrics-liquid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-drop {
+            flex: 1;
+            min-width: calc(50% - 6px);
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .metric-drop:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .metric-value.positive { color: #00ff88; }
+        .metric-value.negative { color: #ff6b6b; }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .peak-bubble {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 193, 7, 0.15));
+            border-radius: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .peak-bubble .icon {
+            font-size: 1rem;
+        }
+
+        .peak-bubble .value {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        .time-bubble {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .time-dot {
+            width: 8px;
+            height: 8px;
+            background: #00f2fe;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 10px #00f2fe;
+        }
+
+        .time-value {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .liquid-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Liquid Tokens</h1>
+            <p class="subtitle">Flowing with market dynamics</p>
+        </header>
+
+        <div class="liquid-grid">
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">1</span>
+                            <div class="token-info">
+                                <h3 class="token-name">RUST</h3>
+                                <p class="token-address">9VLP...BAGS</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-8.4</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$15.9K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$29.0K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$175.0K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value">+0.0%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">2.11x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">42m ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">2</span>
+                            <div class="token-info">
+                                <h3 class="token-name">Mom Coin</h3>
+                                <p class="token-address">62g4...pump</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-7.2</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$22.0K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$25.0K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$199.1K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value negative">-9.1%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">2.43x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">1h ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">3</span>
+                            <div class="token-info">
+                                <h3 class="token-name">Bread</h3>
+                                <p class="token-address">puvZ...pump</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-5.3</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$88.7K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$37.9K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$478.6K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value positive">+1.7%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">3.60x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">1h ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">4</span>
+                            <div class="token-info">
+                                <h3 class="token-name">LINUS</h3>
+                                <p class="token-address">AvxF...BAGS</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-4.8</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$14.8K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$8.7K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$12.3K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value positive">+9.1%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">1.72x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">1h ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">5</span>
+                            <div class="token-info">
+                                <h3 class="token-name">LILTAY</h3>
+                                <p class="token-address">DgPK...pump</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-3.1</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$90.2K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$167.9K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$243.4K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value positive">+2.0%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">2.33x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">1h ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">6</span>
+                            <div class="token-info">
+                                <h3 class="token-name">ToweLie</h3>
+                                <p class="token-address">9Cxm...pump</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-2.3</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$34.9K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$72.3K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$18.6K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value negative">-2.7%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">2.51x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">18m ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">7</span>
+                            <div class="token-info">
+                                <h3 class="token-name">CHINESE</h3>
+                                <p class="token-address">C3Po...pump</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value negative">-1.5</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$36.3K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$90.4K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$243.7K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value negative">-8.5%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">3.31x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">48m ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">8</span>
+                            <div class="token-info">
+                                <h3 class="token-name">Paperclip</h3>
+                                <p class="token-address">87mq...pump</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value">0.3</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$27.1K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$46.8K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$55.6K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value negative">-4.5%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">1.95x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">18m ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">9</span>
+                            <div class="token-info">
+                                <h3 class="token-name">X</h3>
+                                <p class="token-address">2KMV...BAGS</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value positive">2.1</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$421.1K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$909.9K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$1.5M</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value negative">-3.8%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">2.77x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">1h ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="liquid-card">
+                <div class="card-content">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: flex-start;">
+                            <span class="rank-bubble">10</span>
+                            <div class="token-info">
+                                <h3 class="token-name">GME</h3>
+                                <p class="token-address">3Dpm...BAGS</p>
+                            </div>
+                        </div>
+                        <div class="score-circle">
+                            <span class="score-value positive">5.6</span>
+                            <span class="score-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="metrics-liquid">
+                        <div class="metric-drop">
+                            <span class="metric-label">Spotted</span>
+                            <span class="metric-value">$20.4K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Current</span>
+                            <span class="metric-value">$43.6K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$17.1K</span>
+                        </div>
+                        <div class="metric-drop">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value positive">+4.8%</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="peak-bubble">
+                            <span class="icon">⚡</span>
+                            <span class="value">2.88x Peak</span>
+                        </span>
+                        <span class="time-bubble">
+                            <span class="time-dot"></span>
+                            <span class="time-value">1h ago</span>
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</body>
+</html>

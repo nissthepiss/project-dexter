@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 05: Floating with Backdrop Blur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #050505;
+            --orange: #ff3d00;
+            --green: #00ff5a;
+            --gray: #4d4d5a;
+            --gray-light: #7a7a8a;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Source Code Pro', monospace;
+            background: var(--bg-primary);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(255, 61, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 90, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-header {
+            position: sticky;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 1200px;
+            z-index: 100;
+            margin-bottom: 20px;
+        }
+
+        .header-glass {
+            background: rgba(15, 15, 20, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 61, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .logo .dexter {
+            color: var(--orange);
+            text-shadow: 0 0 30px rgba(255, 61, 0, 0.5);
+        }
+
+        .logo .dot {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .logo .tagline {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--gray-light);
+            font-weight: 400;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 12px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .badge:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .badge.version .dot { background: var(--orange); }
+        .badge.version { color: var(--orange); }
+
+        .badge.network .dot { background: var(--green); }
+        .badge.network { color: var(--green); }
+
+        .badge.mode .dot { background: var(--orange); }
+        .badge.mode { color: var(--orange); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: var(--orange);
+        }
+
+        .mode-selector {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .mode-option {
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--gray-light);
+            position: relative;
+        }
+
+        .mode-option.active {
+            color: var(--white);
+            background: rgba(255, 61, 0, 0.2);
+        }
+
+        .mode-option:not(.active):hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .timeframe-pills {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .timeframe-btn {
+            padding: 8px 14px;
+            font-size: 11px;
+            color: var(--gray-light);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        .timeframe-btn.active {
+            background: var(--orange);
+            color: var(--white);
+            box-shadow: 0 2px 10px rgba(255, 61, 0, 0.3);
+        }
+
+        .timeframe-btn:not(.active):hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 16px;
+            margin-left: auto;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .toggle-item:hover {
+            color: var(--white);
+        }
+
+        .toggle-item.active {
+            color: var(--white);
+        }
+
+        .toggle-switch {
+            width: 32px;
+            height: 18px;
+            background: var(--gray);
+            border-radius: 9px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .toggle-item.active .toggle-switch {
+            background: var(--orange);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--white);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-item.active .toggle-switch::after {
+            left: 16px;
+        }
+
+        .main-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <div class="floating-header">
+        <div class="header-glass">
+            <div class="header-top">
+                <div class="logo">
+                    <span class="dexter">DEXTER</span>
+                    <span class="dot">.</span>
+                    <span class="tagline">TOKEN HUNTER</span>
+                </div>
+                <div class="status-badges">
+                    <div class="badge version">
+                        <span class="dot"></span>
+                        v1.0.0
+                    </div>
+                    <div class="badge network">
+                        <span class="dot"></span>
+                        SOLANA
+                    </div>
+                    <div class="badge mode">
+                        <span class="dot"></span>
+                        DEGEN-MODE
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-row">
+                <div class="control-group">
+                    <span class="control-label">$ MODE</span>
+                    <div class="mode-selector">
+                        <div class="mode-option active">DEGEN</div>
+                        <div class="mode-option">HOLDER</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">$ TIMEFRAME</span>
+                    <div class="timeframe-pills">
+                        <button class="timeframe-btn">5M</button>
+                        <button class="timeframe-btn">30M</button>
+                        <button class="timeframe-btn active">1H</button>
+                        <button class="timeframe-btn">2H</button>
+                        <button class="timeframe-btn">ALL</button>
+                    </div>
+                </div>
+
+                <div class="toggle-group">
+                    <div class="toggle-item active" data-toggle="telegram">
+                        <div class="toggle-switch"></div>
+                        <span>telegram-alerts</span>
+                    </div>
+                    <div class="toggle-item" data-toggle="public">
+                        <div class="toggle-switch"></div>
+                        <span>public-channels</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        [ Rest of your UI remains the same ]
+    </div>
+
+    <script>
+        document.querySelectorAll('.mode-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.mode-option').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.toggle-item').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

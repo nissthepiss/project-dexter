@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import logger from './logger.mjs';
-import * as db from './database/db.mjs';
+import * as db from './database/db-adapter.mjs';
 import * as dexscreener from './apis/dexscreener.mjs';
 import * as bitquery from './apis/bitquery.mjs';
 import * as dexpaprika from './apis/dexpaprika.mjs';
 import { dexscreenerLimiter } from './rateLimit.mjs';
 import mvpCalculator from './mvpCalculator_v3.mjs';
+import { dataDumper } from './dataDumper.mjs';
 
 class TokenManager {
   constructor() {
@@ -24,7 +25,9 @@ class TokenManager {
     this.telegramAutoAlert = true; // Default enabled
 
     // Tracking windows
-    this.monitoringWindow = 2 * 60 * 60 * 1000; // 2 hours
+    this.monitoringWindow = 2 * 60 * 60 * 1000; // 2 hours for degen tokens
+    this.holderMonitoringWindow = 48 * 60 * 60 * 1000; // 48 hours for holder tokens
+    this.maxHolderTokens = 500; // Hard cap for holder tokens to prevent memory leaks
 
     // Current view mode for filtering updates
     this.currentViewMode = 'all-time';
@@ -39,8 +42,30 @@ class TokenManager {
     this.sseConnectedTokens = new Set(); // Track which tokens have SSE
     this.lastTop10Addresses = []; // Track last top 10 for rotation
 
+    // Debounce for view mode changes (prevents rapid SSE re-subscription)
+    this.viewModeDebounceTimer = null;
+    this.viewModeDebounceMs = 2000; // Wait 2 seconds after view mode change before updating SSE
+
     // Track tokens that failed discovery (to avoid spam)
     this.failedDiscoveryTokens = new Map(); // address -> { failedAt, reason }
+
+    // MVP tracking per view mode
+    this.currentMVP = {
+      '5m': null,
+      '30m': null,
+      '1h': null,
+      '2h': null,
+      '4h': null,
+      'all-time': null
+    };
+    this.mvpSince = {
+      '5m': null,
+      '30m': null,
+      '1h': null,
+      '2h': null,
+      '4h': null,
+      'all-time': null
+    };
   }
 
   setTelegramService(telegramService) {
@@ -148,7 +173,14 @@ class TokenManager {
           volTenSecondsAgo: null,
           _tenSecondSnapshotAt: null,
           _needsRefresh: true, // Flag to indicate this token needs a fresh fetch
-          lastUpdated: tokenData.lastUpdated || Date.now()
+          lastUpdated: tokenData.lastUpdated || Date.now(),
+          // Restore source property for holder tokens (use 'degen' as default for old rows)
+          source: tokenData.source || 'degen',
+          holderRank: tokenData.holderRank || null,
+          holderSpottedAt: tokenData.holderSpottedAt || null,
+          holderSpottedMc: tokenData.holderSpottedMc || null,
+          holderPeakMc: tokenData.holderPeakMc || null,
+          holderPeakMultiplier: tokenData.holderPeakMultiplier || null
         };
 
         this.trackedTokens.set(token.contractAddress, token);
@@ -246,11 +278,17 @@ class TokenManager {
     // This updates all tokens NOT in the SSE top 10
     this.dexpaprikaBackgroundInterval = setInterval(() => {
       this.updateBackgroundTokensDexPaprika();
+      // Also update transaction metrics for SSE tokens (they don't get metrics from SSE)
+      this.updateSSETokenMetrics();
+      // Also refresh Unknown ticker tokens
+      this.refreshUnknownTickerTokens();
     }, 15000);
 
     // Initial background update after 2 seconds
     setTimeout(() => {
       this.updateBackgroundTokensDexPaprika();
+      this.updateSSETokenMetrics();
+      this.refreshUnknownTickerTokens();
     }, 2000);
   }
 
@@ -286,6 +324,11 @@ class TokenManager {
 
   // Update SSE subscriptions based on current top 10
   updateSSESubscriptions() {
+    // Skip update if we're in a debounce period (recently changed view mode)
+    if (this.viewModeDebounceTimer) {
+      return; // Let the debounce timer handle the update
+    }
+
     try {
       const top10 = this.getTop10(this.currentViewMode);
       const newAddresses = top10.map(t => t.contractAddress);
@@ -300,7 +343,8 @@ class TokenManager {
         this.lastTop10Addresses = newAddresses;
 
         if (newAddresses.length > 0) {
-          logger.info(`📡 SSE subscribed to ${result.connected} top tokens`);
+          logger.debug(`📡 SSE subscribed to ${result.connected} top tokens` +
+            (result.queued > 0 ? ` (${result.queued} queued)` : ''));
         }
       }
     } catch (error) {
@@ -347,12 +391,18 @@ class TokenManager {
       if (currentMultiplier > token.peakMultiplier) {
         token.peakMultiplier = currentMultiplier;
         token.peakMc = token.currentMc;
-        
+
         // Check for tier 3 alert (only if crossing from below to above)
         if (previousPeak < this.alertTiers.tier3 && currentMultiplier >= this.alertTiers.tier3) {
           this.checkAndSendTier3Alert(token);
         }
       }
+
+      // Check and record price path milestones (1.25x, 1.5x, 1.75x)
+      dataDumper.checkPriceMilestones(token, currentMultiplier);
+
+      // Check for 2x detection and dump data if hit
+      dataDumper.checkAndDumpTwoX(token);
     }
 
     // Record snapshot for MVP momentum tracking
@@ -371,8 +421,8 @@ class TokenManager {
   // Also includes holder/ex-holder tokens regardless of time window
   async updateBackgroundTokensDexPaprika() {
     try {
-      // Get all tokens from last hour (monitoring window)
-      const windowMs = 60 * 60 * 1000; // 1 hour for background tracking
+      // Get all tokens from monitoring window (same as main window)
+      const windowMs = this.monitoringWindow; // 2 hours for background tracking
       const now = Date.now();
 
       const backgroundTokens = Array.from(this.trackedTokens.values())
@@ -470,12 +520,18 @@ class TokenManager {
         if (currentMultiplier > token.peakMultiplier) {
           token.peakMultiplier = currentMultiplier;
           token.peakMc = token.currentMc;
-          
+
           // Check for tier 3 alert (only if crossing from below to above)
           if (previousPeak < this.alertTiers.tier3 && currentMultiplier >= this.alertTiers.tier3) {
             this.checkAndSendTier3Alert(token);
           }
         }
+
+        // Check and record price path milestones (1.25x, 1.5x, 1.75x)
+        dataDumper.checkPriceMilestones(token, currentMultiplier);
+
+        // Check for 2x detection and dump data if hit
+        dataDumper.checkAndDumpTwoX(token);
 
         // Update holder-specific peak values for holder tokens
         if (isHolderToken && token.holderSpottedMc && token.holderSpottedMc > 0) {
@@ -486,9 +542,10 @@ class TokenManager {
           }
         }
 
-        // Fetch missing logo for holder tokens (retry mechanism)
+        // Fetch missing logo for holder tokens (retry mechanism, rate limited)
         if (isHolderToken && !token.logoUrl && !token._logoFetchAttempted) {
           try {
+            await dexscreenerLimiter.acquire();
             const tokenData = await dexscreener.getTokenByAddress(addr);
             if (tokenData && tokenData.logoUrl) {
               token.logoUrl = tokenData.logoUrl;
@@ -518,6 +575,121 @@ class TokenManager {
       await this.cleanupOldTokens();
     } catch (error) {
       logger.error('DexPaprika background update failed', error);
+    }
+  }
+
+  // Update transaction metrics for SSE-connected tokens (top 10)
+  // SSE provides real-time price but NOT transaction metrics, so we fetch those via REST
+  async updateSSETokenMetrics() {
+    try {
+      const now = Date.now();
+
+      // Get all SSE-connected tokens that need transaction metrics update
+      const sseTokens = Array.from(this.trackedTokens.values())
+        .filter(t => {
+          const inSSE = this.sseConnectedTokens.has(t.contractAddress);
+          const needsUpdate = !t.lastMetricsUpdate || (now - t.lastMetricsUpdate > 15000); // 15s stale
+          return inSSE && needsUpdate;
+        });
+
+      if (sseTokens.length === 0) return;
+
+      const addresses = sseTokens.map(t => t.contractAddress);
+      logger.info(`📊 Updating transaction metrics for ${addresses.length} SSE tokens`);
+
+      // Fetch in batches (10 concurrent requests)
+      const prices = await dexpaprika.getBatchPrices(addresses, 10);
+
+      let updatedCount = 0;
+      for (const [addr, data] of Object.entries(prices)) {
+        if (!data) continue;
+
+        const token = this.trackedTokens.get(addr);
+        if (!token) continue;
+
+        // ONLY update transaction metrics - price/volume come from SSE
+        if (data.transactionMetrics) {
+          token.transactionMetrics = data.transactionMetrics;
+          token.lastMetricsUpdate = now;
+          updatedCount++;
+        }
+
+        // Also update totalSupply if not set (needed for SSE MC calculation)
+        if (data.totalSupply && !token.totalSupply) {
+          token.totalSupply = data.totalSupply;
+        }
+      }
+
+      if (updatedCount > 0) {
+        logger.info(`✅ Updated transaction metrics for ${updatedCount}/${addresses.length} SSE tokens`);
+      }
+    } catch (error) {
+      logger.error('SSE token metrics update failed', error);
+    }
+  }
+
+  // CYCLE: Refresh Unknown ticker tokens - Periodically re-query tokens with Unknown symbols
+  async refreshUnknownTickerTokens() {
+    try {
+      const now = Date.now();
+
+      // Find tokens with Unknown/UNKNOWN symbols that haven't been refreshed recently
+      const unknownTokens = Array.from(this.trackedTokens.values())
+        .filter(t => {
+          const isUnknown = !t.symbol || t.symbol === 'Unknown' || t.symbol === 'UNKNOWN' || t.symbol === 'unknown';
+          const notRecentlyRefreshed = !t.lastUnknownRefresh || (now - t.lastUnknownRefresh > 60000); // 1 minute cooldown
+          return isUnknown && notRecentlyRefreshed;
+        });
+
+      if (unknownTokens.length === 0) return;
+
+      const addresses = unknownTokens.map(t => t.contractAddress);
+      logger.info(`🔄 Refreshing ${addresses.length} Unknown ticker tokens from DexPaprika...`);
+
+      // Fetch token data from DexPaprika (has better name/symbol data)
+      const tokenDataPromises = addresses.map(async (addr) => {
+        try {
+          const data = await dexpaprika.getTokenData(addr);
+          return { address: addr, data };
+        } catch (error) {
+          return { address: addr, data: null, error: error.message };
+        }
+      });
+
+      const results = await Promise.all(tokenDataPromises);
+      let updatedCount = 0;
+
+      for (const result of results) {
+        if (!result.data) continue;
+
+        const token = this.trackedTokens.get(result.address);
+        if (!token) continue;
+
+        // Update name/symbol if they were Unknown and we now have better data
+        let wasUpdated = false;
+        if (result.data.name && result.data.name !== 'Unknown' &&
+            (!token.name || token.name === 'Unknown')) {
+          token.name = result.data.name;
+          wasUpdated = true;
+        }
+        if (result.data.symbol && result.data.symbol !== 'UNKNOWN' &&
+            (!token.symbol || token.symbol === 'UNKNOWN' || token.symbol === 'Unknown')) {
+          token.symbol = result.data.symbol;
+          wasUpdated = true;
+        }
+
+        if (wasUpdated) {
+          token.lastUnknownRefresh = now;
+          updatedCount++;
+          logger.success(`✅ Updated ${result.address.slice(0, 8)}...: ${token.symbol} (${token.name})`);
+        }
+      }
+
+      if (updatedCount > 0) {
+        logger.success(`✅ Refreshed ${updatedCount}/${addresses.length} Unknown ticker tokens`);
+      }
+    } catch (error) {
+      logger.error('Unknown ticker refresh failed', error);
     }
   }
 
@@ -642,7 +814,7 @@ class TokenManager {
               name: bestPair.baseToken?.name || tokenData.name || 'Unknown',
               symbol: bestPair.baseToken?.symbol || tokenData.symbol,
               chainShort: 'Solana',
-              logoUrl: tokenData.logoUrl,
+              logoUrl: bestPair.info?.imageUrl || tokenData.logoUrl || null,
               spottedAt: spottedAt,
               spottedMc: mc,
               currentMc: mc,
@@ -654,7 +826,8 @@ class TokenManager {
               mcTenSecondsAgo: mc,
               volTenSecondsAgo: bestPair.volume?.h24 || 0,
               _tenSecondSnapshotAt: Date.now(),
-              lastUpdated: Date.now()
+              lastUpdated: Date.now(),
+              source: 'degen'
             };
 
             this.trackedTokens.set(addr, token);
@@ -955,7 +1128,7 @@ class TokenManager {
       case '5m': windowMs = 5 * 60 * 1000; break;
       case '30m': windowMs = 30 * 60 * 1000; break;
       case '1h': windowMs = 60 * 60 * 1000; break;
-      case '4h': windowMs = 4 * 60 * 60 * 1000; break;
+      case '2h': windowMs = 2 * 60 * 60 * 1000; break;
       case 'all-time': default: windowMs = null; break;
     }
     const now = Date.now();
@@ -972,7 +1145,24 @@ class TokenManager {
   // Get MVP coin from top 10 based on momentum scoring
   getMVP(viewMode = 'all-time') {
     const top10 = this.getTop10(viewMode);
-    return mvpCalculator.getMVP(top10, viewMode);
+    const mvp = mvpCalculator.getMVP(top10, viewMode);
+
+    // Track MVP changes to calculate mvpSince
+    const currentMVPAddress = mvp ? mvp.address : null;
+    const previousMVPAddress = this.currentMVP[viewMode];
+
+    if (currentMVPAddress !== previousMVPAddress) {
+      // MVP changed, update tracking
+      this.currentMVP[viewMode] = currentMVPAddress;
+      this.mvpSince[viewMode] = currentMVPAddress ? Date.now() : null;
+    }
+
+    // Add mvpSince to the result
+    if (mvp) {
+      mvp.mvpSince = this.mvpSince[viewMode];
+    }
+
+    return mvp;
   }
 
   // Get score data for a single token (used for top10 component display)
@@ -986,31 +1176,109 @@ class TokenManager {
       .sort((a, b) => b.peakMultiplier - a.peakMultiplier);
   }
 
-  // Helper: Clean up tokens older than 2 hours (excludes holder coins)
+  // Helper: Clean up tokens older than monitoring window
   async cleanupOldTokens() {
     try {
       const cutoffTime = Date.now() - this.monitoringWindow;
+      const holderCutoffTime = Date.now() - this.holderMonitoringWindow;
       const keysToDelete = [];
 
-      for (const [addr, token] of this.trackedTokens.entries()) {
-        // Never expire holder coins - they stay tracked indefinitely
-        if (token.source === 'holder') continue;
+      // Separate holder and degen tokens for different handling
+      const holderTokens = [];
+      const degenTokens = [];
 
+      for (const [addr, token] of this.trackedTokens.entries()) {
+        if (token.source === 'holder' || token.source === 'ex-holder') {
+          holderTokens.push([addr, token]);
+        } else {
+          degenTokens.push([addr, token]);
+        }
+      }
+
+      // Clean up degen tokens (2 hours)
+      for (const [addr, token] of degenTokens) {
         if (token.spottedAt < cutoffTime) {
           keysToDelete.push(addr);
+        }
+      }
+
+      // Clean up holder tokens (48 hours) - including ex-holder
+      let holderCleanupCount = 0;
+      for (const [addr, token] of holderTokens) {
+        // Clean up holder tokens older than 48 hours
+        if (token.spottedAt < holderCutoffTime) {
+          keysToDelete.push(addr);
+          holderCleanupCount++;
+        }
+      }
+
+      // Hard cap: if we still have too many holder tokens, remove oldest ones
+      if (holderTokens.length - holderCleanupCount > this.maxHolderTokens) {
+        const sortedHolderTokens = holderTokens
+          .filter(([addr, token]) => !keysToDelete.includes(addr))
+          .sort((a, b) => a[1].spottedAt - b[1].spottedAt);
+
+        const excessCount = (holderTokens.length - holderCleanupCount) - this.maxHolderTokens;
+        for (let i = 0; i < excessCount; i++) {
+          keysToDelete.push(sortedHolderTokens[i][0]);
+          holderCleanupCount++;
         }
       }
 
       keysToDelete.forEach(addr => this.trackedTokens.delete(addr));
 
       if (keysToDelete.length > 0) {
-        logger.database(`Cleaned up ${keysToDelete.length} old tokens (2h+ old)`);
+        const degenCount = keysToDelete.filter(addr => {
+          const token = this.trackedTokens.get(addr);
+          return token && token.source !== 'holder' && token.source !== 'ex-holder';
+        }).length;
+        logger.database(`Cleaned up ${keysToDelete.length} tokens (${degenCount} degen, ${holderCleanupCount} holder/ex-holder)`);
       }
 
       // Clean up MVP calculator buffers for tokens no longer tracked
       mvpCalculator.cleanupStaleBuffers(Array.from(this.trackedTokens.keys()));
+
+      // Clean up failed discovery tokens (remove entries older than 1 hour)
+      const failedCutoffTime = Date.now() - (60 * 60 * 1000);
+      let failedCleanupCount = 0;
+      for (const [addr, data] of this.failedDiscoveryTokens.entries()) {
+        if (data.failedAt < failedCutoffTime) {
+          this.failedDiscoveryTokens.delete(addr);
+          failedCleanupCount++;
+        }
+      }
+      if (failedCleanupCount > 0) {
+        logger.database(`Cleaned up ${failedCleanupCount} stale failed discovery entries`);
+      }
+
+      // Log token count statistics
+      this.logTokenCounts();
     } catch (error) {
       logger.error('Token cleanup failed', error);
+    }
+  }
+
+  // Log current token counts and warn if approaching limits
+  logTokenCounts() {
+    const totalCount = this.trackedTokens.size;
+    let holderCount = 0;
+    let exHolderCount = 0;
+    let degenCount = 0;
+
+    for (const token of this.trackedTokens.values()) {
+      if (token.source === 'holder') holderCount++;
+      else if (token.source === 'ex-holder') exHolderCount++;
+      else degenCount++;
+    }
+
+    logger.debug(`Token counts: ${totalCount} total (${degenCount} degen, ${holderCount} holder, ${exHolderCount} ex-holder), ${this.failedDiscoveryTokens.size} failed discovery`);
+
+    // Warn if approaching limits
+    if (totalCount > 2000) {
+      logger.warn(`High token count detected: ${totalCount} tokens tracked. Consider reducing monitoring windows.`);
+    }
+    if (holderCount + exHolderCount > this.maxHolderTokens * 0.8) {
+      logger.warn(`Approaching holder token limit: ${holderCount + exHolderCount}/${this.maxHolderTokens} holder tokens`);
     }
   }
 
@@ -1031,7 +1299,7 @@ class TokenManager {
   }
 
   setViewMode(viewMode) {
-    const validModes = ['5m', '30m', '1h', '4h', 'all-time'];
+    const validModes = ['5m', '30m', '1h', '2h', 'all-time'];
     if (!validModes.includes(viewMode)) {
       logger.warn(`Invalid view mode: ${viewMode}, defaulting to all-time`);
       this.currentViewMode = 'all-time';
@@ -1041,6 +1309,18 @@ class TokenManager {
     if (this.currentViewMode !== viewMode) {
       logger.info(`View mode changed: ${this.currentViewMode} → ${viewMode}`);
       this.currentViewMode = viewMode;
+
+      // Clear existing debounce timer
+      if (this.viewModeDebounceTimer) {
+        clearTimeout(this.viewModeDebounceTimer);
+      }
+
+      // Debounce SSE update to prevent rapid re-subscription when switching modes
+      this.viewModeDebounceTimer = setTimeout(() => {
+        logger.debug('View mode debounce elapsed, updating SSE subscriptions');
+        this.viewModeDebounceTimer = null; // Clear timer so updates can proceed
+        this.updateSSESubscriptions();
+      }, this.viewModeDebounceMs);
     }
   }
 
@@ -1049,7 +1329,7 @@ class TokenManager {
       case '5m': return 5 * 60 * 1000;
       case '30m': return 30 * 60 * 1000;
       case '1h': return 60 * 60 * 1000;
-      case '4h': return 4 * 60 * 60 * 1000;
+      case '2h': return 2 * 60 * 60 * 1000;
       case 'all-time':
       default: return null;
     }
@@ -1086,7 +1366,8 @@ class TokenManager {
 
       const now = Date.now();
 
-      // Fetch token data from DexScreener
+      // Fetch token data from DexScreener (rate limited)
+      await dexscreenerLimiter.acquire();
       const tokenData = await dexscreener.getTokenByAddress(contractAddress);
 
       // Even if DexScreener fails, create a basic entry - holder coins always show
@@ -1147,7 +1428,7 @@ class TokenManager {
         name: bestPair?.baseToken?.name || tokenData.name || 'Unknown',
         symbol: bestPair?.baseToken?.symbol || tokenData.symbol || contractAddress.slice(0, 6).toUpperCase(),
         chainShort: bestPair?.chainId || 'solana',
-        logoUrl: tokenData.logoUrl || null,
+        logoUrl: bestPair?.info?.imageUrl || tokenData.logoUrl || null,
         spottedAt: now,
         spottedMc: mc,
         currentMc: mc,
@@ -1219,9 +1500,49 @@ class TokenManager {
 
   // Get holder tokens sorted by rank
   getHolderTokens() {
-    return Array.from(this.trackedTokens.values())
-      .filter(t => t.source === 'holder' && t.holderRank != null)
-      .sort((a, b) => a.holderRank - b.holderRank);
+    const allTokens = Array.from(this.trackedTokens.values());
+    const holderTokens = allTokens.filter(t => t.source === 'holder' && t.holderRank != null);
+
+    return holderTokens.sort((a, b) => a.holderRank - b.holderRank);
+  }
+
+  // Get holder score for a single token
+  getScoreForHolderToken(token) {
+    // Use holder-specific stats for score calculation
+    const holderSpottedMc = token.holderSpottedMc || token.spottedMc || 1;
+    const holderPeakMc = token.holderPeakMc || token.peakMc || token.currentMc;
+    const currentMultiplier = holderSpottedMc > 0 ? token.currentMc / holderSpottedMc : 1.0;
+
+    // 1. Multiplier score (0-100, capped at 10x)
+    const multiplierScore = Math.min(currentMultiplier / 10, 1) * 100;
+
+    // 2. Consistency score - based on how close current is to holder peak
+    // If current is near peak, token is healthy/consistent
+    const consistency = holderPeakMc > 0 ? (token.currentMc / holderPeakMc) : 1;
+    const consistencyScore = consistency * 100;
+
+    // 3. Volume health - higher volume = more liquid/healthy
+    const volumeScore = Math.min((token.volume24h || 0) / 100000, 1) * 100;
+
+    // 4. Rank bonus - #1 gets 100, #10 gets 10
+    const rankScore = Math.max(0, 110 - (token.holderRank * 10));
+
+    // Weighted total
+    const totalScore =
+      (multiplierScore * 0.40) +
+      (consistencyScore * 0.30) +
+      (volumeScore * 0.20) +
+      (rankScore * 0.10);
+
+    return {
+      total: totalScore,
+      components: {
+        multiplier: { raw: currentMultiplier, score: multiplierScore, weight: 0.40 },
+        consistency: { raw: consistency, score: consistencyScore, weight: 0.30 },
+        volume: { raw: token.volume24h || 0, score: volumeScore, weight: 0.20 },
+        rank: { raw: token.holderRank, score: rankScore, weight: 0.10 }
+      }
+    };
   }
 
   // Get holder MVP based on holder-specific algorithm
@@ -1229,54 +1550,18 @@ class TokenManager {
     const holderTokens = this.getHolderTokens();
     if (holderTokens.length === 0) return null;
 
-    // Holder MVP Algorithm:
-    // Score based on:
-    // 1. Current multiplier (40%) - how much it's up from when spotted IN HOLDER MODE
-    // 2. Consistency score (30%) - low volatility = good
-    // 3. Volume health (20%) - healthy trading volume
-    // 4. Rank bonus (10%) - higher ranked = trusted more
-
     let bestToken = null;
     let bestScore = -Infinity;
 
     for (const token of holderTokens) {
-      // Use holder-specific stats for MVP calculation
-      const holderSpottedMc = token.holderSpottedMc || token.spottedMc || 1;
-      const holderPeakMc = token.holderPeakMc || token.peakMc || token.currentMc;
-      const currentMultiplier = holderSpottedMc > 0 ? token.currentMc / holderSpottedMc : 1.0;
+      const scoreData = this.getScoreForHolderToken(token);
 
-      // 1. Multiplier score (0-100, capped at 10x)
-      const multiplierScore = Math.min(currentMultiplier / 10, 1) * 100;
-
-      // 2. Consistency score - based on how close current is to holder peak
-      // If current is near peak, token is healthy/consistent
-      const consistency = holderPeakMc > 0 ? (token.currentMc / holderPeakMc) : 1;
-      const consistencyScore = consistency * 100;
-
-      // 3. Volume health - higher volume = more liquid/healthy
-      const volumeScore = Math.min((token.volume24h || 0) / 100000, 1) * 100;
-
-      // 4. Rank bonus - #1 gets 100, #10 gets 10
-      const rankScore = Math.max(0, 110 - (token.holderRank * 10));
-
-      // Weighted total
-      const totalScore =
-        (multiplierScore * 0.40) +
-        (consistencyScore * 0.30) +
-        (volumeScore * 0.20) +
-        (rankScore * 0.10);
-
-      if (totalScore > bestScore) {
-        bestScore = totalScore;
+      if (scoreData.total > bestScore) {
+        bestScore = scoreData.total;
         bestToken = {
           token,
-          score: totalScore,
-          components: {
-            multiplier: { raw: currentMultiplier, score: multiplierScore, weight: 0.40 },
-            consistency: { raw: consistency, score: consistencyScore, weight: 0.30 },
-            volume: { raw: token.volume24h || 0, score: volumeScore, weight: 0.20 },
-            rank: { raw: token.holderRank, score: rankScore, weight: 0.10 }
-          }
+          score: scoreData.total,
+          components: scoreData.components
         };
       }
     }

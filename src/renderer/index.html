@@ -7,122 +7,191 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
 </head>
-<body class="terminal-body">
+<body class="terminal-body" data-mode="degen">
+    <!-- Custom Title Bar -->
+    <div class="custom-titlebar">
+        <div class="titlebar-drag-region"></div>
+        <div class="titlebar-controls">
+            <button class="titlebar-btn minimize-btn" id="minimize-btn" title="Minimize">
+                <svg width="10" height="10" viewBox="0 0 10 10">
+                    <rect x="0" y="4" width="10" height="1.5" fill="currentColor"/>
+                </svg>
+            </button>
+            <button class="titlebar-btn maximize-btn" id="maximize-btn" title="Maximize">
+                <svg width="10" height="10" viewBox="0 0 10 10">
+                    <rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1"/>
+                </svg>
+            </button>
+            <button class="titlebar-btn close-btn" id="close-btn" title="Close">
+                <svg width="10" height="10" viewBox="0 0 10 10">
+                    <path d="M1 1L9 9M1 9L9 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Scanline Overlay -->
     <div class="scanlines"></div>
     <div class="scanlines-glow"></div>
 
     <!-- Terminal Container -->
     <div class="terminal-container">
-        <!-- Terminal Header -->
-        <header class="terminal-header">
-            <div class="header-left">
-                <div class="terminal-controls">
-                    <span class="control-dot close"></span>
-                    <span class="control-dot minimize"></span>
-                    <span class="control-dot maximize"></span>
-                </div>
-                <div class="header-title">
-                    <span class="title-prefix">~/dexter</span>
-                    <span class="title-separator">::</span>
-                    <span class="title-command">token-hunter</span>
-                </div>
-            </div>
-            <div class="header-center">
-                <h1 class="app-title">
-                    <span class="title-dexter">DEXTER</span>
-                    <span class="title-cursor">_</span>
-                </h1>
-            </div>
-            <div class="header-right">
-                <div class="connection-status" id="connection-status">
+        <!-- Header - 3 Column Layout -->
+        <div class="header-container">
+            <!-- Top Status Bar -->
+            <div class="top-bar">
+                <div class="status-badge version">
                     <span class="status-dot"></span>
-                    <span class="status-text">CONNECTED</span>
+                    v1.0.0
+                </div>
+                <div class="status-badge network">
+                    <span class="status-dot"></span>
+                    SOLANA
+                </div>
+                <div class="status-badge mode">
+                    <span class="status-dot"></span>
+                    <span id="header-mode-text">DEGEN MODE</span>
+                </div>
+                <div class="admin-lock" id="admin-lock">
+                    <span class="admin-lock-icon">🔒</span>
+                    <span class="admin-lock-text">ADMIN</span>
                 </div>
             </div>
-        </header>
+
+            <!-- 3-Column Header Grid -->
+            <div class="header-grid">
+                <!-- LEFT COLUMN: Logo + Controls -->
+                <div class="header-column header-column-left">
+                    <div class="logo-section-wrapper">
+                        <div class="logo-main">
+                            <span class="dexter">DEXTER</span>
+                            <span class="dot">.</span>
+                        </div>
+                    </div>
+
+                    <div class="header-controls">
+                        <!-- Mode Toggle -->
+                        <div class="control-group">
+                            <span class="header-control-label">$ MODE</span>
+                            <div class="header-mode-toggle" id="header-mode-toggle">
+                                <div class="header-mode-option active" data-mode="degen">DEGEN</div>
+                                <div class="header-mode-option" data-mode="holder">HOLDER</div>
+                                <div class="header-mode-option" data-mode="radar">RADAR</div>
+                            </div>
+                        </div>
+
+                        <!-- Timeframe Buttons -->
+                        <div class="control-group">
+                            <span class="header-control-label">$ TIMEFRAME</span>
+                            <div class="header-timeframe-buttons" id="header-timeframe-buttons">
+                                <button class="header-timeframe-btn" data-view="5m">5M</button>
+                                <button class="header-timeframe-btn" data-view="30m">30M</button>
+                                <button class="header-timeframe-btn" data-view="1h">1H</button>
+                                <button class="header-timeframe-btn" data-view="2h">2H</button>
+                                <button class="header-timeframe-btn active" data-view="all-time">ALL</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENTER COLUMN: Recent Arrivals -->
+                <div class="header-column header-column-center">
+                    <div class="header-arrivals" id="header-arrivals">
+                        <div class="arrivals-header">
+                            <div class="arrivals-header-top">
+                                <span class="arrivals-icon">◈</span>
+                                <span class="arrivals-title">RECENT ARRIVALS</span>
+                            </div>
+                            <div class="arrivals-header-content">
+                                <div class="arrivals-stats">
+                                    <div class="arrivals-stat">
+                                        <span class="arrivals-stat-label">DEGEN</span>
+                                        <span class="arrivals-stat-value" id="arrivals-degen-count">0</span>
+                                    </div>
+                                    <div class="arrivals-stat">
+                                        <span class="arrivals-stat-label">HOLDER</span>
+                                        <span class="arrivals-stat-value" id="arrivals-holder-count">0</span>
+                                    </div>
+                                </div>
+                                <div class="arrivals-status">
+                                    <span class="arrivals-status-dot"></span>
+                                    <span class="arrivals-status-text">SCANNING</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arrivals-divider"></div>
+
+                        <!-- Degen Segment -->
+                        <div class="arrivals-mode arrivals-degen">
+                            <div class="arrivals-mode-header">
+                                <div class="arrivals-mode-header-left">
+                                    <span class="arrivals-mode-badge degen">DEGEN</span>
+                                    <span class="arrivals-mode-label">latest 5</span>
+                                </div>
+                                <span class="arrivals-momentum-label">1M MOMENTUM %</span>
+                            </div>
+                            <div class="arrivals-tokens" id="arrivals-degen-tokens">
+                                <!-- Tokens rendered dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="arrivals-separator"></div>
+
+                        <!-- Holder Segment -->
+                        <div class="arrivals-mode arrivals-holder">
+                            <div class="arrivals-mode-header">
+                                <div class="arrivals-mode-header-left">
+                                    <span class="arrivals-mode-badge holder">HOLDER</span>
+                                    <span class="arrivals-mode-label">latest 5</span>
+                                </div>
+                                <span class="arrivals-momentum-label">1M MOMENTUM %</span>
+                            </div>
+                            <div class="arrivals-tokens" id="arrivals-holder-tokens">
+                                <!-- Tokens rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Alerts Log Terminal -->
+                <div class="header-column header-column-right">
+                    <div class="notification-terminal" id="notification-terminal">
+                        <div class="terminal-drag-handle" id="terminal-drag-handle" title="Drag to move">
+                            <div class="drag-handle-grip"></div>
+                        </div>
+                        <div class="terminal-resize-handle terminal-resize-nw" id="resize-nw" data-dir="nw" title="Resize"></div>
+                        <div class="terminal-resize-handle terminal-resize-ne" id="resize-ne" data-dir="ne" title="Resize"></div>
+                        <div class="terminal-resize-handle terminal-resize-sw" id="resize-sw" data-dir="sw" title="Resize"></div>
+                        <div class="terminal-resize-handle terminal-resize-se" id="resize-se" data-dir="se" title="Resize"></div>
+                        <div class="terminal-header">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-title">alerts.log</span>
+                        </div>
+                        <div class="terminal-messages" id="terminal-messages">
+                            <!-- Messages rendered dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Terminal Content -->
         <main class="terminal-main">
-            <!-- Branding Banner -->
-            <div class="brand-banner">
-                <div class="banner-gradient"></div>
-                <div class="banner-content">
-                    <h2 class="brand-title">
-                        <span class="brand-dexter">DEXTER</span>
-                        <span class="brand-separator">.</span>
-                        <span class="brand-subtitle">TOKEN HUNTER</span>
-                    </h2>
-                    <div class="brand-meta">
-                        <span class="meta-tag">v1.0.0</span>
-                        <span class="meta-separator">|</span>
-                        <span class="meta-network">SOLANA</span>
-                        <span class="meta-separator">|</span>
-                        <span class="meta-mode" id="display-mode">DEGEN MODE</span>
-                    </div>
-                </div>
-                <div class="banner-decor">
-                    <span class="decor-line"></span>
-                    <span class="decor-bracket">[</span>
-                    <span class="decor-x">×</span>
-                    <span class="decor-bracket">]</span>
-                </div>
-            </div>
-
-            <!-- Control Panel -->
-            <div class="control-panel">
-                <div class="control-section mode-section">
-                    <label class="control-label">
-                        <span class="label-prompt">$</span>
-                        <span class="label-text">mode</span>
-                    </label>
-                    <div class="mode-toggle">
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="degen" checked>
-                            <span class="mode-indicator"></span>
-                            <span class="mode-text">degen</span>
-                        </label>
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="holder">
-                            <span class="mode-indicator"></span>
-                            <span class="mode-text">holder</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="control-section time-section">
-                    <label class="control-label">
-                        <span class="label-prompt">$</span>
-                        <span class="label-text">timeframe</span>
-                    </label>
-                    <div class="time-tabs">
-                        <button class="time-tab" data-view="5m">5M</button>
-                        <button class="time-tab" data-view="30m">30M</button>
-                        <button class="time-tab" data-view="1h">1H</button>
-                        <button class="time-tab" data-view="4h">4H</button>
-                        <button class="time-tab active" data-view="all-time">ALL</button>
-                        <button class="time-tab" id="holder-current-tab" data-view="current" style="display:none;">CUR</button>
-                    </div>
-                </div>
-
-                <div class="control-section options-section">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="telegram-auto-alert-checkbox" checked>
-                        <span class="checkbox-box"></span>
-                        <span class="checkbox-text">telegram-alerts</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="public-channels-checkbox" checked>
-                        <span class="checkbox-box"></span>
-                        <span class="checkbox-text">public-channels</span>
-                    </label>
-                </div>
+            <!-- Hidden inputs for JavaScript compatibility -->
+            <div style="display: none;">
+                <input type="radio" name="mode" value="degen" checked id="hidden-mode-degen">
+                <input type="radio" name="mode" value="holder" id="hidden-mode-holder">
+                <input type="radio" name="mode" value="radar" id="hidden-mode-radar">
+                <input type="checkbox" id="telegram-auto-alert-checkbox" checked>
+                <input type="checkbox" id="public-channels-checkbox" checked>
+                <button class="time-tab" id="holder-current-tab" data-view="current"></button>
             </div>
 
             <!-- Content Grid -->
-            <div class="content-grid">
+            <div class="content-grid" id="content-grid">
                 <!-- Token List Panel -->
                 <section class="panel token-panel">
                     <div class="panel-header">
@@ -188,6 +257,47 @@
                 </section>
             </div>
 
+            <!-- Radar Mode Display -->
+            <div class="radar-view" id="radar-view" style="display: none;">
+                <div class="radar-grid">
+                    <!-- Degen Radar -->
+                    <div class="radar-panel radar-degen-panel">
+                        <div class="radar-panel-header">
+                            <span class="radar-panel-icon">»</span>
+                            <span class="radar-panel-title">DEGEN RADAR</span>
+                            <span class="radar-panel-path">./radar/degen/all-time</span>
+                        </div>
+                        <div class="radar-display" id="radar-degen-display">
+                            <div class="radar-empty-state">
+                                <div class="radar-empty-icon">◎</div>
+                                <div class="radar-empty-text">Scanning Degen tokens...</div>
+                            </div>
+                        </div>
+                        <div class="radar-update-log" id="radar-degen-log">
+                            <div class="radar-log-entry radar-log-empty">awaiting signals...</div>
+                        </div>
+                    </div>
+
+                    <!-- MVP Radar -->
+                    <div class="radar-panel radar-mvp-panel">
+                        <div class="radar-panel-header">
+                            <span class="radar-panel-icon">»</span>
+                            <span class="radar-panel-title">MVP RADAR</span>
+                            <span class="radar-panel-path">./radar/mvp/all-time</span>
+                        </div>
+                        <div class="radar-display" id="radar-mvp-display">
+                            <div class="radar-empty-state">
+                                <div class="radar-empty-icon">◎</div>
+                                <div class="radar-empty-text">Scanning MVP tokens...</div>
+                            </div>
+                        </div>
+                        <div class="radar-update-log" id="radar-mvp-log">
+                            <div class="radar-log-entry radar-log-empty">awaiting signals...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Status Bar -->
             <footer class="status-bar">
                 <div class="status-left">
@@ -195,13 +305,19 @@
                     <span class="status-message" id="status-message">System ready</span>
                 </div>
                 <div class="status-center">
-                    <span class="stat-item">
-                        <span class="stat-label">TOKENS</span>
-                        <span class="stat-value" id="token-count-status">0</span>
+                    <span class="stat-item stat-degen">
+                        <span class="stat-label">DEGEN TOKENS</span>
+                        <span class="stat-value stat-value-orange" id="degen-count-status">0</span>
+                    </span>
+                    <span class="stat-divider">|</span>
+                    <span class="stat-item stat-holder">
+                        <span class="stat-label">HOLDER TOKENS</span>
+                        <span class="stat-value stat-value-green" id="holder-count-status">0</span>
                     </span>
                 </div>
                 <div class="status-right">
-                    <span class="update-time" id="last-update">--:--:--</span>
+                    <span class="time-label">TIME:</span>
+                    <span class="footer-clock" id="footer-clock">00:00 <span class="clock-ampm">AM</span></span>
                 </div>
             </footer>
         </main>
@@ -232,6 +348,14 @@
                 <span class="btn-icon">⊘</span>
                 <span class="btn-label">IGNORE</span>
             </button>
+            <button class="action-btn" id="data-stats-btn" title="Data Collector Stats">
+                <span class="btn-icon">📊</span>
+                <span class="btn-label">STATS</span>
+            </button>
+            <button class="action-btn" id="reset-terminal-btn" title="Reset Terminal Position">
+                <span class="btn-icon">↺</span>
+                <span class="btn-label">RST_TERM</span>
+            </button>
             <div class="actions-divider"></div>
             <button class="action-btn volume-btn" id="volume-btn" title="Alert Volume">
                 <span class="btn-icon">♪</span>
@@ -241,11 +365,6 @@
                 <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" step="10" value="70">
                 <span class="volume-value" id="volume-value">70%</span>
             </div>
-        </aside>
-
-        <!-- System Tray -->
-        <aside class="system-tray">
-            <div class="tray-clock" id="system-clock">00:00</div>
         </aside>
     </div>
 
@@ -293,6 +412,23 @@
             </div>
             <div class="modal-footer">
                 <button class="modal-btn" id="close-ignore-btn">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="password-modal-overlay" id="password-modal-overlay">
+        <div class="password-modal">
+            <div class="password-modal-header">
+                <span class="password-modal-icon">🔒</span>
+                <span class="password-modal-title">ADMIN ACCESS</span>
+            </div>
+            <p class="password-modal-subtitle">Enter password to unlock admin controls</p>
+            <input type="password" class="password-modal-input" id="password-input" placeholder="••••••" maxlength="6">
+            <div class="password-modal-error" id="password-error"></div>
+            <div class="password-modal-buttons">
+                <button class="password-modal-btn" id="password-cancel-btn">CANCEL</button>
+                <button class="password-modal-btn primary" id="password-submit-btn">UNLOCK</button>
             </div>
         </div>
     </div>

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Floating Cards</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0c0c0c;
+            --card-bg: rgba(30, 30, 30, 0.8);
+            --border: rgba(255, 107, 0, 0.2);
+            --text: #666;
+            --text-bright: #999;
+            --white: #ccc;
+            --orange: #ff6b00;
+            --orange-glow: rgba(255, 107, 0, 0.3);
+            --green: #4ade80;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 20%, rgba(255, 107, 0, 0.03) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 80%, rgba(255, 107, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            padding: 80px 60px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* TOP NAV */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(12, 12, 12, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--orange);
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .nav-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--bg);
+        }
+
+        /* MVP CARD */
+        .mvp-section {
+            margin-bottom: 40px;
+        }
+
+        .mvp-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 60px;
+            align-items: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .mvp-visual {
+            position: relative;
+        }
+
+        .mvp-orb {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange), #cc5500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--bg);
+            box-shadow: 0 0 60px var(--orange-glow);
+        }
+
+        .mvp-orb::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 1px solid var(--orange);
+            opacity: 0.3;
+        }
+
+        .mvp-orb::after {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            border: 1px solid var(--orange);
+            opacity: 0.1;
+        }
+
+        .mvp-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mvp-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .mvp-symbol {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .mvp-name {
+            font-size: 14px;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mvp-score-area {
+            text-align: right;
+        }
+
+        .mvp-score-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .mvp-score {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--orange);
+            line-height: 1;
+        }
+
+        .mvp-health {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        /* TOKEN GRID */
+        .tokens-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .tokens-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .tokens-count {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .token-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .token-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--orange);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .token-card:hover {
+            border-color: var(--border);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .token-card:hover::before {
+            opacity: 1;
+        }
+
+        .token-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .token-rank {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .token-flags {
+            display: flex;
+            gap: 4px;
+        }
+
+        .flag-badge {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .flag-badge.tg {
+            background: var(--orange);
+            color: var(--bg);
+        }
+
+        .flag-badge.bl {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .token-icon-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .token-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .token-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .token-symbol {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .token-name {
+            font-size: 11px;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .token-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metric-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text);
+        }
+
+        .metric-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .metric-value.green {
+            color: var(--green);
+        }
+
+        .token-score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .score-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--orange);
+        }
+
+        /* FLOATING PANELS */
+        .floating-panels {
+            position: fixed;
+            right: 60px;
+            bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .float-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            width: 280px;
+        }
+
+        .float-panel-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            color: var(--text-bright);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        .breakdown-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            color: var(--white);
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 60px;
+            background: rgba(12, 12, 12, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 30px;
+        }
+
+        .status-item span {
+            color: var(--orange);
+        }
+
+        .status-right {
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <nav class="nav">
+        <div class="logo">DEX<span>TER</span></div>
+        <div class="nav-controls">
+            <button class="nav-btn active">Degen</button>
+            <button class="nav-btn">Holder</button>
+            <button class="nav-btn active">5M</button>
+            <button class="nav-btn">30M</button>
+            <button class="nav-btn">1H</button>
+            <button class="nav-btn">4H</button>
+            <button class="nav-btn">ALL</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="mvp-section">
+            <div class="mvp-card">
+                <div class="mvp-visual">
+                    <div class="mvp-orb">B</div>
+                </div>
+                <div class="mvp-info">
+                    <span class="mvp-label">Most Valuable Performer</span>
+                    <span class="mvp-symbol">BONK</span>
+                    <span class="mvp-name">Bonk Inu Protocol</span>
+                </div>
+                <div class="mvp-score-area">
+                    <div class="mvp-score-label">Total Score</div>
+                    <div class="mvp-score">94.2</div>
+                    <div class="mvp-health">Health: 87%</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="tokens-header">
+                <span class="tokens-title">Top Tokens</span>
+                <span class="tokens-count">24 Active</span>
+            </div>
+            <div class="token-grid">
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#01</span>
+                        <div class="token-flags">
+                            <span class="flag-badge tg">TG</span>
+                        </div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">BONK</span>
+                            <span class="token-name">Bonk Inu</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$2.8M</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$840K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+133%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.6x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">94.2</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#02</span>
+                        <div class="token-flags">
+                            <span class="flag-badge tg">TG</span>
+                        </div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">WIF</span>
+                            <span class="token-name">dogwifhat</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$2.1M</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$620K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+136%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.7x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">91.8</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#03</span>
+                        <div class="token-flags"></div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">POPCAT</span>
+                            <span class="token-name">Popcat</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$1.4M</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$380K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+115%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.8x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">88.4</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#04</span>
+                        <div class="token-flags">
+                            <span class="flag-badge tg">TG</span>
+                        </div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">MYRO</span>
+                            <span class="token-name">Myro</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$980K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$290K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+133%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.9x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">85.1</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#05</span>
+                        <div class="token-flags"></div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">SEAL</span>
+                            <span class="token-name">Sealana</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$760K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$180K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+100%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.4x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">82.3</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#06</span>
+                        <div class="token-flags"></div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">MONG</span>
+                            <span class="token-name">Mong</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$540K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$140K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+86%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.3x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">78.9</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#07</span>
+                        <div class="token-flags">
+                            <span class="flag-badge bl">BL</span>
+                        </div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">SLERF</span>
+                            <span class="token-name">Slerf</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$410K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$120K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+71%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.2x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">75.6</span>
+                    </div>
+                </div>
+
+                <div class="token-card">
+                    <div class="token-card-header">
+                        <span class="token-rank">#08</span>
+                        <div class="token-flags"></div>
+                    </div>
+                    <div class="token-icon-row">
+                        <div class="token-icon"></div>
+                        <div class="token-details">
+                            <span class="token-symbol">WEN</span>
+                            <span class="token-name">Wen</span>
+                        </div>
+                    </div>
+                    <div class="token-metrics">
+                        <div class="metric">
+                            <span class="metric-label">MC</span>
+                            <span class="metric-value">$320K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Volume</span>
+                            <span class="metric-value">$95K</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Net</span>
+                            <span class="metric-value green">+78%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Peak</span>
+                            <span class="metric-value">2.3x</span>
+                        </div>
+                    </div>
+                    <div class="token-score">
+                        <span class="score-label">Score</span>
+                        <span class="score-value">72.1</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="floating-panels">
+        <div class="float-panel">
+            <div class="float-panel-title">Score Breakdown</div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Buy Pressure</span>
+                <span class="breakdown-value">18.4</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Net Buy Vol</span>
+                <span class="breakdown-value">19.2</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Txns Velocity</span>
+                <span class="breakdown-value">17.8</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Price Mom.</span>
+                <span class="breakdown-value">20.1</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">SSE Mom.</span>
+                <span class="breakdown-value">18.7</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-left">
+            <span class="status-item">Tokens: <span>24</span></span>
+            <span class="status-item">Alerts: <span>7</span></span>
+            <span class="status-item">Ignored: <span>3</span></span>
+        </div>
+        <div class="status-right">14:32:07 UTC</div>
+    </div>
+</body>
+</html>

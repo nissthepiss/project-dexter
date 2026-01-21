@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Terminal Brutalist</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --border: #2a2a2a;
+            --text: #8a8a8a;
+            --text-bright: #e0e0e0;
+            --orange: #ff6b00;
+            --orange-dim: #cc5500;
+            --orange-glow: rgba(255, 107, 0, 0.3);
+            --green: #3a7a3a;
+            --red: #8a3a3a;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            padding: 8px;
+            gap: 8px;
+        }
+
+        /* HEADER */
+        .header {
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .logo-box {
+            background: var(--bg-card);
+            border: 2px solid var(--orange);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--orange);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .mode-btn {
+            padding: 10px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mode-btn.active {
+            background: var(--orange);
+            color: var(--bg-dark);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .tf-btn {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-left: 1px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tf-btn:first-child {
+            border-left: none;
+        }
+
+        .tf-btn.active {
+            background: var(--orange);
+            color: var(--bg-dark);
+        }
+
+        .status-indicators {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-badge.online {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .status-badge.admin {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, var(--bg-card) 0%, var(--bg-dark) 100%);
+        }
+
+        .panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-bright);
+        }
+
+        .panel-count {
+            font-size: 10px;
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        /* TOKEN TABLE */
+        .token-table {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .token-table::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .token-table::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        .token-table::-webkit-scrollbar-thumb {
+            background: var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: var(--bg-dark);
+            z-index: 10;
+        }
+
+        th {
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: rgba(255, 107, 0, 0.05);
+        }
+
+        .rank {
+            color: var(--orange);
+            font-weight: 700;
+        }
+
+        .token-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .token-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--border);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .token-symbol {
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        .token-name {
+            color: var(--text);
+            font-size: 9px;
+        }
+
+        .positive {
+            color: var(--green);
+        }
+
+        .negative {
+            color: var(--red);
+        }
+
+        .score-value {
+            color: var(--orange);
+            font-weight: 700;
+        }
+
+        .flag {
+            font-size: 8px;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .flag.bl {
+            background: var(--red);
+            color: var(--text-bright);
+        }
+
+        .flag.tg {
+            background: var(--orange);
+            color: var(--bg-dark);
+        }
+
+        /* MVP PANEL */
+        .mvp-content {
+            flex: 1;
+            padding: 16px;
+            overflow: auto;
+        }
+
+        .mvp-token {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mvp-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dim));
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px var(--orange-glow);
+        }
+
+        .mvp-symbol {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--bg-dark);
+        }
+
+        .mvp-name {
+            font-size: 14px;
+            color: var(--text-bright);
+            margin-bottom: 4px;
+        }
+
+        .mvp-fullname {
+            font-size: 10px;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mvp-score {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid var(--orange);
+            background: rgba(255, 107, 0, 0.05);
+        }
+
+        .score-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .score-value-main {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--orange);
+            line-height: 1;
+        }
+
+        .health-bar {
+            margin-top: 12px;
+            height: 4px;
+            background: var(--bg-dark);
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--orange-dim), var(--orange));
+            width: 87%;
+        }
+
+        .health-text {
+            font-size: 9px;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .score-breakdown {
+            margin-top: 16px;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 10px;
+        }
+
+        .breakdown-label {
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .breakdown-value {
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .metric-box {
+            padding: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+        }
+
+        .metric-label {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+
+        /* FOOTER */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-section {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-item {
+            color: var(--text);
+        }
+
+        .footer-item span {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .footer-time {
+            color: var(--text);
+        }
+
+        /* ANIMATIONS */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--orange);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo-box">
+                <div class="logo-icon"></div>
+                <span class="logo-text">DEXTER</span>
+            </div>
+
+            <div class="controls">
+                <div class="mode-toggle">
+                    <button class="mode-btn active">Degen Mode</button>
+                    <button class="mode-btn">Holder Mode</button>
+                </div>
+                <div class="timeframe-tabs">
+                    <button class="tf-btn active">5M</button>
+                    <button class="tf-btn">30M</button>
+                    <button class="tf-btn">1H</button>
+                    <button class="tf-btn">4H</button>
+                    <button class="tf-btn">ALL</button>
+                </div>
+            </div>
+
+            <div class="status-indicators">
+                <div class="status-badge online">● Connected</div>
+                <div class="status-badge admin">Admin</div>
+            </div>
+        </header>
+
+        <!-- MAIN -->
+        <main class="main">
+            <!-- TOKEN LIST PANEL -->
+            <section class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Top Tokens</span>
+                    <span class="panel-count">24 Active</span>
+                </div>
+                <div class="token-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Token</th>
+                                <th>Spotted</th>
+                                <th>Current</th>
+                                <th>Volume</th>
+                                <th>Net</th>
+                                <th>Score</th>
+                                <th>Time</th>
+                                <th>Peak</th>
+                                <th>Flags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="rank">01</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">BONK</div>
+                                            <div class="token-name">Bonk Inu</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$1.2M</td>
+                                <td>$2.8M</td>
+                                <td>$840K</td>
+                                <td class="positive">+133%</td>
+                                <td class="score-value">94.2</td>
+                                <td>2h 14m</td>
+                                <td>$3.1M <span class="positive">2.6x</span></td>
+                                <td><span class="flag tg">TG</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">02</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">WIF</div>
+                                            <div class="token-name">dogwifhat</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$890K</td>
+                                <td>$2.1M</td>
+                                <td>$620K</td>
+                                <td class="positive">+136%</td>
+                                <td class="score-value">91.8</td>
+                                <td>1h 47m</td>
+                                <td>$2.4M <span class="positive">2.7x</span></td>
+                                <td><span class="flag tg">TG</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">03</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">POPCAT</div>
+                                            <div class="token-name">Popcat</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$650K</td>
+                                <td>$1.4M</td>
+                                <td>$380K</td>
+                                <td class="positive">+115%</td>
+                                <td class="score-value">88.4</td>
+                                <td>3h 02m</td>
+                                <td>$1.8M <span class="positive">2.8x</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">04</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">MYRO</div>
+                                            <div class="token-name">Myro</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$420K</td>
+                                <td>$980K</td>
+                                <td>$290K</td>
+                                <td class="positive">+133%</td>
+                                <td class="score-value">85.1</td>
+                                <td>1h 33m</td>
+                                <td>$1.2M <span class="positive">2.9x</span></td>
+                                <td><span class="flag tg">TG</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">05</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">SEAL</div>
+                                            <div class="token-name">Sealana</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$380K</td>
+                                <td>$760K</td>
+                                <td>$180K</td>
+                                <td class="positive">+100%</td>
+                                <td class="score-value">82.3</td>
+                                <td>2h 51m</td>
+                                <td>$920K <span class="positive">2.4x</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">06</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">MONG</div>
+                                            <div class="token-name">Mong</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$290K</td>
+                                <td>$540K</td>
+                                <td>$140K</td>
+                                <td class="positive">+86%</td>
+                                <td class="score-value">78.9</td>
+                                <td>4h 17m</td>
+                                <td>$680K <span class="positive">2.3x</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">07</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">SLERF</div>
+                                            <div class="token-name">Slerf</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$240K</td>
+                                <td>$410K</td>
+                                <td>$120K</td>
+                                <td class="positive">+71%</td>
+                                <td class="score-value">75.6</td>
+                                <td>1h 09m</td>
+                                <td>$520K <span class="positive">2.2x</span></td>
+                                <td><span class="flag bl">BL</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">08</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">WEN</div>
+                                            <div class="token-name">Wen</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$180K</td>
+                                <td>$320K</td>
+                                <td>$95K</td>
+                                <td class="positive">+78%</td>
+                                <td class="score-value">72.1</td>
+                                <td>2h 44m</td>
+                                <td>$410K <span class="positive">2.3x</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">09</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">MOODENG</div>
+                                            <div class="token-name">Moo Deng</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$150K</td>
+                                <td>$240K</td>
+                                <td>$78K</td>
+                                <td class="positive">+60%</td>
+                                <td class="score-value">68.4</td>
+                                <td>3h 28m</td>
+                                <td>$310K <span class="positive">2.1x</span></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="rank">10</td>
+                                <td>
+                                    <div class="token-cell">
+                                        <div class="token-icon"></div>
+                                        <div>
+                                            <div class="token-symbol">BODEN</div>
+                                            <div class="token-name">Boden</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>$120K</td>
+                                <td>$190K</td>
+                                <td>$62K</td>
+                                <td class="positive">+58%</td>
+                                <td class="score-value">64.7</td>
+                                <td>1h 55m</td>
+                                <td>$240K <span class="positive">2.0x</span></td>
+                                <td><span class="flag tg">TG</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- MVP PANEL -->
+            <section class="panel">
+                <div class="panel-header">
+                    <span class="panel-title"><span class="live-dot"></span>MVP Token</span>
+                </div>
+                <div class="mvp-content">
+                    <div class="mvp-token">
+                        <div class="mvp-icon-wrapper">
+                            <span class="mvp-symbol">B</span>
+                        </div>
+                        <div class="mvp-name">BONK</div>
+                        <div class="mvp-fullname">Bonk Inu Protocol</div>
+                    </div>
+
+                    <div class="mvp-score">
+                        <div class="score-label">Total Score</div>
+                        <div class="score-value-main">94.2</div>
+                        <div class="health-bar">
+                            <div class="health-fill"></div>
+                        </div>
+                        <div class="health-text">Health: 87%</div>
+                    </div>
+
+                    <div class="score-breakdown">
+                        <div class="breakdown-row">
+                            <span class="breakdown-label">Buy Pressure</span>
+                            <span class="breakdown-value">18.4</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span class="breakdown-label">Net Buy Volume</span>
+                            <span class="breakdown-value">19.2</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span class="breakdown-label">Txns Velocity</span>
+                            <span class="breakdown-value">17.8</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span class="breakdown-label">Price Momentum</span>
+                            <span class="breakdown-value">20.1</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span class="breakdown-label">SSE Momentum</span>
+                            <span class="breakdown-value">18.7</span>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-label">MC Acceleration</div>
+                            <div class="metric-value">+42%</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Volume Acceleration</div>
+                            <div class="metric-value">+38%</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Market Cap</div>
+                            <div class="metric-value">$2.8M</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">24h Volume</div>
+                            <div class="metric-value">$840K</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-section">
+                <div class="footer-item">Tokens: <span>24</span></div>
+                <div class="footer-item">Alerts: <span>7</span></div>
+                <div class="footer-item">Ignored: <span>3</span></div>
+            </div>
+            <div class="footer-time">Last Update: 14:32:07 UTC</div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer 10 - Hexagonal Sci-Fi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Audiowide&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --hex-cyan: #00ffff;
+            --hex-magenta: #ff00ff;
+            --hex-yellow: #ffff00;
+            --hex-dark: #0a0a14;
+            --hex-panel: #12121e;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--hex-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hexagonal grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2300ffff' fill-opacity='0.03'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 1;
+            border-bottom: 2px solid var(--hex-cyan);
+            padding: 12px 25px;
+            background: var(--hex-panel);
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-family: 'Audiowide', cursive;
+            font-size: 1.4rem;
+            background: linear-gradient(90deg, var(--hex-cyan), var(--hex-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            font-size: 0.65rem;
+            color: var(--hex-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mode-toggle, .timeframe-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--hex-cyan);
+            cursor: pointer;
+            transition: all 0.2s;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mode-toggle.active, .timeframe-btn.active {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: var(--hex-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 20px 25px;
+            overflow-y: auto;
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .token-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--hex-cyan);
+            text-transform: uppercase;
+        }
+
+        .token-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.05);
+        }
+
+        .token-table tr:hover {
+            background: rgba(0, 255, 255, 0.03);
+        }
+
+        .rank {
+            font-family: 'Audiowide', cursive;
+            color: var(--hex-magenta);
+        }
+
+        .token-name {
+            font-weight: 600;
+        }
+
+        .token-address {
+            font-size: 0.6rem;
+            color: var(--hex-cyan);
+            opacity: 0.6;
+        }
+
+        .positive { color: var(--hex-cyan); text-shadow: 0 0 10px var(--hex-cyan); }
+        .negative { color: var(--hex-magenta); text-shadow: 0 0 10px var(--hex-magenta); }
+        .peak { color: var(--hex-yellow); text-shadow: 0 0 10px var(--hex-yellow); }
+
+        /* HEXAGONAL SCI-FI FOOTER */
+        .hex-footer {
+            position: relative;
+            z-index: 1;
+            background: var(--hex-panel);
+            border-top: 2px solid var(--hex-cyan);
+            padding: 20px 25px;
+            clip-path: polygon(0 0, 15px 0, 25px 5px, calc(100% - 25px) 5px, calc(100% - 15px) 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+        }
+
+        .hex-cell {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            background: rgba(0, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transition: all 0.3s ease;
+        }
+
+        .hex-cell:hover {
+            background: rgba(0, 255, 255, 0.08);
+            border-color: var(--hex-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .hex-cell.mvp {
+            background: rgba(255, 0, 255, 0.08);
+            border-color: var(--hex-magenta);
+        }
+
+        .hex-cell.mvp:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
+        .hex-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .hex-value {
+            font-family: 'Audiowide', cursive;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+        }
+
+        .hex-cell.mvp .hex-value {
+            color: var(--hex-magenta);
+            text-shadow: 0 0 10px var(--hex-magenta);
+        }
+
+        .hex-label {
+            font-size: 0.5rem;
+            color: var(--hex-cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .hex-cell.mvp .hex-label {
+            color: var(--hex-magenta);
+        }
+
+        /* Decorative elements */
+        .corner-hex {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--hex-cyan);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            opacity: 0.3;
+        }
+
+        .corner-hex.tl { top: 10px; left: 10px; }
+        .corner-hex.tr { top: 10px; right: 10px; }
+        .corner-hex.bl { bottom: 10px; left: 10px; }
+        .corner-hex.br { bottom: 10px; right: 10px; }
+
+        /* Scanning line */
+        .scan-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--hex-cyan), transparent);
+            animation: scan-move 3s linear infinite;
+        }
+
+        @keyframes scan-move {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">DEXTER_TOKEN_HUNTER</div>
+            <div class="status-bar">
+                <span>V2.4.1</span>
+                <span>|</span>
+                <span>SOLANA</span>
+                <span>|</span>
+                <span>DEGEN MODE</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="mode-toggle active">DEGEN</button>
+            <button class="mode-toggle">HOLDER</button>
+            <button class="mode-toggle">RADAR</button>
+            <span style="color:var(--hex-cyan);opacity:0.5;margin:0 10px;">|</span>
+            <button class="timeframe-btn">5M</button>
+            <button class="timeframe-btn">30M</button>
+            <button class="timeframe-btn active">1H</button>
+            <button class="timeframe-btn">2H</button>
+            <button class="timeframe-btn">ALL</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <table class="token-table">
+            <thead>
+                <tr><th>#</th><th>TOKEN</th><th>SPOTTED</th><th>CURRENT</th><th>VOLUME</th><th>NET</th><th>SCORE</th><th>PEAK</th><th>TIME</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="rank">01</td><td><div class="token-name">RUST</div><div class="token-address">9VLP...BAGS</div></td><td>$15.9K</td><td>$29.0K</td><td>$175.0K</td><td class="positive">+0.0%</td><td class="negative">-8.4</td><td class="peak">2.11x</td><td>42m</td></tr>
+                <tr><td class="rank">02</td><td><div class="token-name">Mom Coin</div><div class="token-address">62g4...pump</div></td><td>$22.0K</td><td>$25.0K</td><td>$199.1K</td><td class="negative">-9.1%</td><td class="negative">-7.2</td><td class="peak">2.43x</td><td>1h</td></tr>
+                <tr><td class="rank">03</td><td><div class="token-name">Bread</div><div class="token-address">puvZ...pump</div></td><td>$88.7K</td><td>$37.9K</td><td>$478.6K</td><td class="positive">+1.7%</td><td class="negative">-5.3</td><td class="peak">3.60x</td><td>1h</td></tr>
+                <tr><td class="rank">04</td><td><div class="token-name">LINUS</div><div class="token-address">AvxF...BAGS</div></td><td>$14.8K</td><td>$8.7K</td><td>$12.3K</td><td class="positive">+9.1%</td><td class="negative">-4.8</td><td class="peak">1.72x</td><td>1h</td></tr>
+                <tr><td class="rank">05</td><td><div class="token-name">LILTAY</div><div class="token-address">DgPK...pump</div></td><td>$90.2K</td><td>$167.9K</td><td>$243.4K</td><td class="positive">+2.0%</td><td class="negative">-3.1</td><td class="peak">2.33x</td><td>1h</td></tr>
+                <tr><td class="rank">06</td><td><div class="token-name">ToweLie</div><div class="token-address">9Cxm...pump</div></td><td>$34.9K</td><td>$72.3K</td><td>$18.6K</td><td class="negative">-2.7%</td><td class="negative">-2.3</td><td class="peak">2.51x</td><td>18m</td></tr>
+                <tr><td class="rank">07</td><td><div class="token-name">CHINESE</div><div class="token-address">C3Po...pump</div></td><td>$36.3K</td><td>$90.4K</td><td>$243.7K</td><td class="negative">-8.5%</td><td class="negative">-1.5</td><td class="peak">3.31x</td><td>48m</td></tr>
+                <tr><td class="rank">08</td><td><div class="token-name">Paperclip</div><div class="token-address">87mq...pump</div></td><td>$27.1K</td><td>$46.8K</td><td>$55.6K</td><td class="negative">-4.5%</td><td>0.3</td><td class="peak">1.95x</td><td>18m</td></tr>
+                <tr><td class="rank">09</td><td><div class="token-name">X</div><div class="token-address">2KMV...BAGS</div></td><td>$421.1K</td><td>$909.9K</td><td>$1.5M</td><td class="negative">-3.8%</td><td class="positive">2.1</td><td class="peak">2.77x</td><td>1h</td></tr>
+                <tr><td class="rank">10</td><td><div class="token-name">GME</div><div class="token-address">3Dpm...BAGS</div></td><td>$20.4K</td><td>$43.6K</td><td>$17.1K</td><td class="positive">+4.8%</td><td class="positive">5.6</td><td class="peak">2.88x</td><td>1h</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="hex-footer">
+        <div class="corner-hex tl"></div>
+        <div class="corner-hex tr"></div>
+        <div class="corner-hex bl"></div>
+        <div class="corner-hex br"></div>
+
+        <div class="footer-grid">
+            <div class="hex-cell">
+                <div class="hex-icon">⚡</div>
+                <div class="hex-value">ON</div>
+                <div class="hex-label">Status</div>
+            </div>
+            <div class="hex-cell">
+                <div class="hex-icon">📊</div>
+                <div class="hex-value">10</div>
+                <div class="hex-label">Tokens</div>
+            </div>
+            <div class="hex-cell">
+                <div class="hex-icon">🔍</div>
+                <div class="hex-value">2.8K</div>
+                <div class="hex-label">Scanned</div>
+            </div>
+            <div class="hex-cell">
+                <div class="hex-icon">📈</div>
+                <div class="hex-value">50%</div>
+                <div class="hex-label">Positive</div>
+            </div>
+            <div class="hex-cell mvp">
+                <div class="hex-icon">🏆</div>
+                <div class="hex-value">GME</div>
+                <div class="hex-label">MVP</div>
+            </div>
+            <div class="hex-cell">
+                <div class="hex-icon">🕐</div>
+                <div class="hex-value">14:32</div>
+                <div class="hex-label">Update</div>
+            </div>
+        </div>
+
+        <div class="scan-line"></div>
+    </footer>
+</body>
+</html>

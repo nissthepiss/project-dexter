@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Leaderboard - Trading Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #151a23;
+            --bg-hover: #1a202c;
+            --border: #2d3748;
+            --border-light: #3d4a5c;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #8b5cf6;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .dashboard-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .header-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .header-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-stat-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-stat-value.positive {
+            color: var(--accent-green);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0 20px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            border-right: 2px solid var(--accent-blue);
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title-badge {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 120px 140px 100px 90px 100px 100px;
+            gap: 16px;
+            padding: 14px 20px;
+            background: var(--bg-hover);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 120px 140px 100px 90px 100px 100px;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            animation: slideIn 0.3s ease-out backwards;
+        }
+
+        .table-row:nth-child(2) { animation-delay: 0.05s; }
+        .table-row:nth-child(3) { animation-delay: 0.1s; }
+        .table-row:nth-child(4) { animation-delay: 0.15s; }
+        .table-row:nth-child(5) { animation-delay: 0.2s; }
+        .table-row:nth-child(6) { animation-delay: 0.25s; }
+        .table-row:nth-child(7) { animation-delay: 0.3s; }
+        .table-row:nth-child(8) { animation-delay: 0.35s; }
+        .table-row:nth-child(9) { animation-delay: 0.4s; }
+        .table-row:nth-child(10) { animation-delay: 0.45s; }
+        .table-row:nth-child(11) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .table-row:hover {
+            background: var(--bg-hover);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank-cell {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .rank-cell.top-3 {
+            color: var(--accent-yellow);
+        }
+
+        .token-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .token-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .token-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .token-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .token-address {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .metric-cell {
+            text-align: right;
+        }
+
+        .metric-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value.positive {
+            color: var(--accent-green);
+        }
+
+        .metric-value.negative {
+            color: var(--accent-red);
+        }
+
+        .score-cell {
+            text-align: center;
+        }
+
+        .score-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .score-value.positive {
+            color: var(--accent-green);
+        }
+
+        .score-value.negative {
+            color: var(--accent-red);
+        }
+
+        .time-cell {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .peak-cell {
+            text-align: center;
+        }
+
+        .peak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 4px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        .sparkline {
+            width: 100px;
+            height: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .sparkline-bar {
+            flex: 1;
+            background: var(--accent-blue);
+            opacity: 0.6;
+            border-radius: 2px 2px 0 0;
+            transition: all 0.2s ease;
+        }
+
+        .table-row:hover .sparkline-bar {
+            opacity: 1;
+        }
+
+        .sparkline-bar.up {
+            background: var(--accent-green);
+        }
+
+        .sparkline-bar.down {
+            background: var(--accent-red);
+        }
+
+        @media (max-width: 1400px) {
+            .sidebar {
+                display: none;
+            }
+            .table-header, .table-row {
+                grid-template-columns: 50px 1fr 100px 100px 120px 80px 80px 90px 90px;
+                gap: 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sparkline {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 0 16px;
+            }
+            .header-stats {
+                display: none;
+            }
+            .content-area {
+                padding: 16px;
+            }
+            .table-header, .table-row {
+                grid-template-columns: 40px 1fr 80px 80px;
+                gap: 8px;
+            }
+            .table-header > *:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(6)):not(:nth-child(9)),
+            .table-row > *:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(6)):not(:nth-child(9)) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="logo">
+                <div class="logo-icon">T</div>
+                <span class="logo-text">TokenTracker Pro</span>
+            </div>
+            <div class="header-stats">
+                <div class="header-stat">
+                    <span class="header-stat-label">Total Volume</span>
+                    <span class="header-stat-value">$2.48M</span>
+                </div>
+                <div class="header-stat">
+                    <span class="header-stat-label">Top Gainer</span>
+                    <span class="header-stat-value positive">LINUS +9.1%</span>
+                </div>
+                <div class="header-stat">
+                    <span class="header-stat-label">Updated</span>
+                    <span class="header-stat-value">Just now</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Markets</div>
+                    <div class="sidebar-item active">
+                        <span>📊</span> Discovered Tokens
+                    </div>
+                    <div class="sidebar-item">
+                        <span>🔥</span> Trending
+                    </div>
+                    <div class="sidebar-item">
+                        <span>⭐</span> Top Rated
+                    </div>
+                    <div class="sidebar-item">
+                        <span>🆕</span> New Listings
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Filters</div>
+                    <div class="sidebar-item">
+                        <span>💰</span> Volume (High)
+                    </div>
+                    <div class="sidebar-item">
+                        <span>📈</span> 24h Change
+                    </div>
+                    <div class="sidebar-item">
+                        <span>⏱️</span> Time Found
+                    </div>
+                </div>
+            </aside>
+
+            <main class="content-area">
+                <h2 class="section-title">
+                    Discovered Tokens
+                    <span class="section-title-badge">Top 10</span>
+                </h2>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <span style="text-align: center;">#</span>
+                        <span>Token</span>
+                        <span style="text-align: right;">Spotted</span>
+                        <span style="text-align: right;">Current</span>
+                        <span style="text-align: right;">Volume</span>
+                        <span style="text-align: right;">Net</span>
+                        <span style="text-align: center;">Score</span>
+                        <span style="text-align: center;">Peak</span>
+                        <span style="text-align: center;">Time</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell top-3">1</span>
+                        <div class="token-cell">
+                            <div class="token-icon">R</div>
+                            <div class="token-info">
+                                <span class="token-name">RUST</span>
+                                <span class="token-address">9VLP...BAGS</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$15.9K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$29.0K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$175.0K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">+0.0%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-8.4</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">2.11x</span>
+                        </div>
+                        <div class="time-cell">42m</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell top-3">2</span>
+                        <div class="token-cell">
+                            <div class="token-icon">M</div>
+                            <div class="token-info">
+                                <span class="token-name">Mom Coin</span>
+                                <span class="token-address">62g4...pump</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$22.0K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$25.0K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$199.1K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value negative">-9.1%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-7.2</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">2.43x</span>
+                        </div>
+                        <div class="time-cell">1h</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell top-3">3</span>
+                        <div class="token-cell">
+                            <div class="token-icon">B</div>
+                            <div class="token-info">
+                                <span class="token-name">Bread</span>
+                                <span class="token-address">puvZ...pump</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$88.7K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$37.9K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$478.6K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value positive">+1.7%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-5.3</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">3.60x</span>
+                        </div>
+                        <div class="time-cell">1h</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">4</span>
+                        <div class="token-cell">
+                            <div class="token-icon">L</div>
+                            <div class="token-info">
+                                <span class="token-name">LINUS</span>
+                                <span class="token-address">AvxF...BAGS</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$14.8K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$8.7K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$12.3K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value positive">+9.1%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-4.8</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">1.72x</span>
+                        </div>
+                        <div class="time-cell">1h</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">5</span>
+                        <div class="token-cell">
+                            <div class="token-icon">L</div>
+                            <div class="token-info">
+                                <span class="token-name">LILTAY</span>
+                                <span class="token-address">DgPK...pump</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$90.2K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$167.9K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$243.4K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value positive">+2.0%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-3.1</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">2.33x</span>
+                        </div>
+                        <div class="time-cell">1h</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">6</span>
+                        <div class="token-cell">
+                            <div class="token-icon">T</div>
+                            <div class="token-info">
+                                <span class="token-name">ToweLie</span>
+                                <span class="token-address">9Cxm...pump</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$34.9K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$72.3K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$18.6K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value negative">-2.7%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-2.3</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">2.51x</span>
+                        </div>
+                        <div class="time-cell">18m</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">7</span>
+                        <div class="token-cell">
+                            <div class="token-icon">C</div>
+                            <div class="token-info">
+                                <span class="token-name">CHINESE</span>
+                                <span class="token-address">C3Po...pump</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$36.3K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$90.4K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$243.7K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value negative">-8.5%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value negative">-1.5</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">3.31x</span>
+                        </div>
+                        <div class="time-cell">48m</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">8</span>
+                        <div class="token-cell">
+                            <div class="token-icon">P</div>
+                            <div class="token-info">
+                                <span class="token-name">Paperclip</span>
+                                <span class="token-address">87mq...pump</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$27.1K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$46.8K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$55.6K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value negative">-4.5%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value">0.3</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">1.95x</span>
+                        </div>
+                        <div class="time-cell">18m</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">9</span>
+                        <div class="token-cell">
+                            <div class="token-icon">X</div>
+                            <div class="token-info">
+                                <span class="token-name">X</span>
+                                <span class="token-address">2KMV...BAGS</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$421.1K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$909.9K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$1.5M</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value negative">-3.8%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value positive">2.1</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">2.77x</span>
+                        </div>
+                        <div class="time-cell">1h</div>
+                    </div>
+
+                    <div class="table-row">
+                        <span class="rank-cell">10</span>
+                        <div class="token-cell">
+                            <div class="token-icon">G</div>
+                            <div class="token-info">
+                                <span class="token-name">GME</span>
+                                <span class="token-address">3Dpm...BAGS</span>
+                            </div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$20.4K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$43.6K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value">$17.1K</div>
+                        </div>
+                        <div class="metric-cell">
+                            <div class="metric-value positive">+4.8%</div>
+                        </div>
+                        <div class="score-cell">
+                            <span class="score-value positive">5.6</span>
+                        </div>
+                        <div class="peak-cell">
+                            <span class="peak-badge">2.88x</span>
+                        </div>
+                        <div class="time-cell">1h</div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

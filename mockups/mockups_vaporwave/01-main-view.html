@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER TOKEN HUNTER - Vaporwave</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* VAPORWAVE THEME */
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #9d4edd;
+            --neon-magenta: #ff006e;
+            --violet-deep: #3c096c;
+            --violet-mid: #5a189a;
+            --violet-light: #7b2cbf;
+            --chrome-light: #e0e0e0;
+            --chrome-mid: #a0a0a0;
+            --chrome-dark: #606060;
+            --bg-dark: #0a0015;
+            --bg-mid: #1a0030;
+            --grid-color: rgba(255, 0, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Gradient Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg,
+                #ff00ff 0%,
+                #9d4edd 15%,
+                #3c096c 30%,
+                #1a0030 50%,
+                #00ffff 85%,
+                #ff00ff 100%);
+            opacity: 0.15;
+            animation: gradientShift 15s ease-in-out infinite;
+            z-index: -3;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        /* Grid Pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center top;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top;
+            z-index: -2;
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--neon-pink);
+            top: -100px;
+            left: -100px;
+            opacity: 0.3;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--neon-cyan);
+            bottom: -50px;
+            right: -50px;
+            opacity: 0.3;
+            animation-delay: -10s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: var(--neon-purple);
+            top: 50%;
+            right: 20%;
+            opacity: 0.2;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, 30px) scale(1.1); }
+            50% { transform: translate(20px, 60px) scale(0.9); }
+            75% { transform: translate(-30px, 20px) scale(1.05); }
+        }
+
+        /* CRT Scanlines */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Main Container */
+        .vaporwave-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-pink);
+            border-radius: 5px;
+            padding: 15px 20px;
+            box-shadow:
+                0 0 20px var(--neon-pink),
+                0 0 40px rgba(255, 0, 255, 0.3),
+                inset 0 0 60px rgba(255, 0, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 3px;
+            background: linear-gradient(90deg,
+                transparent,
+                var(--neon-cyan),
+                var(--neon-pink),
+                var(--neon-cyan),
+                transparent);
+            animation: headerGlow 3s linear infinite;
+        }
+
+        @keyframes headerGlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50%); }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(180deg, var(--chrome-light), var(--neon-cyan), var(--chrome-mid));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow:
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-pink);
+            letter-spacing: 8px;
+            position: relative;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+        }
+
+        .logo::after {
+            content: 'TOKEN HUNTER';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--neon-pink);
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-purple);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .mode-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            padding: 10px 15px;
+            background: transparent;
+            border: none;
+            color: var(--chrome-mid);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .mode-btn.active {
+            color: var(--neon-pink);
+            background: linear-gradient(180deg, rgba(255, 0, 255, 0.3), transparent);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .mode-btn:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .timeframe-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .timeframe-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            padding: 10px 12px;
+            background: linear-gradient(180deg, rgba(0, 255, 255, 0.1), transparent);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        .timeframe-btn:hover,
+        .timeframe-btn.active {
+            background: linear-gradient(180deg, rgba(255, 0, 255, 0.3), rgba(157, 78, 221, 0.2));
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: linear-gradient(135deg,
+                rgba(60, 9, 108, 0.8),
+                rgba(26, 0, 48, 0.9));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                var(--neon-pink),
+                var(--neon-cyan),
+                var(--neon-purple),
+                var(--neon-cyan),
+                var(--neon-pink));
+            background-size: 200% 100%;
+            animation: panelGlow 4s linear infinite;
+        }
+
+        @keyframes panelGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            letter-spacing: 3px;
+        }
+
+        .panel-icon {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        /* Table Header */
+        .table-header {
+            display: grid;
+            grid-template-columns: 40px 120px 100px 100px 100px 60px 60px 60px 60px 40px 40px;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .th {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 7px;
+            color: var(--neon-purple);
+            text-shadow: 0 0 5px var(--neon-purple);
+            text-align: center;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            gap: 15px;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            border: 3px solid var(--neon-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px var(--neon-cyan);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 40px var(--neon-cyan), 0 0 60px var(--neon-pink);
+            }
+        }
+
+        .empty-icon::after {
+            content: '◈';
+            font-size: 30px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: var(--chrome-light);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .empty-subtext {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: var(--neon-purple);
+            text-shadow: 0 0 5px var(--neon-purple);
+        }
+
+        /* MVP Panel */
+        .mvp-empty {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .mvp-trophy {
+            font-size: 60px;
+            margin-bottom: 15px;
+            animation: trophyGlow 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px var(--neon-pink));
+        }
+
+        @keyframes trophyGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px var(--neon-pink));
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 40px var(--neon-pink)) drop-shadow(0 0 60px var(--neon-cyan));
+                transform: scale(1.05);
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg,
+                rgba(60, 9, 108, 0.9),
+                rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-purple);
+            border-radius: 5px;
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-shadow: 0 0 5px var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.3);
+        }
+
+        .action-btn:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            box-shadow: 0 0 25px var(--neon-pink);
+            transform: scale(1.1);
+        }
+
+        .action-btn .icon {
+            font-size: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-purple);
+            border-radius: 5px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .footer-status {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        .footer-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        /* Japanese Decorations */
+        .jp-decoration {
+            position: fixed;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 60px;
+            color: var(--neon-pink);
+            opacity: 0.1;
+            text-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .jp-1 { top: 10%; left: 5%; transform: rotate(-15deg); }
+        .jp-2 { top: 60%; right: 8%; transform: rotate(20deg); }
+        .jp-3 { bottom: 15%; left: 3%; transform: rotate(-10deg); }
+
+        /* Geometric Shapes */
+        .geo-shape {
+            position: fixed;
+            opacity: 0.15;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 86px solid var(--neon-cyan);
+            top: 20%;
+            right: 15%;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+            animation: triangleFloat 15s ease-in-out infinite;
+        }
+
+        @keyframes triangleFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        .circle {
+            width: 100px;
+            height: 100px;
+            border: 4px solid var(--neon-pink);
+            border-radius: 50%;
+            bottom: 25%;
+            left: 8%;
+            animation: circlePulse 8s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        @keyframes circlePulse {
+            0%, 100% { transform: scale(1); opacity: 0.15; }
+            50% { transform: scale(1.2); opacity: 0.25; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scanlines Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Floating Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Japanese Decorations -->
+    <div class="jp-decoration jp-1">電網</div>
+    <div class="jp-decoration jp-2">夢</div>
+    <div class="jp-decoration jp-3">一九八五</div>
+
+    <!-- Geometric Shapes -->
+    <div class="geo-shape triangle"></div>
+    <div class="geo-shape circle"></div>
+
+    <div class="vaporwave-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo">DEXTER</div>
+            </div>
+            <div class="header-controls">
+                <div class="control-group">
+                    <span class="control-label">$ MODE</span>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active">DEGEN</button>
+                        <button class="mode-btn">HOLDER</button>
+                        <button class="mode-btn">RADAR</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <span class="control-label">$ TIMEFRAME</span>
+                    <div class="timeframe-buttons">
+                        <button class="timeframe-btn">5M</button>
+                        <button class="timeframe-btn">30M</button>
+                        <button class="timeframe-btn">1H</button>
+                        <button class="timeframe-btn">2H</button>
+                        <button class="timeframe-btn active">ALL</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Token List Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">» TOKEN_LIST</span>
+                    <span class="panel-icon">◈</span>
+                </div>
+                <div class="table-header">
+                    <span class="th">#</span>
+                    <span class="th">TOKEN</span>
+                    <span class="th">SPOTTED</span>
+                    <span class="th">CURRENT</span>
+                    <span class="th">VOLUME</span>
+                    <span class="th">NET</span>
+                    <span class="th">SCORE</span>
+                    <span class="th">TIME</span>
+                    <span class="th">PEAK</span>
+                    <span class="th">BL</span>
+                    <span class="th">TG</span>
+                </div>
+                <div class="empty-state">
+                    <div class="empty-icon"></div>
+                    <div class="empty-text">SCANNING NETWORK...</div>
+                    <div class="empty-subtext">awaiting token data stream</div>
+                </div>
+            </div>
+
+            <!-- MVP Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">» MVP_LEADER</span>
+                    <span class="panel-icon">🏆</span>
+                </div>
+                <div class="mvp-empty">
+                    <div class="mvp-trophy">🏆</div>
+                    <div class="empty-text">NO MVP YET</div>
+                    <div class="empty-subtext">tracking momentum...</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-status">» System ready</div>
+            <div class="footer-status">TOKENS: 0</div>
+            <div class="footer-time">00:00:00</div>
+        </footer>
+    </div>
+
+    <!-- Quick Actions Sidebar -->
+    <aside class="sidebar">
+        <button class="action-btn">
+            <span class="icon">⚡</span>
+            <span>TEST</span>
+        </button>
+        <button class="action-btn">
+            <span class="icon">⌫</span>
+            <span>PURGE</span>
+        </button>
+        <button class="action-btn">
+            <span class="icon">◈</span>
+            <span>CHECK</span>
+        </button>
+        <button class="action-btn">
+            <span class="icon">⇡</span>
+            <span>TELE</span>
+        </button>
+        <button class="action-btn">
+            <span class="icon">📡</span>
+            <span>CHAN</span>
+        </button>
+        <button class="action-btn">
+            <span class="icon">⊘</span>
+            <span>IGNR</span>
+        </button>
+        <button class="action-btn">
+            <span class="icon">📊</span>
+            <span>STAT</span>
+        </button>
+    </aside>
+</body>
+</html>

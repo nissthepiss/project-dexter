@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER TOKEN HUNTER - MVP Expanded</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #9d4edd;
+            --neon-magenta: #ff006e;
+            --violet-deep: #3c096c;
+            --chrome-light: #e0e0e0;
+            --chrome-mid: #a0a0a0;
+            --bg-dark: #0a0015;
+            --grid-color: rgba(255, 0, 255, 0.15);
+            --profit-green: #39ff14;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #ff00ff 0%, #9d4edd 15%, #3c096c 30%, #1a0030 50%, #00ffff 85%, #ff00ff 100%);
+            opacity: 0.15;
+            animation: gradientShift 15s ease-in-out infinite;
+            z-index: -3;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center top;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top;
+            z-index: -2;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(60px); z-index: -1; animation: float 20s ease-in-out infinite; }
+        .orb-1 { width: 400px; height: 400px; background: var(--neon-pink); top: -100px; left: -100px; opacity: 0.3; }
+        .orb-2 { width: 300px; height: 300px; background: var(--neon-cyan); bottom: -50px; right: -50px; opacity: 0.3; animation-delay: -10s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        .vaporwave-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-pink);
+            border-radius: 5px;
+            padding: 15px 20px;
+            box-shadow: 0 0 20px var(--neon-pink), 0 0 40px rgba(255, 0, 255, 0.3);
+        }
+
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; background: linear-gradient(180deg, var(--chrome-light), var(--neon-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px var(--neon-cyan); letter-spacing: 8px; text-align: center; }
+
+        /* Main MVP Panel - Expanded */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mvp-panel-expanded {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.95), rgba(26, 0, 48, 0.98));
+            border: 3px solid var(--neon-pink);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 40px var(--neon-pink), 0 0 80px rgba(157, 78, 221, 0.4), inset 0 0 60px rgba(255, 0, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: mvpFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes mvpFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .mvp-panel-expanded::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan), var(--neon-purple), var(--neon-cyan), var(--neon-pink));
+            background-size: 200% 100%;
+            animation: panelGlow 3s linear infinite;
+        }
+
+        @keyframes panelGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .mvp-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .mvp-trophy {
+            font-size: 80px;
+            margin-bottom: 15px;
+            animation: trophySpin 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px var(--neon-pink));
+        }
+
+        @keyframes trophySpin {
+            0%, 100% { transform: rotate(-5deg) scale(1); filter: drop-shadow(0 0 30px var(--neon-pink)); }
+            50% { transform: rotate(5deg) scale(1.1); filter: drop-shadow(0 0 50px var(--neon-pink)) drop-shadow(0 0 70px var(--neon-cyan)); }
+        }
+
+        .mvp-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink);
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .mvp-symbol-main {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px var(--neon-pink);
+            margin-bottom: 10px;
+        }
+
+        .mvp-name-main {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 20px;
+            color: var(--chrome-light);
+            margin-bottom: 10px;
+        }
+
+        .mvp-contract {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--neon-cyan);
+            background: rgba(0, 255, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            display: inline-block;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* Score Display */
+        .mvp-score-hero {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(157, 78, 221, 0.1));
+            border: 2px solid var(--neon-pink);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mvp-score-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--neon-pink), transparent 30%);
+            animation: scoreRotate 4s linear infinite;
+        }
+
+        @keyframes scoreRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .mvp-score-hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: var(--chrome-mid);
+            letter-spacing: 3px;
+        }
+
+        .score-value-hero {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 80px;
+            font-weight: 900;
+            color: var(--neon-pink);
+            text-shadow: 0 0 50px var(--neon-pink), 0 0 100px var(--neon-cyan);
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            width: 98.7%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+            border-radius: 4px;
+            animation: scorePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scorePulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 20px var(--neon-pink); }
+            50% { opacity: 0.8; box-shadow: 0 0 40px var(--neon-pink); }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .stat-card.highlight {
+            border-color: var(--neon-pink);
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.15), rgba(157, 78, 221, 0.1));
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 7px;
+            color: var(--neon-purple);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        .stat-value.green {
+            color: var(--profit-green);
+            text-shadow: 0 0 15px var(--profit-green);
+        }
+
+        .stat-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .stat-change.positive {
+            color: var(--profit-green);
+        }
+
+        /* Score Components */
+        .score-components {
+            margin-top: 25px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .component-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 5px;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        .component-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 6px;
+            color: var(--chrome-mid);
+            margin-bottom: 8px;
+        }
+
+        .component-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--neon-purple);
+        }
+
+        .component-bar {
+            height: 4px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .component-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, rgba(60, 9, 108, 0.9), rgba(26, 0, 48, 0.95));
+            border: 2px solid var(--neon-purple);
+            border-radius: 5px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .jp-decoration {
+            position: fixed;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 60px;
+            color: var(--neon-pink);
+            opacity: 0.08;
+        }
+
+        .jp-1 { top: 15%; left: 5%; transform: rotate(-15deg); }
+        .jp-2 { top: 65%; right: 5%; transform: rotate(20deg); }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="jp-decoration jp-1">最強</div>
+    <div class="jp-decoration jp-2">MVP</div>
+
+    <div class="vaporwave-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">DEXTER</div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="mvp-panel-expanded">
+                <!-- MVP Header -->
+                <div class="mvp-header">
+                    <div class="mvp-trophy">🏆</div>
+                    <div class="mvp-title">MOMENTUM LEADER</div>
+                    <div class="mvp-symbol-main">PEPE2.0</div>
+                    <div class="mvp-name-main">Pepe Returns</div>
+                    <div class="mvp-contract">7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU</div>
+                </div>
+
+                <!-- Hero Score -->
+                <div class="mvp-score-hero">
+                    <div class="score-label">MVP SCORE</div>
+                    <div class="score-value-hero">98.7</div>
+                    <div class="score-bar">
+                        <div class="score-bar-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card highlight">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-label">SPOTTED MC</div>
+                        <div class="stat-value">$12.5K</div>
+                        <div class="stat-change">2m ago</div>
+                    </div>
+                    <div class="stat-card highlight">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-label">CURRENT MC</div>
+                        <div class="stat-value green">$287.4K</div>
+                        <div class="stat-change positive">▲ 2195%</div>
+                    </div>
+                    <div class="stat-card highlight">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-label">PEAK</div>
+                        <div class="stat-value green">3.42x</div>
+                        <div class="stat-change positive">from spotted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-label">VOLUME 24H</div>
+                        <div class="stat-value">$1.2M</div>
+                        <div class="stat-change positive">▲ 234%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-label">NET VOLUME</div>
+                        <div class="stat-value green">$892K</div>
+                        <div class="stat-change positive">inflow</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-label">AGE</div>
+                        <div class="stat-value">2m 34s</div>
+                        <div class="stat-change">since spotted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-label">BUY PRESSURE</div>
+                        <div class="stat-value">94.2%</div>
+                        <div class="stat-change positive">bullish</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💎</div>
+                        <div class="stat-label">HOLDERS</div>
+                        <div class="stat-value">1,247</div>
+                        <div class="stat-change positive">▲ 156</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-label">TXNS/5M</div>
+                        <div class="stat-value">234</div>
+                        <div class="stat-change positive">high</div>
+                    </div>
+                </div>
+
+                <!-- Score Components -->
+                <div class="score-components">
+                    <div class="section-title">SCORE COMPONENTS</div>
+                    <div class="components-grid">
+                        <div class="component-item">
+                            <div class="component-label">BUY PRESSURE</div>
+                            <div class="component-value">94.2</div>
+                            <div class="component-bar"><div class="component-bar-fill" style="width: 94%"></div></div>
+                        </div>
+                        <div class="component-item">
+                            <div class="component-label">NET VOLUME</div>
+                            <div class="component-value">89.5</div>
+                            <div class="component-bar"><div class="component-bar-fill" style="width: 89%"></div></div>
+                        </div>
+                        <div class="component-item">
+                            <div class="component-label">TXN VELOCITY</div>
+                            <div class="component-value">78.3</div>
+                            <div class="component-bar"><div class="component-bar-fill" style="width: 78%"></div></div>
+                        </div>
+                        <div class="component-item">
+                            <div class="component-label">PRICE MOMENTUM</div>
+                            <div class="component-value">99.1</div>
+                            <div class="component-bar"><div class="component-bar-fill" style="width: 99%"></div></div>
+                        </div>
+                        <div class="component-item">
+                            <div class="component-label">SSE MOMENTUM</div>
+                            <div class="component-value">92.8</div>
+                            <div class="component-bar"><div class="component-bar-fill" style="width: 92%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div></div>
+            <div class="footer-time">14:32:18</div>
+        </footer>
+    </div>
+</body>
+</html>
