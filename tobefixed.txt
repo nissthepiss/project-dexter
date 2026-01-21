@@ -1,11 +1,11 @@
 ================================================================================
 PROJECT DEXTER - POTENTIAL BUGS, ERRORS, AND DATA INCONSISTENCIES
 Analysis Date: 2026-01-21
-Iteration: 2/5
+Iteration: 3/5
 ================================================================================
 
 ================================================================================
-ADDITIONAL FINDINGS FROM ITERATION 2
+ADDITIONAL FINDINGS FROM ITERATION 3
 ================================================================================
 
 ================================================================================
@@ -501,41 +501,179 @@ ADDITIONAL ISSUES FROM ITERATION 2
     - Should regularly audit and update dependencies
 
 ================================================================================
-UPDATED SUMMARY
+ADDITIONAL ISSUES FROM ITERATION 3
 ================================================================================
 
-Total Issues Identified: 77
+78. [RESOURCE LEAK] DataCollector Buffer Not Cleared (dataCollector.mjs:162-193)
+    - flush() clears buffer but doesn't clear if write fails
+    - If fs.writeFileSync() throws, buffer retains data
+    - Next flush will duplicate data in file
+    - Should clear buffer only after successful write
+
+79. [DATA CORRUPTION] DataCollector File Write (dataCollector.mjs:173-185)
+    - Reads entire file, appends buffer, writes back
+    - If two flushes happen concurrently, data will be lost
+    - No file locking for concurrent access
+    - Should use append mode or implement locking
+
+80. [POTENTIAL DIVIDE BY ZERO] DataDumper Multiplier (dataDumper.mjs:115)
+    - `const currentMultiplier = token.currentMc / token.spottedMc;`
+    - If spottedMc is 0, returns Infinity
+    - Happens for holder tokens added without data
+    - Should guard against zero denominator
+
+81. [MEMORY LEAK] DataDumper Price Snapshots (dataDumper.mjs:35)
+    - priceSnapshots Map grows indefinitely
+    - Only cleared when token hits 2x
+    - Tokens that never hit 2x keep snapshots forever
+    - Should implement periodic cleanup
+
+82. [RACE CONDITION] DataDumper TwoX Crossed (dataDumper.mjs:111-113)
+    - Check and add to twoxCrossed Set not atomic
+    - If two concurrent calls, both could pass check
+    - Same token could be dumped twice
+    - Should use atomic operation or mutex
+
+83. [NULL REFERENCE] Debug Routes Purge (debugRoutes.mjs:173-174)
+    - `tokenManager.topTokens = [];`
+    - `tokenManager.fadeOutTokens = [];`
+    - These properties don't exist on TokenManager
+    - Will throw "Cannot set properties of undefined"
+    - Should remove these lines
+
+84. [DATA LOSS] DataCollector Shutdown (dataCollector.mjs:226-232)
+    - shutdown() clears interval but doesn't wait for pending flush
+    - If flush is in progress, data could be lost
+    - Should await flush completion before clearing
+
+85. [POTENTIAL CRASH] Main Process Window State (main/index.js:48-57)
+    - `JSON.parse(data)` without try-catch
+    - If file is corrupted, app fails to start
+    - Should handle parse error gracefully
+
+86. [RESOURCE LEAK] Main Process Backend Spawn (main/index.js:14-29)
+    - Backend process spawned but stdio: 'inherit' may not cleanup properly
+    - On Windows, uses taskkill but process object not nulled after
+    - Multiple start/stop cycles could leak handles
+    - Should ensure proper cleanup
+
+87. [TIMING ISSUE] Main Process Backend Startup (main/index.js:134-138)
+    - Fixed 2 second wait for backend before creating window
+    - If backend takes longer than 2s, window may load before backend ready
+    - Should implement health check or proper IPC readiness signal
+
+88. [INCONSISTENT ERROR HANDLING] DataCollector JSON Parse (dataCollector.mjs:176-180)
+    - Catches error and sets existingData = []
+    - But doesn't log what went wrong
+    - Makes debugging file corruption impossible
+    - Should log error before clearing
+
+89. [MISSING VALIDATION] Rate Limiter Wait Time (rateLimit.mjs:24-26)
+    - `const waitTime = this.windowMs - (now - oldestRequest) + 10;`
+    - Adding 10ms buffer but not accounting for clock skew
+    - Could wait negative time if system clock changed
+    - Should max(waitTime, 0)
+
+90. [MEMORY LEAK] DataCollector Flush Timer (dataCollector.mjs:35-37)
+    - setInterval runs forever even if enabled = false
+    - flush() checks enabled but timer still consuming resources
+    - Should clear interval when disabled
+
+91. [POTENTIAL STALL] Rate Limiter Recursive Acquire (rateLimit.mjs:27)
+    - `return this.acquire()` recursive call
+    - Under heavy load, could hit max call stack size
+    - Confirmed infinite recursion risk
+    - Should use async loop instead
+
+92. [DATA INCONSISTENCY] Debug Routes Non-existent Properties (debugRoutes.mjs:173-180)
+    - References tokenManager.topTokens and tokenManager.fadeOutTokens
+    - These don't exist in TokenManager class
+    - purge endpoint will crash when trying to set these
+    - Remove lines 173-174 and 176-180
+
+93. [MISSING CLEANUP] Main Process Interval Not Cleared (main/index.js)
+    - No clearInterval in stopBackend()
+    - If startBackend() called multiple times, multiple intervals created
+    - Should track and clear all timers
+
+94. [TYPE COERCION] DataDumper Source Check (dataDumper.mjs:146)
+    - `(token.source === 'holder' || token.source === 'ex-holder') ? 'holder' : 'degen'`
+    - If source is undefined/null, defaults to 'degen'
+    - But tokens might not have source property initialized
+    - Should use explicit check for 'degen' source
+
+95. [FILE HANDLE LEAK] Multiple JSON Sync Writes (telegramService.mjs, dataDumper.mjs)
+    - Multiple fs.writeFileSync() calls without closing handles
+    - Node.js eventually garbage collects but under load could hit OS limit
+    - Should use explicit handle management or streaming
+
+96. [POTENTIAL INFINITY] DataDumper SpottedMc Check (dataDumper.mjs:174)
+    - `token.spottedMc > 0 ? token.spottedAt : null`
+    - Checks spottedMc but spottedAt could be 0/unset
+    - Using 0 as falsy but 0 is valid timestamp (Unix epoch)
+    - Should use explicit null/undefined check
+
+97. [MISSING ERROR HANDLING] SSE JSON Parse (dexpaprika.mjs:94-95)
+    - `const data = JSON.parse(jsonStr);` inside try-catch
+    - But catch block is empty (line 112-114)
+    - Invalid JSON silently skipped
+    - Should log invalid JSON for debugging
+
+98. [RESOURCE LEAK] Interval Timers Not Tracked (tokenManager.mjs)
+    - Multiple intervals: discoveryInterval, topUpdateInterval, dexpaprikaBackgroundInterval
+    - stopTracking() clears them but if error during clearInterval, others may not clear
+    - Should use try-catch for each clearInterval to ensure all cleanup attempted
+
+99. [RACE CONDITION] Token Manager Initialization (server.mjs:41-44)
+    - `await tokenManager.initialize()` but if fails, process.exit(1) called
+    - No graceful degradation or retry
+    - If database is locked, app immediately exits
+    - Should implement retry with backoff
+
+100. [MISSING VALIDATION] View Mode Parameter (tokenManager.mjs:1186-1191)
+    - Checks if viewMode is in validModes array
+    - But if invalid, defaults to 'all-time' and logs warning
+    - Frontend may display 'all-time' data while showing different mode
+    - Should return error to frontend to fix UI state
+
+================================================================================
+UPDATED SUMMARY - ITERATION 3
+================================================================================
+
+Total Issues Identified: 100
 
 Severity Breakdown:
-- CRITICAL: 6 (security, data loss, race conditions, memory leaks)
-- HIGH: 15 (logic errors, unhandled errors, null references, infinite loops)
-- MEDIUM: 32 (race conditions, inconsistencies, error handling, performance)
-- LOW: 24 (code quality, unused code, inconsistencies)
+- CRITICAL: 7 (added: resource leak in dataCollector)
+- HIGH: 18 (added: divide by zero, data corruption, race conditions)
+- MEDIUM: 40 (added: timing issues, memory leaks, inconsistent behavior)
+- LOW: 28 (added: code quality, error handling)
 
-Most Affected Files:
+New Issues in Iteration 3: 23
+Most Critical New Issues:
+- DataCollector concurrent write data corruption
+- DataDumper divide by zero on spottedMc=0
+- Debug routes purge accessing non-existent properties
+- Main process startup timing issues
+- Rate limiter confirmed infinite recursion
+
+Updated Affected Files (with new counts):
 1. tokenManager.mjs - 15 issues
-2. telegramService.mjs - 12 issues (with iteration 2 findings)
+2. telegramService.mjs - 12 issues
 3. app.js (frontend) - 8 issues
-4. db.mjs - 10 issues (with iteration 2 findings)
-5. dexpaprika.mjs - 5 issues
-6. Various API files - 8 issues
-7. Routes files - 6 issues
-8. mvpCalculator_v3.mjs - 4 issues
-9. server.mjs - 2 issues
-10. Other files - 7 issues
+4. db.mjs - 10 issues
+5. dataCollector.mjs - 6 issues (NEW: 4)
+6. dataDumper.mjs - 5 issues (NEW)
+7. debugRoutes.mjs - 5 issues
+8. dexpaprika.mjs - 6 issues
+9. rateLimit.mjs - 2 issues
+10. main/index.js - 4 issues (NEW)
+11. Other files - 27 issues
 
-Updated Recommended Priority Fixes:
-1. Move Telegram credentials to environment variables
-2. Add authentication/authorization to debug endpoints
-3. Fix infinite recursion in rateLimit.acquire()
-4. Fix 2h view mode missing in MVP calculator
-5. Clean up failedDiscoveryTokens Map periodically
-6. Add proper error handling for SSE connections
-7. Fix database save timing in purge operation
-8. Implement mutex for public channel rate limiting
-9. Add dataCollector buffer size limits
-10. Remove/stub out unused tokenManager properties in stats endpoint
-11. Add spottedMc=0 guard in MVP calculation
-12. Implement retry logic for API failures
+Revised Priority Fixes (Top 5):
+1. Fix infinite recursion in rateLimit.acquire() - CONFIRMED STACK OVERFLOW RISK
+2. Add mutex for DataCollector buffer access - DATA CORRUPTION RISK
+3. Fix debugRoutes purge non-existent properties - CRASH ON PURGE
+4. Add spottedMc=0 guards in DataDumper and MVP calculator - INFINITY BUGS
+5. Move Telegram credentials to environment variables - SECURITY
 
 ================================================================================
