@@ -81,6 +81,11 @@ app.use('/api/blacklist', createBlacklistRoutes({ tokenManager, logger }));
 app.set('telegramService', telegramService);
 app.use('/api/channels', channelsRouter);
 
+// Health check endpoint for Railway/deployment platforms
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', mode: process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite' });
+});
+
 // Serve static frontend for external viewing (read-only)
 app.use(express.static(path.join(__dirname, '../renderer')));
 
