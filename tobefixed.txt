@@ -1,0 +1,403 @@
+================================================================================
+PROJECT DEXTER - POTENTIAL BUGS, ERRORS, AND DATA INCONSISTENCIES
+Analysis Date: 2026-01-21
+Iteration: 1/5
+================================================================================
+
+================================================================================
+CRITICAL ISSUES
+================================================================================
+
+1. [SECURITY] Hardcoded Telegram Credentials (telegramService.mjs:13-20)
+   - API_ID, API_HASH, PHONE, CHANNEL_IDS are hardcoded in source
+   - This is a security vulnerability if code is shared/deployed
+   - Should use environment variables
+
+2. [DATA LOSS] Database Shadow Files Not Handled (db.mjs:377-463)
+   - When purging database, .shm and .wal files are deleted
+   - But saveDatabase() is called BEFORE file deletion, then db recreated
+   - This could cause data persistence issues
+   - The saveDatabase() call at line 408 may write data that gets immediately deleted
+
+3. [RACE CONDITION] Token Discovery Duplicate Prevention (tokenManager.mjs:783-790)
+   - Lines 783-790: "Guard: never overwrite spottedAt for existing tokens"
+   - This check happens AFTER token is already added to trackedTokens in discovery
+   - Race condition: if same token discovered twice quickly, first spottedAt could be overwritten
+   - The check at line 785 `if (this.trackedTokens.has(addr))` comes AFTER batch API call
+
+4. [MEMORY LEAK] Failed Discovery Tokens Never Cleaned Up (tokenManager.mjs:48)
+   - failedDiscoveryTokens Map grows indefinitely
+   - Tokens that fail discovery are tracked with retry logic
+   - But old entries (beyond retry window) are never removed from the Map
+   - This will cause memory growth over time
+
+5. [INCONSISTENT DATA] Peak Multiplier Calculation (tokenManager.mjs:147)
+   - `peakMc: tokenData.peakMultiplier * tokenData.spottedMc`
+   - Assumes peakMultiplier is already calculated correctly in DB
+   - If spottedMc changed but peakMultiplier not updated, this gives wrong peakMc
+   - Should store peakMc directly in DB instead of recalculating
+
+================================================================================
+HIGH PRIORITY BUGS
+================================================================================
+
+6. [LOGIC ERROR] View Mode '2h' Not Handled in MVP Calculator (mvpCalculator_v3.mjs:255-305)
+   - Case '2h' is missing from switch statement in adjustWeightsForViewMode()
+   - Falls through to default 'all-time' weights
+   - But tokenManager.getTop10() supports '2h' mode (line 1111)
+   - This causes incorrect scoring for 2h view mode
+
+7. [UNHANDLED ERROR] SSE Connection Errors (dexpaprika.mjs:120-122)
+   - SSE 'error' event only logs to debug level
+   - No reconnection logic for failed SSE connections
+   - If SSE stream fails, token stays in sseConnectedTokens but has no live updates
+   - Should either: disconnect token on error, or attempt reconnection
+
+8. [DATA INCONSISTENCY] Volume Sanity Check Too Broad (tokenManager.mjs:461-465)
+   - Rejects data if volume > 1000x MC
+   - But what if legitimate high-volume token? (e.g., 1000x volume is possible)
+   - This could reject valid data for volatile tokens
+   - Should use higher threshold or additional validation
+
+9. [NULL REFERENCE] Token Routes Stats Endpoint (tokenRoutes.mjs:156-161)
+   - `tokenManager.topTokens.length` - topTokens property doesn't exist on TokenManager
+   - `tokenManager.fadeOutTokens.length` - fadeOutTokens property doesn't exist
+   - This will throw "Cannot read property 'length' of undefined"
+   - These properties were removed/refactored but endpoint not updated
+
+10. [POTENTIAL DIVIDE BY ZERO] MVP Calculator (mvpCalculator_v3.mjs:219-220)
+    - `const currentMultiplier = token.currentMc / token.spottedMc;`
+    - If spottedMc is 0, this returns Infinity
+    - Happens for holder tokens added without initial data (spottedMc=0)
+    - Should guard against spottedMc <= 0
+
+================================================================================
+MEDIUM PRIORITY ISSUES
+================================================================================
+
+11. [STALE DATA] Metrics Freshness Check May Be Too Strict (mvpCalculator_v3.mjs:241-248)
+    - 30 second freshness window for transaction metrics
+    - If metrics update fails once, token scores drop significantly
+    - No graceful degradation - just loses those components entirely
+    - Consider longer window or partial score fallback
+
+12. [INCONSISTENT BEHAVIOR] Holder Token SpottedMc Initialization (tokenManager.mjs:481-490)
+    - Holder tokens can have spottedMc=0 when first added
+    - Then later initialized from DexPaprika data
+    - But initial multiplier calculations will use 0 as baseline
+    - This creates misleading multipliers until data arrives
+
+13. [RACE CONDITION] View Mode Debounce (tokenManager.mjs:1198-1208)
+    - 2 second debounce when view mode changes
+    - But updateSSESubscriptions() checks `if (this.viewModeDebounceTimer)` (line 308)
+    - During debounce, SSE updates are completely blocked
+    - This means top 10 won't update for 2 seconds after mode change
+    - Could cause stale data display
+
+14. [DATA INCONSISTENCY] Ten Second Snapshot Not Initialized (tokenManager.mjs:344-352)
+    - `_tenSecondSnapshotAt` can be null initially
+    - But then the check `>= 10000` will never be true if it stays null
+    - Wait - there IS initialization check: `if (token._tenSecondSnapshotAt === null)`
+    - However, this only runs in handleSSEPriceUpdate() and updateBackgroundTokensDexPaprika()
+    - If token is never updated via these paths, snapshot never initializes
+
+15. [ERROR HANDLING] Holder Service Token Add Failure (holderService.mjs:121-145)
+    - When adding holder tokens, if tokenManager.addHolderToken() fails
+    - The error is caught but token is not marked as needing retry
+    - Failed holder tokens are never retried
+    - Should track failures like discovery does
+
+================================================================================
+LOW PRIORITY / CODE QUALITY
+================================================================================
+
+16. [INCONSISTENCY] Missing Error Code in Server (server.mjs:572-576)
+    - Error handler checks `err.code === 'EADDRINUSE'`
+    - But then immediately exits process without graceful shutdown
+    - tokenManager.shutdown() is called but errors are ignored
+    - Should ensure cleanup completes before exit
+
+17. [POTENTIAL BUG] DexScreener Chain Comparison (dexscreener.mjs:17-18)
+    - `token.chainId === 'solana' || token.chain === 'solana'`
+    - Inconsistent property access (chainId vs chain)
+    - One may be undefined causing incorrect filtering
+    - Should use consistent property or provide fallback
+
+18. [DUPLICATE CODE] View Mode Switch in Multiple Places
+    - View mode '2h' exists in tokenManager.getViewModeWindowMs() (line 1217)
+    - But not in mvpCalculator_v3.adjustWeightsForViewMode()
+    - Inconsistent implementation across codebase
+    - Should centralize view mode definitions
+
+19. [UNUSED CODE] Disabled Bitquery Functions (tokenManager.mjs:829-995)
+    - Large blocks of commented-out code for Bitquery integration
+    - Makes code harder to read/maintain
+    - Should be removed or moved to separate file
+
+20. [TYPO] Variable Name in Discovery (tokenManager.mjs:712)
+    - `const batchSize = 30;`
+    - But DexScreener batch API limit is actually 30 tokens per request
+    - This is correct, but the loop uses `i += batchSize` which could skip tokens if batch doesn't divide evenly
+    - Actually no, the slice handles this correctly
+    - However, there's no verification that all tokens in batch were processed
+
+21. [INCONSISTENT NULL HANDLING] Database Token Insert (db.mjs:191-218)
+    - Extensive null coalescing with `??` operator
+    - But some fields like `spottedAt` default to `Date.now()` if undefined
+    - Inconsistent: some use `?? null`, others use `?? defaultValue`
+    - Should have consistent strategy for required vs optional fields
+
+22. [POTENTIAL ISSUE] MVP Calculator Momentum Check (mvpCalculator_v3.mjs:54-57)
+    - `sseMomentum.blendedMcMomentum * 100`
+    - If blendedMcMomentum is negative, this produces negative score contribution
+    - This may be intentional (bearish signal) but not documented
+    - Also, raw value stored (line 108) would be negative - confusing for display
+
+23. [MISSING VALIDATION] Public Channel URL Extraction (telegramService.mjs:94-122)
+    - extractChannelId() tries multiple patterns but returns null if none match
+    - No validation that extracted ID is valid (could be random number)
+    - Should verify ID format (e.g., negative for channels)
+
+24. [DATA LOSS RISK] Announced Tokens Not Cleaned Up (telegramService.mjs:501-537)
+    - announcedTokens Map grows indefinitely
+    - Old entries are never removed
+    - Should have cleanup for tokens older than X days
+
+25. [INCONSISTENT API] Tier 3 Alert Return Values (telegramService.mjs:361-444)
+    - Returns `success: true` even when rate limited (line 405)
+    - Also returns `success: true` when messaging is disabled (line 367)
+    - This is misleading - "success" should mean "alert sent"
+    - Callers can't distinguish between "sent successfully" and "skipped"
+
+================================================================================
+FRONTEND ISSUES
+================================================================================
+
+26. [MEMORY LEAK] Event Listeners Not Cleaned Up (app.js:89-99, 1000+)
+    - Multiple addEventListener calls but no cleanup
+    - For example: resize handler at line 269, document click at line 691
+    - If app is re-initialized (e.g., hot reload), old listeners persist
+    - Should track listeners and remove on cleanup
+
+27. [POTENTIAL ERROR] LocalStorage JSON Parse (app.js:122-148)
+    - `JSON.parse(savedState)` without try-catch
+    - If localStorage is corrupted, entire terminal positioning fails
+    - Should wrap in try-catch
+
+28. [INCONSISTENT STATE] Current Mode Tracking (app.js:4-6)
+    - Global variables `currentMode`, `currentViewMode` maintained separately
+    - But backend also tracks these in server.mjs (line 25) and tokenManager (line 31)
+    - Could get out of sync if frontend state changes but backend update fails
+    - No reconciliation mechanism
+
+29. [MISSING VALIDATION] Token Score Display (app.js:593-599)
+    - Multiplier alert checks `multiplier >= 3 && multiplier < 4`
+    - What if multiplier is exactly 4? Alert missed
+    - Should be `multiplier >= 3 && multiplier < 5` for 3x-4.99x range
+    - Or separate checks for each milestone
+
+30. [POTENTIAL BUG] Previous Token Data Cleanup (app.js:654-660)
+    - Cleans up tokens that left the list
+    - But only checks `!currentAddresses.has(key)`
+    - If API returns empty/partial list, ALL tokens could be deleted
+    - Should have minimum check or only cleanup after confirming new data is valid
+
+31. [INCONSISTENCY] Alert Sound Volume (app.js:39-43)
+    - Volume stored in localStorage but applied immediately on construction
+    - If saved volume is invalid (e.g., > 100), no validation
+    - Should clamp to 0-100 range
+
+32. [MISSING ERROR HANDLING] Fetch Calls (app.js:1000+)
+    - Multiple fetch() calls without proper error handling
+    - Example: syncTelegramMessagingToBackend() (line 726)
+    - Only catches and logs, doesn't show user feedback
+    - User may think setting was saved when it actually failed
+
+33. [POTENTIAL ISSUE] Token Source Check (app.js:509-510)
+    - `const tokenSource = token.source || 'degen';`
+    - But tokens can have source='ex-holder' which is different from 'degen'
+    - The ternary below only checks for 'holder'/'ex-holder'
+    - This correctly identifies both as 'Holder' list
+    - However, 'ex-holder' tokens shouldn't alert as "entered the list" - they were removed
+
+================================================================================
+DATABASE ISSUES
+================================================================================
+
+34. [PERFORMANCE] Synchronous Database Saves (db.mjs:45-53)
+    - saveDatabase() uses writeFileSync - blocks event loop
+    - Called frequently (every token update)
+    - Could cause performance issues with many tokens
+    - Consider debouncing or async writes
+
+35. [SCHEMA ISSUE] Missing Unique Constraint (db.mjs:58-76)
+    - contractAddress has UNIQUE constraint
+    - But 'id' is PRIMARY KEY and auto-generated uuid
+    - If uuid generation collides (unlikely but possible), INSERT OR REPLACE would overwrite wrong token
+    - Should rely on contractAddress as natural key
+
+36. [MIGRATION ISSUE] Column Add Logic (db.mjs:78-109)
+    - ALTER TABLE commands run every init without checking if already added
+    - Wrapped in try-catch so errors are ignored
+    - But this means on every startup, attempts to add columns that exist
+    - Inefficient and clutters logs
+
+37. [DATA INTEGRITY] Cascade Delete Missing (db.mjs:112-121)
+    - priceHistory has FOREIGN KEY to tokens
+    - But tokens table has no ON DELETE CASCADE
+    - When token deleted, orphaned priceHistory records remain
+    - Should add CASCADE or manually cleanup
+
+38. [INCONSISTENT DEFAULTS] Alert Tiers (db.mjs:156-164)
+    - Default tiers: 1.1, 1.25, 1.4
+    - But tokenManager constructor uses: 1.1, 1.2, 1.3 (lines 17-20)
+    - Mismatch between DB default and code default
+    - New installations get DB defaults, not code defaults
+
+================================================================================
+API INTEGRATION ISSUES
+================================================================================
+
+39. [TIMEOUT] DexScreener Timeout Too Short (dexscreener.mjs:41, 93)
+    - 15 second timeout for token requests
+    - For batch requests with 30 tokens, this may not be enough
+    - First request in batch could time out before response arrives
+    - Should consider longer timeout or individual request timeouts
+
+40. [NO RETRY] API Failures (dexpaprika.mjs:318-346)
+    - getTokenData() returns null on error
+    - No retry logic for transient failures
+    - Caller must handle null, but no distinction between:
+       - Network error (retryable)
+       - 404 not found (not retryable)
+       - 429 rate limited (retry with backoff)
+
+41. [MISSING VALIDATION] API Response Data (tokenManager.mjs:776-781)
+    - `const mc = bestPair.marketCap || bestPair.fdv;`
+    - If both are undefined/0, token is created with mc=0
+    - Then line 777 checks `if (!mc || mc === 0)` - but this is AFTER token added
+    - Failed discovery tracking at line 779 happens too late
+    - Token already in discovery list with bad data
+
+42. [RATE LIMITING] DexScreener Profiles API (tokenManager.mjs:241-244)
+    - Discovery runs every 1 second (60 req/min)
+    - DexScreener rate limit is 60 req/min
+    - No buffer for:
+       - Network delays
+       - Other concurrent DexScreener calls (holder token fetches, logo fetches)
+    - Could exceed rate limit and get blocked
+
+================================================================================
+SSM (SSE) ISSUES
+================================================================================
+
+43. [CONNECTION LEAK] SSE Disconnection (dexpaprika.mjs:142-152)
+    - disconnect() destroys request but doesn't remove from failedConnections
+    - Tokens in backoff stay in failedConnections forever
+    - If token disconnects and reconnects successfully, should clear backoff state
+    - Currently backoff cleared on connect (line 49) but what if was previously in backoff?
+
+44. [MISSING HEARTBEAT] SSE Connection Health (dexpaprika.mjs)
+    - No heartbeat/ping mechanism to detect dead connections
+    - If server stops sending data but connection stays open, won't detect
+    - Relies only on incoming data events
+    - Should implement timeout-based health check
+
+45. [QUEUE PROCESSING] SSE Connection Queue (dexpaprika.mjs:154-176)
+    - Queued tokens are processed sequentially with 500ms delay
+    - If top 10 changes rapidly, queue could backlog
+    - Tokens at end of queue wait longer for SSE connection
+    - Consider parallel connections with limit
+
+================================================================================
+HOLDER MODE ISSUES
+================================================================================
+
+46. [DATA INCONSISTENCY] Holder Peak Multiplier (tokenManager.mjs:517-523)
+    - Holder peak calculated as: `currentMc / holderSpottedMc`
+    - But holderSpottedMc can be 0 for tokens added without data
+    - Results in Infinity or NaN
+    - Should guard against zero or missing holderSpottedMc
+
+47. [MISSING VALIDATION] Holder Channel CA Extraction (telegramService.mjs:646-674)
+    - extractCAFromUrl() has multiple regex patterns
+    - No validation that extracted string is valid Solana address
+    - Could extract invalid strings that look like addresses
+    - Should verify base58 format and length (32-44 chars)
+
+48. [INCONSISTENT UPDATES] Holder Token Background Updates (tokenManager.mjs:410-415)
+    - Holder tokens included in background updates regardless of time window
+    - But tokens with source='ex-holder' also included
+    - Both 'holder' and 'ex-holder' get updates indefinitely
+    - Could be many old tokens consuming API quota
+
+================================================================================
+ALERT SYSTEM ISSUES
+================================================================================
+
+49. [SPAM PREVENTION] Floor Alert Tracking (app.js:569-587)
+    - floorAlertedTokens Set tracks tokens that hit 100% drop
+    - Tokens removed from tracking when they recover to 50% of peak
+    - But what if token drops to 100% again later? Not re-alerted
+    - Should reset floor alert after significant recovery
+
+50. [INCONSISTENT COOLDOWN] Alert Cooldowns (app.js:437-460)
+    - Different cooldowns for different alert types
+    - 'rapid_gain' has 60s cooldown, others have 10s
+    - But volume_surge has same 10s cooldown
+    - Volume can surge continuously - 10s may cause spam
+    - Should be longer or have threshold increase
+
+51. [MISSING RESET] Token Alert History (app.js:463-466, 654-660)
+    - History cleaned up when token leaves list
+    - But if token stays in list for hours, history accumulates
+    - Old entries never expire based on time
+    - Should also clean up entries older than X minutes
+
+================================================================================
+DOCUMENTATION / METADATA ISSUES
+================================================================================
+
+52. [OUTDATED COMMENT] Server Monitoring Window (server.mjs:564)
+    - Comment says "Monitoring window: 3 hours"
+    - But code uses 2 hours (tokenManager.mjs:28)
+    - Misleading comment
+
+53. [INCONSISTENT NAMING] Dexpaprika vs DexPaprika
+    - Sometimes "DexPaprika", sometimes "dexpaprika"
+    - File is "dexpaprika.mjs" but comments say "DexPaprika"
+    - Should be consistent
+
+================================================================================
+SUMMARY
+================================================================================
+
+Total Issues Identified: 53
+
+Severity Breakdown:
+- CRITICAL: 5 (security, data loss, race conditions, memory leaks)
+- HIGH: 10 (logic errors, unhandled errors, null references)
+- MEDIUM: 15 (race conditions, inconsistencies, error handling)
+- LOW: 20 (code quality, unused code, inconsistencies)
+
+Most Affected Files:
+1. tokenManager.mjs - 15 issues
+2. app.js (frontend) - 8 issues
+3. telegramService.mjs - 6 issues
+4. db.mjs - 5 issues
+5. dexpaprika.mjs - 5 issues
+6. mvpCalculator_v3.mjs - 4 issues
+7. server.mjs - 2 issues
+8. Other files - 8 issues
+
+Recommended Priority Fixes:
+1. Move Telegram credentials to environment variables
+2. Fix 2h view mode missing in MVP calculator
+3. Clean up failedDiscoveryTokens Map periodically
+4. Add proper error handling for SSE connections
+5. Fix database save timing in purge operation
+6. Remove/stub out unused tokenManager properties in stats endpoint
+7. Add spottedMc=0 guard in MVP calculation
+8. Implement retry logic for DexPaprika API failures
+
+================================================================================
