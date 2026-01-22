@@ -1,0 +1,15 @@
+[build]
+builder = "NIXPACKS"
+
+[phases.build]
+cmds = ["npm ci --omit=dev --omit=optional"]
+
+[deploy]
+startCommand = "node src/backend/server.mjs"
+healthcheckPath = "/api/tokens/top"
+healthcheckTimeout = 300
+numReplicas = 1
+
+[deploy.env]
+NODE_ENV = "production"
+NODE_VERSION = "22"
