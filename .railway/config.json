@@ -1,6 +1,7 @@
 {
   "build": {
-    "builder": "nixpacks"
+    "builder": "dockerfile",
+    "dockerfilePath": "Dockerfile"
   },
   "deploy": {
     "startCommand": "node src/backend/server.mjs",
