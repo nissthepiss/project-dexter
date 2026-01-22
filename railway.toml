@@ -6,6 +6,6 @@ cmd = "true"
 cmd = "node src/backend/server.mjs"
 
 [deploy]
-healthcheckPath = "/api/tokens/top"
+healthcheckPath = "/health"
 healthcheckTimeout = 300
 numReplicas = 1

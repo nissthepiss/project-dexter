@@ -44,10 +44,10 @@ app.use(express.json());
 const dataCollector = new DataCollector(logger);
 logger.info('[DataCollector] Recording scoring metrics to src/data/scoring-logs/');
 
-// Initialize token manager
+// Initialize token manager (non-blocking - server starts even if this fails)
 tokenManager.initialize().catch(err => {
   logger.error('Failed to initialize TokenManager', err);
-  process.exit(1);
+  // Don't exit - let server start in degraded mode for health checks
 });
 
 // Inject telegram service into token manager for auto-alerts
@@ -85,7 +85,13 @@ app.use('/api/channels', channelsRouter);
 
 // Health check endpoint for Railway/deployment platforms
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', mode: process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite' });
+  const hasDb = !!process.env.DATABASE_URL;
+  res.status(200).json({
+    status: 'ok',
+    mode: hasDb ? 'PostgreSQL' : 'SQLite',
+    database: hasDb ? 'configured' : 'local',
+    port: PORT
+  });
 });
 
 // Serve static frontend for external viewing (read-only)
