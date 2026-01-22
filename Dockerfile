@@ -12,8 +12,5 @@ RUN npm ci --omit=dev --omit=optional
 # Copy source code
 COPY src ./src
 
-# Expose port
-EXPOSE 3001
-
-# Start the backend server
+# Start the backend server (Railway sets PORT env var)
 CMD ["node", "src/backend/server.mjs"]
