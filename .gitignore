@@ -7,3 +7,8 @@ node_modules
 .env
 .env.local
 .env.*.local
+
+# Telegram session files (Railway generates its own)
+src/data/telegram_credentials.json
+src/data/telegram_session-*.txt
+src/data/telegram_session*.json
