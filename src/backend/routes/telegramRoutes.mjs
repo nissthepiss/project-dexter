@@ -120,6 +120,17 @@ export function createTelegramRoutes({ telegramService, logger, tokenManager }) 
     }
   });
 
+  // Clear Telegram session (for AUTH_KEY_DUPLICATED error recovery)
+  router.post('/clear-session', async (req, res) => {
+    try {
+      const result = await telegramService.clearSession();
+      res.json(result);
+    } catch (error) {
+      logger.error('Clear session failed', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // Get public channels list
   router.get('/public-channels', (req, res) => {
     try {

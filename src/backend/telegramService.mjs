@@ -9,10 +9,15 @@ import logger from './logger.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Detect if running on Railway (or other production environment)
+const IS_RAILWAY = process.env.RAILWAY_ENVIRONMENT || process.env.DATABASE_URL || process.env.PORT;
+const ENV_SUFFIX = IS_RAILWAY ? '-railway' : '-local';
+
 // Telegram API credentials
-const API_ID = 24633284;
-const API_HASH = 'db57716f3f179bc1c653c3ec0f7377d5';
-const PHONE = '+447521185232';
+// Railway can override these via environment variables
+const API_ID = parseInt(process.env.TELEGRAM_API_ID || '24633284');
+const API_HASH = process.env.TELEGRAM_API_HASH || 'db57716f3f179bc1c653c3ec0f7377d5';
+const PHONE = process.env.TELEGRAM_PHONE || '+447521185232';
 
 // Channels
 const PRIVATE_CHANNEL_ID = BigInt('-1003511885609');
@@ -25,10 +30,19 @@ const PUBLIC_RATE_LIMIT = {
   windowMs: 5 * 60 * 1000 // 5 minutes
 };
 
-// Session file paths
-const SESSION_FILE = path.join(__dirname, '../data/telegram_session.txt');
+// Session file paths - environment-aware to prevent conflicts
+const SESSION_FILE = path.join(__dirname, `../data/telegram_session${ENV_SUFFIX}.txt`);
 const ANNOUNCED_TOKENS_FILE = path.join(__dirname, '../data/announced_tokens.json');
 const PUBLIC_CHANNELS_FILE = path.join(__dirname, '../data/public_channels.json');
+
+// Log which environment we're in
+if (IS_RAILWAY) {
+  logger.info('🚂 Telegram Service running in RAILWAY mode');
+  logger.info(`Session file: telegram_session-railway.txt`);
+} else {
+  logger.info('🏠 Telegram Service running in LOCAL mode');
+  logger.info(`Session file: telegram_session-local.txt`);
+}
 
 class TelegramService {
   constructor() {
@@ -36,6 +50,8 @@ class TelegramService {
     this.isConnected = false;
     this.isAuthenticating = false;
     this.phoneCodeHash = null;
+    this.isReconnecting = false;
+    this.authKeyDuplicated = false;
     
     // Toggles
     this.telegramMessagingEnabled = false; // "Telegram Message" toggle (default OFF)
@@ -184,8 +200,44 @@ class TelegramService {
   // AUTHENTICATION & CONNECTION
   // ==========================================================================
 
+  /**
+   * Properly clean up existing client connection before creating a new one
+   * This prevents AUTH_KEY_DUPLICATED errors from session conflicts
+   */
+  async cleanup() {
+    if (this.client) {
+      try {
+        // Disconnect and clean up the existing client
+        if (this.client.isConnected) {
+          await this.client.disconnect();
+        }
+        this.client = null;
+      } catch (error) {
+        logger.warn('Error during client cleanup:', error.message);
+        this.client = null;
+      }
+    }
+    this.isConnected = false;
+    this.isReconnecting = false;
+  }
+
   async initialize() {
+    // Prevent reconnection loop if we previously hit AUTH_KEY_DUPLICATED
+    if (this.authKeyDuplicated) {
+      logger.error('Previous AUTH_KEY_DUPLICATED error detected. Session may be corrupted. Clear session file and restart.');
+      return { success: false, status: 'auth_key_duplicated', error: 'Session conflict detected. Delete telegram_session.txt and re-authenticate.' };
+    }
+
+    // Prevent concurrent reconnection attempts
+    if (this.isReconnecting) {
+      logger.warn('Reconnection already in progress, skipping initialize');
+      return { success: false, status: 'reconnecting' };
+    }
+
     try {
+      // Clean up any existing connection before creating a new one
+      await this.cleanup();
+
       let sessionString = '';
       if (fs.existsSync(SESSION_FILE)) {
         sessionString = fs.readFileSync(SESSION_FILE, 'utf-8').trim();
@@ -194,13 +246,18 @@ class TelegramService {
 
       const session = new StringSession(sessionString);
       this.client = new TelegramClient(session, API_ID, API_HASH, {
-        connectionRetries: 5,
+        connectionRetries: 3,
+        // Disable auto-reconnect to prevent infinite loops on AUTH_KEY_DUPLICATED
+        autoReconnect: false,
       });
 
+      this.isReconnecting = true;
       await this.client.connect();
+      this.isReconnecting = false;
 
       if (await this.client.isUserAuthorized()) {
         this.isConnected = true;
+        this.authKeyDuplicated = false; // Clear flag on successful connection
         logger.success('Telegram client connected and authorized');
         return { success: true, status: 'connected' };
       } else {
@@ -208,6 +265,16 @@ class TelegramService {
         return { success: false, status: 'needs_auth' };
       }
     } catch (error) {
+      this.isReconnecting = false;
+
+      // Handle AUTH_KEY_DUPLICATED specifically
+      if (error.code === 406 || error.errorMessage === 'AUTH_KEY_DUPLICATED') {
+        this.authKeyDuplicated = true;
+        logger.error('AUTH_KEY_DUPLICATED error detected. Another session may be using this account, or session file is corrupted.');
+        logger.error('To fix: 1) Close other Telegram sessions, or 2) Delete telegram_session.txt and re-authenticate');
+        return { success: false, status: 'auth_key_duplicated', error: 'Session conflict detected. Delete telegram_session.txt and re-authenticate.' };
+      }
+
       logger.error('Failed to initialize Telegram client', error);
       return { success: false, status: 'error', error: error.message };
     }
@@ -482,6 +549,10 @@ class TelegramService {
     return {
       isConnected: this.isConnected,
       isAuthenticating: this.isAuthenticating,
+      isReconnecting: this.isReconnecting,
+      authKeyDuplicated: this.authKeyDuplicated,
+      environment: IS_RAILWAY ? 'railway' : 'local',
+      sessionFile: path.basename(SESSION_FILE),
       telegramMessagingEnabled: this.telegramMessagingEnabled,
       publicChannelEnabled: this.publicChannelEnabled,
       publicChannels: this.publicChannels,
@@ -584,6 +655,36 @@ class TelegramService {
   // ==========================================================================
   // HOLDER MESSAGE READING
   // ==========================================================================
+
+  /**
+   * Clear the Telegram session file and reset connection state
+   * Call this when AUTH_KEY_DUPLICATED error occurs
+   */
+  async clearSession() {
+    try {
+      // First, clean up the client connection
+      await this.cleanup();
+
+      // Clear the duplicate flag
+      this.authKeyDuplicated = false;
+
+      // Delete the session file if it exists
+      if (fs.existsSync(SESSION_FILE)) {
+        fs.unlinkSync(SESSION_FILE);
+        const envName = IS_RAILWAY ? 'Railway' : 'Local';
+        logger.success(`Telegram session file deleted (${envName} environment)`);
+      }
+
+      return {
+        success: true,
+        message: `Session cleared successfully. Please re-authenticate.`,
+        environment: IS_RAILWAY ? 'railway' : 'local'
+      };
+    } catch (error) {
+      logger.error('Failed to clear session', error);
+      return { success: false, error: error.message };
+    }
+  }
 
   async getHolderMessage() {
     await this.ensureConnected();
