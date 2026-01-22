@@ -32,8 +32,10 @@ const PORT = process.env.PORT || 3001;
 
 // CORS: Allow local development and production origins
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3001', 'http://127.0.0.1:3001'];
+const isProduction = !!process.env.DATABASE_URL;
+
 app.use(cors({
-  origin: ALLOWED_ORIGINS,
+  origin: isProduction ? '*' : ALLOWED_ORIGINS,
   credentials: true
 }));
 app.use(express.json());
