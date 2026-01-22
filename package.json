@@ -10,7 +10,7 @@
     "server": "node src/backend/server.mjs",
     "build": "electron-builder",
     "build:win": "electron-builder --win --publish never",
-    "postinstall": "npm run install-app-deps || true",
+    "postinstall": "if [ -z \"$DATABASE_URL\" ]; then npm run install-app-deps || true; else echo \"Skipping Electron deps for Railway deployment\"; fi",
 "install-app-deps": "electron-builder install-app-deps"
   },
   "build": {
