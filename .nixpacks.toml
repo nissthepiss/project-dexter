@@ -1,5 +1,0 @@
-[phases.build]
-cmds = ["npm ci --omit=dev"]
-
-[start]
-cmd = "node src/backend/server.mjs"

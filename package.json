@@ -4,6 +4,9 @@
   "description": "Real-time Solana token tracker for pump.fun tokens",
   "main": "src/main/index.js",
   "homepage": "./",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
