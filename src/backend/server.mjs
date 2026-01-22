@@ -40,9 +40,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Initialize data collector for algorithm analysis
-const dataCollector = new DataCollector(logger);
-logger.info('[DataCollector] Recording scoring metrics to src/data/scoring-logs/');
+// Initialize data collector for algorithm analysis (may fail on Railway if FS is read-only)
+let dataCollector;
+try {
+  dataCollector = new DataCollector(logger);
+  logger.info('[DataCollector] Recording scoring metrics to src/data/scoring-logs/');
+} catch (err) {
+  logger.warn('[DataCollector] Failed to initialize (file system may be read-only)');
+  dataCollector = { record: () => {}, shutdown: () => {} }; // No-op fallback
+}
 
 // Initialize token manager (non-blocking - server starts even if this fails)
 tokenManager.initialize().catch(err => {
@@ -53,11 +59,20 @@ tokenManager.initialize().catch(err => {
 // Inject telegram service into token manager for auto-alerts
 tokenManager.setTelegramService(telegramService);
 
-tokenManager.startTracking();
+// Start token tracking (non-blocking - server starts even if this fails)
+tokenManager.startTracking().catch(err => {
+  logger.error('Failed to start token tracking', err);
+  // Don't exit - server can still serve health checks
+});
 
-// Initialize holder service - runs independently of UI mode
+// Initialize holder service - runs independently of UI mode (non-blocking)
 holderService.setTokenManager(tokenManager);
-holderService.startPolling(5000);
+try {
+  holderService.startPolling(5000);
+} catch (err) {
+  logger.error('Failed to start holder service polling', err);
+  // Don't exit - server can still serve health checks
+}
 
 // Mode state accessors
 const getModeState = () => currentMode;
