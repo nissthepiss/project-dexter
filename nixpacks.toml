@@ -1,8 +1,5 @@
-[phases.setup]
-nixPkgs = ["nodejs-20_x"]
-
 [phases.build]
 cmds = ["npm ci --omit=dev"]
 
-[phases.start]
-cmd = "npm run server"
+[start]
+cmd = "node src/backend/server.mjs"
