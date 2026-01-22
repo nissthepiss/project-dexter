@@ -1,8 +1,6 @@
-[phases.build]
-cmds = []
-
-[phases.install]
-cmds = ["npm ci --omit=dev --omit=optional"]
+[builds]
+[builds.web]
+cmd = "true"
 
 [start]
 cmd = "node src/backend/server.mjs"
