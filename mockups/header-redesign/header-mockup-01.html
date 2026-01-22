@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 01: Command Strip</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-dark: #030303;
+            --bg-panel: #080808;
+            --bg-hover: #141414;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9a9a9e;
+            --text-dim: #4a4a4e;
+            --accent-orange: #ff6b00;
+            --accent-orange-glow: rgba(255, 107, 0, 0.40);
+            --accent-orange-dim: rgba(255, 107, 0, 0.15);
+            --accent-cyan: #00e5ff;
+            --status-green: #4ade80;
+            --status-red: #f87171;
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Bebas Neue', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(3, 7, 18, 0.02) 2px,
+                rgba(3, 7, 18, 0.02) 4px
+            );
+        }
+
+        /* ============================================
+           HEADER 01: COMMAND STRIP
+           Single horizontal strip with inline modules
+           ============================================ */
+        .header-command-strip {
+            background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+            border-bottom: 1px solid var(--accent-orange-dim);
+            position: relative;
+        }
+
+        .header-command-strip::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--accent-orange) 20%,
+                var(--accent-orange) 80%,
+                transparent 100%);
+            opacity: 0.5;
+        }
+
+        .command-strip-inner {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 8px 16px;
+            max-width: 100%;
+        }
+
+        /* Module divider */
+        .module-divider {
+            width: 1px;
+            height: 32px;
+            background: linear-gradient(180deg,
+                transparent 0%,
+                var(--border-subtle) 50%,
+                transparent 100%);
+            flex-shrink: 0;
+        }
+
+        /* Logo Module */
+        .logo-module {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 16px;
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 28px;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .logo-dot {
+            color: var(--accent-orange);
+            text-shadow: 0 0 20px var(--accent-orange-glow);
+        }
+
+        /* Controls Module */
+        .controls-module {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 16px;
+        }
+
+        .control-label {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .mode-pills {
+            display: flex;
+            gap: 2px;
+            background: var(--bg-dark);
+            padding: 2px;
+            border-radius: 3px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .mode-pill {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mode-pill:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .mode-pill.active {
+            background: var(--accent-orange-dim);
+            color: var(--accent-orange);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            gap: 1px;
+        }
+
+        .timeframe-tab {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: var(--text-dim);
+            border-bottom: 2px solid transparent;
+        }
+
+        .timeframe-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .timeframe-tab.active {
+            color: var(--accent-orange);
+            border-bottom-color: var(--accent-orange);
+        }
+
+        /* Arrivals Module */
+        .arrivals-module {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .arrivals-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .arrivals-icon {
+            font-size: 12px;
+            color: var(--accent-orange);
+        }
+
+        .arrivals-title {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .arrivals-strip {
+            display: flex;
+            gap: 6px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .arrival-token {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            border-radius: 3px;
+            font-size: 11px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .arrival-token:hover {
+            border-color: var(--accent-orange-dim);
+            background: var(--bg-hover);
+        }
+
+        .arrival-token.positive {
+            color: var(--status-green);
+        }
+
+        .arrival-token.negative {
+            color: var(--status-red);
+        }
+
+        .arrival-momentum {
+            font-weight: 600;
+        }
+
+        /* Alerts Module */
+        .alerts-module {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 16px;
+            min-width: 320px;
+        }
+
+        .alerts-icon {
+            font-size: 12px;
+            color: var(--accent-orange);
+        }
+
+        .alerts-title {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .alerts-ticker {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .alerts-track {
+            display: flex;
+            gap: 16px;
+            animation: scroll-left 20s linear infinite;
+        }
+
+        .alert-item {
+            font-size: 10px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .alert-item::before {
+            content: '▹';
+            color: var(--accent-orange);
+        }
+
+        .alert-item.tier1 {
+            color: var(--accent-orange);
+        }
+
+        .alert-item.new-token {
+            color: var(--accent-cyan);
+        }
+
+        .alert-item.mvp {
+            color: var(--status-green);
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Status indicators */
+        .status-indicators {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 16px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.green {
+            background: var(--status-green);
+            box-shadow: 0 0 8px var(--status-green);
+        }
+
+        .status-dot.orange {
+            background: var(--accent-orange);
+            box-shadow: 0 0 8px var(--accent-orange);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .version-tag {
+            font-size: 9px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        /* Preview content area */
+        .preview-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .preview-token {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .preview-token:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .preview-token-rank {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .preview-token-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-token-mc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-section {
+            margin-top: 24px;
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-orange-dim);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .mvp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mvp-trophy {
+            font-size: 24px;
+        }
+
+        .mvp-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+        }
+
+        .mvp-score-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mvp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mvp-bar-label {
+            width: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mvp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+            border-radius: 4px;
+            animation: bar-fill 1s ease-out forwards;
+            transform-origin: left;
+        }
+
+        @keyframes bar-fill {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .mvp-bar-value {
+            width: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER: COMMAND STRIP -->
+    <header class="header-command-strip">
+        <div class="command-strip-inner">
+            <!-- Logo Module -->
+            <div class="logo-module">
+                <span class="logo-text">DEXTER<span class="logo-dot">.</span></span>
+            </div>
+
+            <div class="module-divider"></div>
+
+            <!-- Controls Module -->
+            <div class="controls-module">
+                <div class="control-group">
+                    <span class="control-label">MODE</span>
+                    <div class="mode-pills">
+                        <span class="mode-pill active">DEGEN</span>
+                        <span class="mode-pill">HOLDER</span>
+                        <span class="mode-pill">RADAR</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <span class="control-label">TIMEFRAME</span>
+                    <div class="timeframe-tabs">
+                        <span class="timeframe-tab">5M</span>
+                        <span class="timeframe-tab">30M</span>
+                        <span class="timeframe-tab">1H</span>
+                        <span class="timeframe-tab">2H</span>
+                        <span class="timeframe-tab active">ALL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-divider"></div>
+
+            <!-- Arrivals Module -->
+            <div class="arrivals-module">
+                <div class="arrivals-label">
+                    <span class="arrivals-icon">◈</span>
+                    <span class="arrivals-title">Recent Arrivals</span>
+                </div>
+                <div class="arrivals-strip">
+                    <div class="arrival-token positive">
+                        <span>FCHAD</span>
+                        <span class="arrival-momentum">+24%</span>
+                    </div>
+                    <div class="arrival-token positive">
+                        <span>PEPE</span>
+                        <span class="arrival-momentum">+18%</span>
+                    </div>
+                    <div class="arrival-token negative">
+                        <span>WIF</span>
+                        <span class="arrival-momentum">-5%</span>
+                    </div>
+                    <div class="arrival-token positive">
+                        <span>DOGE</span>
+                        <span class="arrival-momentum">+42%</span>
+                    </div>
+                    <div class="arrival-token positive">
+                        <span>BONK</span>
+                        <span class="arrival-momentum">+8%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-divider"></div>
+
+            <!-- Alerts Module -->
+            <div class="alerts-module">
+                <span class="alerts-icon">⚡</span>
+                <span class="alerts-title">Alerts</span>
+                <div class="alerts-ticker">
+                    <div class="alerts-track">
+                        <span class="alert-item tier1">Tier 1 hit: FCHAD 1.1x</span>
+                        <span class="alert-item new-token">New token: PEPE discovered</span>
+                        <span class="alert-item mvp">MVP changed: DOGE</span>
+                        <span class="alert-item tier1">Tier 2 hit: BONK 1.2x</span>
+                        <span class="alert-item new-token">Scanning network...</span>
+                        <!-- Duplicated for seamless scroll -->
+                        <span class="alert-item tier1">Tier 1 hit: FCHAD 1.1x</span>
+                        <span class="alert-item new-token">New token: PEPE discovered</span>
+                        <span class="alert-item mvp">MVP changed: DOGE</span>
+                        <span class="alert-item tier1">Tier 2 hit: BONK 1.2x</span>
+                        <span class="alert-item new-token">Scanning network...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module-divider"></div>
+
+            <!-- Status Indicators -->
+            <div class="status-indicators">
+                <div class="status-dot green"></div>
+                <span class="version-tag">v1.0.0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Preview Content Area -->
+    <main class="preview-content">
+        <h2 class="preview-title">Top 10 Degens</h2>
+        <div class="preview-grid">
+            <div class="preview-token">
+                <div class="preview-token-rank">#1</div>
+                <div class="preview-token-name">FCHAD</div>
+                <div class="preview-token-mc">$156K → $189K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#2</div>
+                <div class="preview-token-name">DOGE</div>
+                <div class="preview-token-mc">$89K → $126K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#3</div>
+                <div class="preview-token-name">PEPE</div>
+                <div class="preview-token-mc">$234K → $276K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#4</div>
+                <div class="preview-token-name">BONK</div>
+                <div class="preview-token-mc">$445K → $481K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#5</div>
+                <div class="preview-token-name">WIF</div>
+                <div class="preview-token-mc">$678K → $644K</div>
+            </div>
+        </div>
+
+        <!-- MVP Section with animated bars -->
+        <div class="mvp-section">
+            <div class="mvp-header">
+                <span class="mvp-trophy">🏆</span>
+                <span class="mvp-title">MOST VALUABLE PLAYER</span>
+            </div>
+            <div class="mvp-score-bars">
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Buy Pressure</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 85%"></div>
+                    </div>
+                    <span class="mvp-bar-value">85%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Net Volume</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 72%"></div>
+                    </div>
+                    <span class="mvp-bar-value">72%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Momentum</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 94%"></div>
+                    </div>
+                    <span class="mvp-bar-value">94%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">TXN Velocity</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 68%"></div>
+                    </div>
+                    <span class="mvp-bar-value">68%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Overall MVP</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <span class="mvp-bar-value">80</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

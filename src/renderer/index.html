@@ -340,6 +340,10 @@
                 <span class="btn-icon">⇡</span>
                 <span class="btn-label">TELEGRAM</span>
             </button>
+            <button class="action-btn admin-btn" id="log-telegram-btn" title="Log to Telegram">
+                <span class="btn-icon">📲</span>
+                <span class="btn-label">LOG_TG</span>
+            </button>
             <button class="action-btn" id="manage-channels-btn" title="Manage Channels">
                 <span class="btn-icon">📡</span>
                 <span class="btn-label">CHANNELS</span>
@@ -429,6 +433,47 @@
             <div class="password-modal-buttons">
                 <button class="password-modal-btn" id="password-cancel-btn">CANCEL</button>
                 <button class="password-modal-btn primary" id="password-submit-btn">UNLOCK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Telegram Login Modal -->
+    <div class="telegram-login-modal-overlay" id="telegram-login-modal-overlay">
+        <div class="telegram-login-modal">
+            <div class="telegram-login-header">
+                <span class="telegram-login-prompt">$</span>
+                <span class="telegram-login-title">telegram-auth</span>
+            </div>
+            <div class="telegram-login-close" id="close-telegram-login">×</div>
+
+            <div class="telegram-login-body">
+                <!-- Step 1: Phone Number -->
+                <div class="telegram-login-step" id="tg-step-phone">
+                    <div class="telegram-step-label">PHONE NUMBER</div>
+                    <input type="tel" class="telegram-login-input" id="tg-phone-input" placeholder="+1234567890" />
+                    <button class="telegram-login-btn" id="tg-request-btn">SEND CODE</button>
+                </div>
+
+                <!-- Step 2: Verification Code -->
+                <div class="telegram-login-step hidden" id="tg-step-code">
+                    <div class="telegram-step-label">VERIFICATION CODE</div>
+                    <input type="text" class="telegram-login-input" id="tg-code-input" placeholder="12345" maxlength="5" />
+                    <button class="telegram-login-btn" id="tg-verify-btn">VERIFY</button>
+                </div>
+
+                <!-- Step 3: 2FA Password -->
+                <div class="telegram-login-step hidden" id="tg-step-password">
+                    <div class="telegram-step-label">2FA PASSWORD</div>
+                    <input type="password" class="telegram-login-input" id="tg-password-input" placeholder="Enter 2FA password" />
+                    <button class="telegram-login-btn" id="tg-password-btn">SUBMIT</button>
+                </div>
+
+                <!-- Status Message -->
+                <div class="telegram-login-status" id="tg-login-status"></div>
+            </div>
+
+            <div class="telegram-login-footer">
+                <button class="telegram-login-btn secondary" id="tg-cancel-btn">CANCEL</button>
             </div>
         </div>
     </div>

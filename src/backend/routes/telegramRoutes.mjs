@@ -20,10 +20,11 @@ export function createTelegramRoutes({ telegramService, logger, tokenManager }) 
     }
   });
 
-  // Start authentication
+  // Start authentication with phone number
   router.post('/auth/start', async (req, res) => {
     try {
-      const result = await telegramService.startAuth();
+      const { phone } = req.body;
+      const result = await telegramService.startAuth(phone);
       res.json(result);
     } catch (error) {
       logger.error('Telegram auth start failed', error);
@@ -127,6 +128,32 @@ export function createTelegramRoutes({ telegramService, logger, tokenManager }) 
       res.json(result);
     } catch (error) {
       logger.error('Clear session failed', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Get current phone number
+  router.get('/phone', (req, res) => {
+    try {
+      const phone = telegramService.getPhone();
+      res.json({ success: true, phone });
+    } catch (error) {
+      logger.error('Get phone failed', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  // Set phone number
+  router.post('/phone', async (req, res) => {
+    try {
+      const { phone } = req.body;
+      if (!phone) {
+        return res.status(400).json({ success: false, error: 'Phone number is required' });
+      }
+      telegramService.setPhone(phone);
+      res.json({ success: true, phone });
+    } catch (error) {
+      logger.error('Set phone failed', error);
       res.status(500).json({ success: false, error: error.message });
     }
   });

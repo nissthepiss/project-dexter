@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "duckduckgo": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "ddg-mcp-search"]
+    },
+    "puppeteer": {
+      "command": "node",
+      "args": ["C:/Projects/Project Dexter/mcp-puppeteer/index.js"]
+    }
+  }
+}

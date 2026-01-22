@@ -100,17 +100,17 @@ class TokenManager {
   async checkAndSendTier3Alert(token) {
     // Check if token just hit tier 3 for the first time
     if (!this.telegramService || !this.telegramAutoAlert) return;
-    
+
     // Skip holder tokens for auto alerts
     if (token.source === 'holder' || token.source === 'ex-holder') return;
-    
+
     // Check if token has hit tier 3
     if (token.peakMultiplier >= this.alertTiers.tier3) {
       // CRITICAL: Always mark as announced when hitting T3, even if messaging is disabled
       // This prevents spam when user enables telegram later
       if (!this.telegramService.isAnnounced(token.contractAddress)) {
         this.telegramService.markAsAnnounced(token.contractAddress, true);
-        
+
         // Only attempt to send if messaging is enabled
         try {
           const tokenInfo = {
@@ -118,15 +118,41 @@ class TokenManager {
             symbol: token.symbol,
             multiplier: token.peakMultiplier
           };
-          
+
           const result = await this.telegramService.sendTier3Alert(token.contractAddress, tokenInfo);
-          
+
           if (result.sentToPrivate) {
             const name = token.symbol || token.name;
             logger.info(`📢 Tier 3 alert sent: ${name} @ ${token.peakMultiplier.toFixed(2)}x`);
           }
         } catch (error) {
           logger.error(`Failed to send Tier 3 alert for ${token.contractAddress}:`, error);
+        }
+      }
+    }
+  }
+
+  async checkAndPostBNB2x(token, previousPeak) {
+    // Check if BNB token just hit 2x for the first time
+    if (!this.telegramService) return;
+
+    // Check if it's a BNB address
+    if (!this.telegramService.isBNBAddress(token.contractAddress)) return;
+
+    // Check if token just hit 2x (crossed from below 2.0 to 2.0 or above)
+    if (previousPeak < 2.0 && token.peakMultiplier >= 2.0) {
+      // Check if not already posted on 2x
+      if (!this.telegramService.isBNBPostedOn2x(token.contractAddress)) {
+        try {
+          const tokenInfo = {
+            name: token.name,
+            symbol: token.symbol,
+            multiplier: token.peakMultiplier
+          };
+
+          await this.telegramService.postBNBOn2x(token.contractAddress, tokenInfo);
+        } catch (error) {
+          logger.error(`Failed to post BNB 2x for ${token.contractAddress}:`, error);
         }
       }
     }
@@ -396,6 +422,9 @@ class TokenManager {
         if (previousPeak < this.alertTiers.tier3 && currentMultiplier >= this.alertTiers.tier3) {
           this.checkAndSendTier3Alert(token);
         }
+
+        // Check for BNB 2x posting
+        this.checkAndPostBNB2x(token, previousPeak);
       }
 
       // Check and record price path milestones (1.25x, 1.5x, 1.75x)
@@ -525,6 +554,9 @@ class TokenManager {
           if (previousPeak < this.alertTiers.tier3 && currentMultiplier >= this.alertTiers.tier3) {
             this.checkAndSendTier3Alert(token);
           }
+
+          // Check for BNB 2x posting
+          this.checkAndPostBNB2x(token, previousPeak);
         }
 
         // Check and record price path milestones (1.25x, 1.5x, 1.75x)
@@ -832,6 +864,16 @@ class TokenManager {
 
             this.trackedTokens.set(addr, token);
             await db.insertOrUpdateToken(token);
+
+            // Post BNB contracts to BNB channel on discovery
+            if (this.telegramService && this.telegramService.isBNBAddress(addr)) {
+              this.telegramService.postBNBOnDiscovery(addr, {
+                name: token.name,
+                symbol: token.symbol
+              }).catch(err => {
+                logger.error(`Failed to post BNB on discovery: ${addr}`, err);
+              });
+            }
           }
         } catch (err) {
           logger.error(`Batch discovery failed for ${batch.length} tokens:`, err?.response?.data || err?.message || err);
@@ -1454,6 +1496,16 @@ class TokenManager {
 
       this.trackedTokens.set(contractAddress, token);
       await db.insertOrUpdateToken(token);
+
+      // Post BNB contracts to BNB channel on discovery (holder mode)
+      if (this.telegramService && this.telegramService.isBNBAddress(contractAddress)) {
+        this.telegramService.postBNBOnDiscovery(contractAddress, {
+          name: token.name,
+          symbol: token.symbol
+        }).catch(err => {
+          logger.error(`Failed to post BNB on discovery (holder): ${contractAddress}`, err);
+        });
+      }
 
       logger.success(`Added holder token #${rank}: ${token.symbol || token.name}`);
       return token;

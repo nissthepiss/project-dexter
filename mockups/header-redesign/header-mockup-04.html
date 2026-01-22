@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 04: Cyber Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-dark: #030303;
+            --bg-panel: #080808;
+            --bg-hover: #141414;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9a9a9e;
+            --text-dim: #4a4a4e;
+            --accent-orange: #ff6b00;
+            --accent-orange-glow: rgba(255, 107, 0, 0.40);
+            --accent-orange-dim: rgba(255, 107, 0, 0.15);
+            --accent-cyan: #00e5ff;
+            --status-green: #4ade80;
+            --status-red: #f87171;
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Bebas Neue', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(3, 7, 18, 0.02) 2px,
+                rgba(3, 7, 18, 0.02) 4px
+            );
+        }
+
+        /* ============================================
+           HEADER 04: CYBER DECK
+           Stacked information layers with glowing borders
+           ============================================ */
+        .header-cyberdeck {
+            background: linear-gradient(180deg, #0a0a0a 0%, #040404 100%);
+            border-bottom: 2px solid var(--accent-orange);
+            position: relative;
+            padding: 14px 18px;
+            box-shadow: 0 4px 30px rgba(255, 107, 0, 0.1);
+        }
+
+        /* Glowing accent line */
+        .header-cyberdeck::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--accent-orange) 15%,
+                var(--accent-cyan) 50%,
+                var(--accent-orange) 85%,
+                transparent 100%);
+            animation: glow-shift 4s ease-in-out infinite;
+        }
+
+        @keyframes glow-shift {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .cyberdeck-inner {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Layer 1: Identity Stack */
+        .cyber-identity {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cyber-logo-frame {
+            background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+            border: 2px solid var(--accent-orange-dim);
+            border-radius: 4px;
+            padding: 12px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated corner accents */
+        .cyber-logo-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-top: 2px solid var(--accent-orange);
+            border-left: 2px solid var(--accent-orange);
+            animation: corner-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes corner-pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .cyber-logo-frame::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-bottom: 2px solid var(--accent-orange);
+            border-right: 2px solid var(--accent-orange);
+            animation: corner-pulse 3s ease-in-out infinite 1.5s;
+        }
+
+        .cyber-logo {
+            font-family: var(--font-display);
+            font-size: 28px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px var(--accent-orange-glow);
+        }
+
+        .cyber-logo-dot {
+            color: var(--accent-orange);
+        }
+
+        .cyber-controls-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cyber-control-layer {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cyber-layer-label {
+            font-size: 7px;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            width: 40px;
+        }
+
+        .cyber-mode-pills {
+            display: flex;
+            gap: 0;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .cyber-mode-pill {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-right: 1px solid var(--border-subtle);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .cyber-mode-pill:last-child {
+            border-right: none;
+        }
+
+        .cyber-mode-pill:hover {
+            background: var(--bg-hover);
+        }
+
+        .cyber-mode-pill.active {
+            background: var(--accent-orange-dim);
+            color: var(--accent-orange);
+            text-shadow: 0 0 10px var(--accent-orange-glow);
+        }
+
+        .cyber-timeframe-pills {
+            display: flex;
+            gap: 0;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .cyber-timeframe-pill {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-right: 1px solid var(--border-subtle);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .cyber-timeframe-pill:last-child {
+            border-right: none;
+        }
+
+        .cyber-timeframe-pill:hover {
+            color: var(--text-primary);
+        }
+
+        .cyber-timeframe-pill.active {
+            background: var(--accent-orange-dim);
+            color: var(--accent-orange);
+        }
+
+        /* Layer 2: Data Deck */
+        .cyber-data-deck {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .cyber-arrivals-deck {
+            background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px 16px;
+            position: relative;
+        }
+
+        /* Deck header with glowing indicator */
+        .cyber-deck-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .cyber-deck-title {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cyber-deck-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            animation: indicator-pulse 2s infinite;
+            box-shadow: 0 0 12px var(--accent-orange);
+        }
+
+        @keyframes indicator-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        .cyber-deck-stats {
+            font-size: 9px;
+            color: var(--text-dim);
+            display: flex;
+            gap: 12px;
+        }
+
+        .cyber-deck-stats span {
+            color: var(--text-secondary);
+        }
+
+        .cyber-arrivals-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .cyber-arrival-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hover glow effect */
+        .cyber-arrival-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .cyber-arrival-card:hover {
+            border-color: var(--accent-orange-dim);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.1);
+        }
+
+        .cyber-arrival-card:hover::before {
+            opacity: 1;
+        }
+
+        .cyber-arrival-symbol {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .cyber-arrival-momentum {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .cyber-arrival-card.positive .cyber-arrival-momentum {
+            color: var(--status-green);
+        }
+
+        .cyber-arrival-card.negative .cyber-arrival-momentum {
+            color: var(--status-red);
+        }
+
+        /* Layer 3: Alerts Terminal */
+        .cyber-alerts-terminal {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 260px;
+        }
+
+        .cyber-terminal-frame {
+            background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-dark) 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px;
+            position: relative;
+        }
+
+        /* Terminal glow effect */
+        .cyber-terminal-frame::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+            opacity: 0.3;
+        }
+
+        .cyber-terminal-header {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cyber-terminal-icon {
+            color: var(--accent-orange);
+        }
+
+        .cyber-alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 120px;
+            overflow: hidden;
+        }
+
+        .cyber-alert-line {
+            font-size: 9px;
+            color: var(--text-secondary);
+            padding: 4px 6px;
+            border-left: 2px solid transparent;
+            background: var(--bg-dark);
+            transition: all 0.15s ease;
+        }
+
+        .cyber-alert-line.tier1 {
+            border-left-color: var(--accent-orange);
+            color: var(--accent-orange);
+            background: var(--accent-orange-dim);
+        }
+
+        .cyber-alert-line.new-token {
+            border-left-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .cyber-alert-line.mvp {
+            border-left-color: var(--status-green);
+            color: var(--status-green);
+        }
+
+        .cyber-alert-timestamp {
+            font-size: 7px;
+            color: var(--text-dim);
+            margin-left: 6px;
+        }
+
+        .cyber-status-bar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cyber-status-indicators {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cyber-status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 8px;
+            color: var(--text-dim);
+        }
+
+        .cyber-status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .cyber-status-dot.green {
+            background: var(--status-green);
+            box-shadow: 0 0 8px var(--status-green);
+        }
+
+        .cyber-status-dot.orange {
+            background: var(--accent-orange);
+            box-shadow: 0 0 8px var(--accent-orange);
+        }
+
+        .cyber-version {
+            font-size: 8px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        /* Preview content */
+        .preview-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .preview-token {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .preview-token:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .preview-token-rank {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .preview-token-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-token-mc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-section {
+            margin-top: 24px;
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-orange-dim);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .mvp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mvp-trophy {
+            font-size: 24px;
+        }
+
+        .mvp-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+        }
+
+        .mvp-score-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mvp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mvp-bar-label {
+            width: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mvp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+            border-radius: 4px;
+            animation: bar-fill 1s ease-out forwards;
+            transform-origin: left;
+        }
+
+        @keyframes bar-fill {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .mvp-bar-value {
+            width: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER: CYBER DECK -->
+    <header class="header-cyberdeck">
+        <div class="cyberdeck-inner">
+            <!-- Identity Stack -->
+            <div class="cyber-identity">
+                <div class="cyber-logo-frame">
+                    <div class="cyber-logo">DEXTER<span class="cyber-logo-dot">.</span></div>
+                </div>
+                <div class="cyber-controls-stack">
+                    <div class="cyber-control-layer">
+                        <span class="cyber-layer-label">MODE</span>
+                        <div class="cyber-mode-pills">
+                            <button class="cyber-mode-pill active">DEGEN</button>
+                            <button class="cyber-mode-pill">HOLDER</button>
+                            <button class="cyber-mode-pill">RADAR</button>
+                        </div>
+                    </div>
+                    <div class="cyber-control-layer">
+                        <span class="cyber-layer-label">TIME</span>
+                        <div class="cyber-timeframe-pills">
+                            <button class="cyber-timeframe-pill">5M</button>
+                            <button class="cyber-timeframe-pill">30M</button>
+                            <button class="cyber-timeframe-pill">1H</button>
+                            <button class="cyber-timeframe-pill">2H</button>
+                            <button class="cyber-timeframe-pill active">ALL</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cyber-status-bar">
+                    <div class="cyber-status-indicators">
+                        <div class="cyber-status-item">
+                            <div class="cyber-status-dot green"></div>
+                            <span>SOLANA</span>
+                        </div>
+                        <div class="cyber-status-item">
+                            <div class="cyber-status-dot orange"></div>
+                            <span>DEGEN</span>
+                        </div>
+                    </div>
+                    <span class="cyber-version">v1.0.0</span>
+                </div>
+            </div>
+
+            <!-- Data Deck -->
+            <div class="cyber-data-deck">
+                <div class="cyber-arrivals-deck">
+                    <div class="cyber-deck-header">
+                        <span class="cyber-deck-title">
+                            <div class="cyber-deck-indicator"></div>
+                            Recent Arrivals
+                        </span>
+                        <div class="cyber-deck-stats">
+                            DEGEN: <span>5</span> | HOLDER: <span>3</span>
+                        </div>
+                    </div>
+                    <div class="cyber-arrivals-grid">
+                        <div class="cyber-arrival-card positive">
+                            <div class="cyber-arrival-symbol">FCHAD</div>
+                            <div class="cyber-arrival-momentum">+24%</div>
+                        </div>
+                        <div class="cyber-arrival-card positive">
+                            <div class="cyber-arrival-symbol">PEPE</div>
+                            <div class="cyber-arrival-momentum">+18%</div>
+                        </div>
+                        <div class="cyber-arrival-card negative">
+                            <div class="cyber-arrival-symbol">WIF</div>
+                            <div class="cyber-arrival-momentum">-5%</div>
+                        </div>
+                        <div class="cyber-arrival-card positive">
+                            <div class="cyber-arrival-symbol">DOGE</div>
+                            <div class="cyber-arrival-momentum">+42%</div>
+                        </div>
+                        <div class="cyber-arrival-card positive">
+                            <div class="cyber-arrival-symbol">BONK</div>
+                            <div class="cyber-arrival-momentum">+8%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Terminal -->
+            <div class="cyber-alerts-terminal">
+                <div class="cyber-terminal-frame">
+                    <div class="cyber-terminal-header">
+                        <span class="cyber-terminal-icon">⚡</span>
+                        <span>Alerts Log</span>
+                    </div>
+                    <div class="cyber-alerts-list">
+                        <div class="cyber-alert-line tier1">
+                            Tier 1: FCHAD 1.1x
+                            <span class="cyber-alert-timestamp">2s</span>
+                        </div>
+                        <div class="cyber-alert-line new-token">
+                            New: PEPE found
+                            <span class="cyber-alert-timestamp">15s</span>
+                        </div>
+                        <div class="cyber-alert-line mvp">
+                            MVP: DOGE
+                            <span class="cyber-alert-timestamp">1m</span>
+                        </div>
+                        <div class="cyber-alert-line tier1">
+                            Tier 2: BONK 1.2x
+                            <span class="cyber-alert-timestamp">3m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Preview Content Area -->
+    <main class="preview-content">
+        <h2 class="preview-title">Top 10 Degens</h2>
+        <div class="preview-grid">
+            <div class="preview-token">
+                <div class="preview-token-rank">#1</div>
+                <div class="preview-token-name">FCHAD</div>
+                <div class="preview-token-mc">$156K → $189K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#2</div>
+                <div class="preview-token-name">DOGE</div>
+                <div class="preview-token-mc">$89K → $126K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#3</div>
+                <div class="preview-token-name">PEPE</div>
+                <div class="preview-token-mc">$234K → $276K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#4</div>
+                <div class="preview-token-name">BONK</div>
+                <div class="preview-token-mc">$445K → $481K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#5</div>
+                <div class="preview-token-name">WIF</div>
+                <div class="preview-token-mc">$678K → $644K</div>
+            </div>
+        </div>
+
+        <!-- MVP Section -->
+        <div class="mvp-section">
+            <div class="mvp-header">
+                <span class="mvp-trophy">🏆</span>
+                <span class="mvp-title">MOST VALUABLE PLAYER</span>
+            </div>
+            <div class="mvp-score-bars">
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Buy Pressure</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 85%"></div>
+                    </div>
+                    <span class="mvp-bar-value">85%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Net Volume</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 72%"></div>
+                    </div>
+                    <span class="mvp-bar-value">72%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Momentum</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 94%"></div>
+                    </div>
+                    <span class="mvp-bar-value">94%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">TXN Velocity</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 68%"></div>
+                    </div>
+                    <span class="mvp-bar-value">68%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Overall MVP</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <span class="mvp-bar-value">80</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

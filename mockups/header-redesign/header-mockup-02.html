@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 02: Tactical HUD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-dark: #030303;
+            --bg-panel: #080808;
+            --bg-hover: #141414;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9a9a9e;
+            --text-dim: #4a4a4e;
+            --accent-orange: #ff6b00;
+            --accent-orange-glow: rgba(255, 107, 0, 0.40);
+            --accent-orange-dim: rgba(255, 107, 0, 0.15);
+            --accent-cyan: #00e5ff;
+            --status-green: #4ade80;
+            --status-red: #f87171;
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Bebas Neue', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(3, 7, 18, 0.02) 2px,
+                rgba(3, 7, 18, 0.02) 4px
+            );
+        }
+
+        /* ============================================
+           HEADER 02: TACTICAL HUD
+           Military/aviation HUD inspired segmented panels
+           ============================================ */
+        .header-hud {
+            background: linear-gradient(180deg, #0c0c0c 0%, #050505 100%);
+            border-bottom: 2px solid var(--accent-orange-dim);
+            position: relative;
+            padding: 12px 16px;
+        }
+
+        /* Corner markers */
+        .header-hud::before,
+        .header-hud::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--accent-orange);
+            border-style: solid;
+            opacity: 0.3;
+        }
+
+        .header-hud::before {
+            top: 4px;
+            left: 4px;
+            border-width: 2px 0 0 2px;
+        }
+
+        .header-hud::after {
+            top: 4px;
+            right: 4px;
+            border-width: 2px 2px 0 0;
+        }
+
+        .hud-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 16px;
+            align-items: start;
+        }
+
+        /* Left HUD Panel - Logo & Controls */
+        .hud-panel-left {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hud-logo-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-orange-dim);
+            padding: 12px 20px;
+            position: relative;
+        }
+
+        /* Technical markings */
+        .hud-logo-box::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background: var(--accent-orange);
+            opacity: 0.5;
+        }
+
+        .hud-logo-box::after {
+            content: 'SYS.01';
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 7px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .hud-logo {
+            font-family: var(--font-display);
+            font-size: 26px;
+            letter-spacing: 3px;
+        }
+
+        .hud-logo-dot {
+            color: var(--accent-orange);
+            text-shadow: 0 0 15px var(--accent-orange-glow);
+        }
+
+        .hud-controls-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 12px;
+        }
+
+        .hud-control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .hud-control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .hud-label {
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            width: 50px;
+        }
+
+        .hud-mode-segment {
+            display: flex;
+            gap: 0;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .hud-mode-btn {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-right: 1px solid var(--border-subtle);
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-mode-btn:last-child {
+            border-right: none;
+        }
+
+        .hud-mode-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .hud-mode-btn.active {
+            background: var(--accent-orange-dim);
+            color: var(--accent-orange);
+        }
+
+        .hud-timeframe-segment {
+            display: flex;
+            gap: 0;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .hud-timeframe-btn {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-right: 1px solid var(--border-subtle);
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+        }
+
+        .hud-timeframe-btn:last-child {
+            border-right: none;
+        }
+
+        .hud-timeframe-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .hud-timeframe-btn.active {
+            background: var(--accent-orange-dim);
+            color: var(--accent-orange);
+        }
+
+        /* Center HUD Panel - Arrivals */
+        .hud-panel-center {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .hud-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4px;
+        }
+
+        .hud-panel-title {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hud-panel-title::before {
+            content: '◈';
+            font-size: 10px;
+        }
+
+        .hud-panel-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 9px;
+            color: var(--text-dim);
+        }
+
+        .hud-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hud-stat-value {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .hud-arrivals-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        .hud-arrival-cell {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 10px;
+            text-align: center;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .hud-arrival-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--accent-orange);
+            transition: width 0.15s ease;
+        }
+
+        .hud-arrival-cell:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .hud-arrival-cell:hover::before {
+            width: 60%;
+        }
+
+        .hud-arrival-symbol {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .hud-arrival-momentum {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .hud-arrival-cell.positive .hud-arrival-momentum {
+            color: var(--status-green);
+        }
+
+        .hud-arrival-cell.negative .hud-arrival-momentum {
+            color: var(--status-red);
+        }
+
+        /* Right HUD Panel - Alerts */
+        .hud-panel-right {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 280px;
+        }
+
+        .hud-alerts-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 12px;
+            position: relative;
+        }
+
+        /* Alert indicator light */
+        .hud-alerts-box::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+            box-shadow: 0 0 8px var(--accent-orange);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hud-alerts-header {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hud-alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hud-alert-item {
+            font-size: 9px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .hud-alert-item.tier1 {
+            border-left-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .hud-alert-item.new-token {
+            border-left-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .hud-alert-item.mvp {
+            border-left-color: var(--status-green);
+            color: var(--status-green);
+        }
+
+        .hud-alert-time {
+            font-size: 7px;
+            color: var(--text-dim);
+            margin-left: 6px;
+        }
+
+        /* Status bar */
+        .hud-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 10px;
+            margin-top: 4px;
+        }
+
+        .hud-status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hud-status-item {
+            font-size: 8px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hud-status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--status-green);
+            box-shadow: 0 0 6px var(--status-green);
+        }
+
+        .hud-status-dot.orange {
+            background: var(--accent-orange);
+            box-shadow: 0 0 6px var(--accent-orange);
+        }
+
+        .hud-status-right {
+            font-size: 8px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        /* Preview content */
+        .preview-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .preview-token {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .preview-token:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .preview-token-rank {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .preview-token-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-token-mc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-section {
+            margin-top: 24px;
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-orange-dim);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .mvp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mvp-trophy {
+            font-size: 24px;
+        }
+
+        .mvp-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+        }
+
+        .mvp-score-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mvp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mvp-bar-label {
+            width: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mvp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+            border-radius: 4px;
+            animation: bar-fill 1s ease-out forwards;
+            transform-origin: left;
+        }
+
+        @keyframes bar-fill {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .mvp-bar-value {
+            width: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER: TACTICAL HUD -->
+    <header class="header-hud">
+        <div class="hud-grid">
+            <!-- Left Panel - Logo & Controls -->
+            <div class="hud-panel-left">
+                <div class="hud-logo-box">
+                    <div class="hud-logo">DEXTER<span class="hud-logo-dot">.</span></div>
+                </div>
+                <div class="hud-controls-box">
+                    <div class="hud-control-row">
+                        <span class="hud-label">MODE</span>
+                        <div class="hud-mode-segment">
+                            <button class="hud-mode-btn active">DEGEN</button>
+                            <button class="hud-mode-btn">HOLDER</button>
+                            <button class="hud-mode-btn">RADAR</button>
+                        </div>
+                    </div>
+                    <div class="hud-control-row">
+                        <span class="hud-label">TIME</span>
+                        <div class="hud-timeframe-segment">
+                            <button class="hud-timeframe-btn">5M</button>
+                            <button class="hud-timeframe-btn">30M</button>
+                            <button class="hud-timeframe-btn">1H</button>
+                            <button class="hud-timeframe-btn">2H</button>
+                            <button class="hud-timeframe-btn active">ALL</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="hud-status-bar">
+                    <div class="hud-status-left">
+                        <div class="hud-status-item">
+                            <div class="hud-status-dot"></div>
+                            <span>SOLANA</span>
+                        </div>
+                        <div class="hud-status-item">
+                            <div class="hud-status-dot orange"></div>
+                            <span>DEGEN</span>
+                        </div>
+                    </div>
+                    <div class="hud-status-right">v1.0.0</div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Arrivals -->
+            <div class="hud-panel-center">
+                <div class="hud-panel-header">
+                    <span class="hud-panel-title">Recent Arrivals</span>
+                    <div class="hud-panel-stats">
+                        <span class="hud-stat">DEGEN: <span class="hud-stat-value">5</span></span>
+                        <span class="hud-stat">HOLDER: <span class="hud-stat-value">3</span></span>
+                    </div>
+                </div>
+                <div class="hud-arrivals-grid">
+                    <div class="hud-arrival-cell positive">
+                        <div class="hud-arrival-symbol">FCHAD</div>
+                        <div class="hud-arrival-momentum">+24%</div>
+                    </div>
+                    <div class="hud-arrival-cell positive">
+                        <div class="hud-arrival-symbol">PEPE</div>
+                        <div class="hud-arrival-momentum">+18%</div>
+                    </div>
+                    <div class="hud-arrival-cell negative">
+                        <div class="hud-arrival-symbol">WIF</div>
+                        <div class="hud-arrival-momentum">-5%</div>
+                    </div>
+                    <div class="hud-arrival-cell positive">
+                        <div class="hud-arrival-symbol">DOGE</div>
+                        <div class="hud-arrival-momentum">+42%</div>
+                    </div>
+                    <div class="hud-arrival-cell positive">
+                        <div class="hud-arrival-symbol">BONK</div>
+                        <div class="hud-arrival-momentum">+8%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Alerts -->
+            <div class="hud-panel-right">
+                <div class="hud-alerts-box">
+                    <div class="hud-alerts-header">⚡ Alerts Log</div>
+                    <div class="hud-alerts-list">
+                        <div class="hud-alert-item tier1">
+                            Tier 1 hit: FCHAD 1.1x
+                            <span class="hud-alert-time">2s</span>
+                        </div>
+                        <div class="hud-alert-item new-token">
+                            New token: PEPE discovered
+                            <span class="hud-alert-time">15s</span>
+                        </div>
+                        <div class="hud-alert-item mvp">
+                            MVP changed: DOGE
+                            <span class="hud-alert-time">1m</span>
+                        </div>
+                        <div class="hud-alert-item tier1">
+                            Tier 2 hit: BONK 1.2x
+                            <span class="hud-alert-time">3m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Preview Content Area -->
+    <main class="preview-content">
+        <h2 class="preview-title">Top 10 Degens</h2>
+        <div class="preview-grid">
+            <div class="preview-token">
+                <div class="preview-token-rank">#1</div>
+                <div class="preview-token-name">FCHAD</div>
+                <div class="preview-token-mc">$156K → $189K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#2</div>
+                <div class="preview-token-name">DOGE</div>
+                <div class="preview-token-mc">$89K → $126K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#3</div>
+                <div class="preview-token-name">PEPE</div>
+                <div class="preview-token-mc">$234K → $276K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#4</div>
+                <div class="preview-token-name">BONK</div>
+                <div class="preview-token-mc">$445K → $481K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#5</div>
+                <div class="preview-token-name">WIF</div>
+                <div class="preview-token-mc">$678K → $644K</div>
+            </div>
+        </div>
+
+        <!-- MVP Section -->
+        <div class="mvp-section">
+            <div class="mvp-header">
+                <span class="mvp-trophy">🏆</span>
+                <span class="mvp-title">MOST VALUABLE PLAYER</span>
+            </div>
+            <div class="mvp-score-bars">
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Buy Pressure</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 85%"></div>
+                    </div>
+                    <span class="mvp-bar-value">85%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Net Volume</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 72%"></div>
+                    </div>
+                    <span class="mvp-bar-value">72%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Momentum</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 94%"></div>
+                    </div>
+                    <span class="mvp-bar-value">94%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">TXN Velocity</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 68%"></div>
+                    </div>
+                    <span class="mvp-bar-value">68%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Overall MVP</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <span class="mvp-bar-value">80</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

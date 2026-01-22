@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 03: Data Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-dark: #030303;
+            --bg-panel: #080808;
+            --bg-hover: #141414;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9a9a9e;
+            --text-dim: #4a4a4e;
+            --accent-orange: #ff6b00;
+            --accent-orange-glow: rgba(255, 107, 0, 0.40);
+            --accent-orange-dim: rgba(255, 107, 0, 0.15);
+            --accent-cyan: #00e5ff;
+            --status-green: #4ade80;
+            --status-red: #f87171;
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Bebas Neue', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(3, 7, 18, 0.02) 2px,
+                rgba(3, 7, 18, 0.02) 4px
+            );
+        }
+
+        /* ============================================
+           HEADER 03: DATA FLOW
+           Liquid connected sections with flow lines
+           ============================================ */
+        .header-dataflow {
+            background: linear-gradient(180deg, rgba(12, 12, 12, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+            border-bottom: 1px solid var(--accent-orange-dim);
+            position: relative;
+            padding: 16px 20px;
+        }
+
+        /* Animated flow line at bottom */
+        .header-dataflow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--accent-orange) 10%,
+                var(--accent-cyan) 50%,
+                var(--accent-orange) 90%,
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: flow-gradient 3s linear infinite;
+        }
+
+        @keyframes flow-gradient {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .dataflow-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        /* Flow connectors between sections */
+        .flow-connector {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--accent-orange-dim) 50%,
+                transparent 100%);
+            position: relative;
+        }
+
+        .flow-connector::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid var(--accent-orange-dim);
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        /* Section 1: Brand Core */
+        .flow-section-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-logo {
+            font-family: var(--font-display);
+            font-size: 32px;
+            letter-spacing: 2px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-dot {
+            color: var(--accent-orange);
+            -webkit-text-fill-color: var(--accent-orange);
+            text-shadow: 0 0 20px var(--accent-orange-glow);
+        }
+
+        /* Section 2: Controls Flow */
+        .flow-section-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 16px;
+            position: relative;
+        }
+
+        /* Glowing border on hover */
+        .flow-section-controls:hover {
+            border-color: var(--accent-orange-dim);
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.1);
+        }
+
+        .control-flow-label {
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .control-flow-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flow-mode-btn {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .flow-mode-btn:hover {
+            border-color: var(--accent-orange-dim);
+            color: var(--text-primary);
+        }
+
+        .flow-mode-btn.active {
+            background: var(--accent-orange-dim);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.2);
+        }
+
+        .flow-timeframe-btn {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .flow-timeframe-btn:hover {
+            border-color: var(--accent-orange-dim);
+            color: var(--text-primary);
+        }
+
+        .flow-timeframe-btn.active {
+            background: var(--accent-orange-dim);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        /* Section 3: Arrivals Stream */
+        .flow-section-arrivals {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 16px;
+            min-width: 0;
+        }
+
+        .flow-section-arrivals:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .arrivals-flow-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .arrivals-flow-icon {
+            font-size: 14px;
+            color: var(--accent-orange);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                text-shadow: 0 0 10px var(--accent-orange-glow);
+            }
+            50% {
+                text-shadow: 0 0 20px var(--accent-orange-glow);
+            }
+        }
+
+        .arrivals-flow-title {
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .arrivals-flow-stream {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .flow-arrival-card {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            animation: card-appear 0.3s ease-out;
+        }
+
+        @keyframes card-appear {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flow-arrival-card:hover {
+            border-color: var(--accent-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.15);
+        }
+
+        .flow-arrival-card.positive {
+            border-left: 3px solid var(--status-green);
+        }
+
+        .flow-arrival-card.negative {
+            border-left: 3px solid var(--status-red);
+        }
+
+        .flow-arrival-momentum {
+            font-weight: 600;
+        }
+
+        /* Section 4: Alerts Feed */
+        .flow-section-alerts {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 16px;
+            width: 300px;
+        }
+
+        .flow-section-alerts:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .alerts-flow-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .alerts-flow-icon {
+            font-size: 14px;
+            animation: alert-blink 2s infinite;
+        }
+
+        @keyframes alert-blink {
+            0%, 90%, 100% { opacity: 1; }
+            95% { opacity: 0.5; }
+        }
+
+        .alerts-flow-title {
+            font-size: 8px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .alerts-flow-feed {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .alerts-flow-track {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            animation: scroll-up 15s linear infinite;
+        }
+
+        @keyframes scroll-up {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .flow-alert-item {
+            font-size: 9px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            padding: 3px 0;
+            border-left: 2px solid transparent;
+            padding-left: 6px;
+        }
+
+        .flow-alert-item.tier1 {
+            border-left-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .flow-alert-item.new-token {
+            border-left-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .flow-alert-item.mvp {
+            border-left-color: var(--status-green);
+            color: var(--status-green);
+        }
+
+        /* Status pulse */
+        .status-pulse-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--status-green);
+            position: relative;
+        }
+
+        .status-pulse::before,
+        .status-pulse::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--status-green);
+            animation: pulse-ring 2s infinite;
+        }
+
+        .status-pulse::after {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+
+        .version-tag {
+            font-size: 8px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        /* Preview content */
+        .preview-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .preview-token {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .preview-token:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .preview-token-rank {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .preview-token-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-token-mc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-section {
+            margin-top: 24px;
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-orange-dim);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .mvp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mvp-trophy {
+            font-size: 24px;
+        }
+
+        .mvp-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+        }
+
+        .mvp-score-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mvp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mvp-bar-label {
+            width: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mvp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+            border-radius: 4px;
+            animation: bar-fill 1s ease-out forwards;
+            transform-origin: left;
+        }
+
+        @keyframes bar-fill {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .mvp-bar-value {
+            width: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER: DATA FLOW -->
+    <header class="header-dataflow">
+        <div class="dataflow-container">
+            <!-- Brand Core -->
+            <div class="flow-section-brand">
+                <span class="brand-logo">DEXTER<span class="brand-dot">.</span></span>
+            </div>
+
+            <div class="flow-connector"></div>
+
+            <!-- Controls Flow -->
+            <div class="flow-section-controls">
+                <span class="control-flow-label">System Control</span>
+                <div class="control-flow-row">
+                    <button class="flow-mode-btn active">DEGEN</button>
+                    <button class="flow-mode-btn">HOLDER</button>
+                    <button class="flow-mode-btn">RADAR</button>
+                    <span style="width: 8px;"></span>
+                    <button class="flow-timeframe-btn">5M</button>
+                    <button class="flow-timeframe-btn">30M</button>
+                    <button class="flow-timeframe-btn">1H</button>
+                    <button class="flow-timeframe-btn">2H</button>
+                    <button class="flow-timeframe-btn active">ALL</button>
+                </div>
+            </div>
+
+            <div class="flow-connector"></div>
+
+            <!-- Arrivals Stream -->
+            <div class="flow-section-arrivals">
+                <div class="arrivals-flow-label">
+                    <span class="arrivals-flow-icon">◈</span>
+                    <span class="arrivals-flow-title">Inbound</span>
+                </div>
+                <div class="arrivals-flow-stream">
+                    <div class="flow-arrival-card positive">
+                        <span>FCHAD</span>
+                        <span class="flow-arrival-momentum">+24%</span>
+                    </div>
+                    <div class="flow-arrival-card positive">
+                        <span>PEPE</span>
+                        <span class="flow-arrival-momentum">+18%</span>
+                    </div>
+                    <div class="flow-arrival-card negative">
+                        <span>WIF</span>
+                        <span class="flow-arrival-momentum">-5%</span>
+                    </div>
+                    <div class="flow-arrival-card positive">
+                        <span>DOGE</span>
+                        <span class="flow-arrival-momentum">+42%</span>
+                    </div>
+                    <div class="flow-arrival-card positive">
+                        <span>BONK</span>
+                        <span class="flow-arrival-momentum">+8%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-connector"></div>
+
+            <!-- Alerts Feed -->
+            <div class="flow-section-alerts">
+                <div class="alerts-flow-label">
+                    <span class="alerts-flow-icon">⚡</span>
+                    <span class="alerts-flow-title">Events</span>
+                </div>
+                <div class="alerts-flow-feed">
+                    <div class="alerts-flow-track">
+                        <div class="flow-alert-item tier1">Tier 1: FCHAD 1.1x</div>
+                        <div class="flow-alert-item new-token">New: PEPE found</div>
+                        <div class="flow-alert-item mvp">MVP: DOGE</div>
+                        <div class="flow-alert-item tier1">Tier 2: BONK 1.2x</div>
+                        <div class="flow-alert-item new-token">Scanning...</div>
+                        <!-- Duplicated for scroll -->
+                        <div class="flow-alert-item tier1">Tier 1: FCHAD 1.1x</div>
+                        <div class="flow-alert-item new-token">New: PEPE found</div>
+                        <div class="flow-alert-item mvp">MVP: DOGE</div>
+                        <div class="flow-alert-item tier1">Tier 2: BONK 1.2x</div>
+                        <div class="flow-alert-item new-token">Scanning...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-connector"></div>
+
+            <!-- Status -->
+            <div class="status-pulse-container">
+                <div class="status-pulse"></div>
+                <span class="version-tag">v1.0.0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Preview Content Area -->
+    <main class="preview-content">
+        <h2 class="preview-title">Top 10 Degens</h2>
+        <div class="preview-grid">
+            <div class="preview-token">
+                <div class="preview-token-rank">#1</div>
+                <div class="preview-token-name">FCHAD</div>
+                <div class="preview-token-mc">$156K → $189K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#2</div>
+                <div class="preview-token-name">DOGE</div>
+                <div class="preview-token-mc">$89K → $126K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#3</div>
+                <div class="preview-token-name">PEPE</div>
+                <div class="preview-token-mc">$234K → $276K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#4</div>
+                <div class="preview-token-name">BONK</div>
+                <div class="preview-token-mc">$445K → $481K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#5</div>
+                <div class="preview-token-name">WIF</div>
+                <div class="preview-token-mc">$678K → $644K</div>
+            </div>
+        </div>
+
+        <!-- MVP Section -->
+        <div class="mvp-section">
+            <div class="mvp-header">
+                <span class="mvp-trophy">🏆</span>
+                <span class="mvp-title">MOST VALUABLE PLAYER</span>
+            </div>
+            <div class="mvp-score-bars">
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Buy Pressure</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 85%"></div>
+                    </div>
+                    <span class="mvp-bar-value">85%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Net Volume</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 72%"></div>
+                    </div>
+                    <span class="mvp-bar-value">72%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Momentum</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 94%"></div>
+                    </div>
+                    <span class="mvp-bar-value">94%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">TXN Velocity</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 68%"></div>
+                    </div>
+                    <span class="mvp-bar-value">68%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Overall MVP</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <span class="mvp-bar-value">80</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

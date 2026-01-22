@@ -1142,6 +1142,15 @@ class DexterApp {
       telegramTokensBtn.addEventListener('click', () => this.openTelegramTokensWindow());
     }
 
+    // Log to Telegram button (admin only)
+    const logTelegramBtn = document.getElementById('log-telegram-btn');
+    if (logTelegramBtn) {
+      logTelegramBtn.addEventListener('click', () => this.openTelegramLoginModal());
+    }
+
+    // Telegram Login Modal handlers
+    this.setupTelegramLoginModal();
+
     // Arrivals ticker copy to clipboard
     document.addEventListener('click', async (e) => {
       // Check if clicked on ticker symbol
@@ -4170,6 +4179,185 @@ class DexterApp {
       clearInterval(pollInterval);
       clearInterval(timeInterval);
     });
+  }
+
+  openTelegramLoginModal() {
+    const modalOverlay = document.getElementById('telegram-login-modal-overlay');
+    if (modalOverlay) {
+      modalOverlay.classList.add('visible');
+      this.resetTelegramLoginModal();
+    }
+  }
+
+  closeTelegramLoginModal() {
+    const modalOverlay = document.getElementById('telegram-login-modal-overlay');
+    if (modalOverlay) {
+      modalOverlay.classList.remove('visible');
+    }
+  }
+
+  resetTelegramLoginModal() {
+    // Reset to step 1
+    document.getElementById('tg-step-phone').classList.remove('hidden');
+    document.getElementById('tg-step-code').classList.add('hidden');
+    document.getElementById('tg-step-password').classList.add('hidden');
+
+    // Clear inputs
+    document.getElementById('tg-phone-input').value = '';
+    document.getElementById('tg-code-input').value = '';
+    document.getElementById('tg-password-input').value = '';
+
+    // Clear status
+    document.getElementById('tg-login-status').textContent = '';
+    document.getElementById('tg-login-status').className = 'telegram-login-status';
+
+    // Load saved phone number
+    fetch(`${API_BASE}/telegram/phone`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.phone) {
+          document.getElementById('tg-phone-input').value = data.phone;
+        }
+      })
+      .catch(err => console.error('Failed to load phone number:', err));
+  }
+
+  setTelegramLoginStatus(message, type) {
+    const statusEl = document.getElementById('tg-login-status');
+    statusEl.textContent = message;
+    statusEl.className = 'telegram-login-status ' + type;
+  }
+
+  setupTelegramLoginModal() {
+    const closeBtn = document.getElementById('close-telegram-login');
+    const cancelBtn = document.getElementById('tg-cancel-btn');
+    const requestBtn = document.getElementById('tg-request-btn');
+    const verifyBtn = document.getElementById('tg-verify-btn');
+    const passwordBtn = document.getElementById('tg-password-btn');
+
+    const closeModal = () => this.closeTelegramLoginModal();
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    // Step 1: Request code
+    if (requestBtn) {
+      requestBtn.addEventListener('click', async () => {
+        const phone = document.getElementById('tg-phone-input').value.trim();
+        if (!phone) {
+          this.setTelegramLoginStatus('Please enter a phone number', 'error');
+          return;
+        }
+
+        requestBtn.disabled = true;
+        this.setTelegramLoginStatus('Sending verification code...', 'info');
+
+        try {
+          const response = await fetch(`${API_BASE}/telegram/auth/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone })
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById('tg-step-phone').classList.add('hidden');
+            document.getElementById('tg-step-code').classList.remove('hidden');
+            this.setTelegramLoginStatus(`Code sent to ${data.phone}`, 'success');
+            document.getElementById('tg-code-input').focus();
+          } else {
+            this.setTelegramLoginStatus(`Error: ${data.error}`, 'error');
+            requestBtn.disabled = false;
+          }
+        } catch (err) {
+          this.setTelegramLoginStatus(`Error: ${err.message}`, 'error');
+          requestBtn.disabled = false;
+        }
+      });
+    }
+
+    // Step 2: Verify code
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', async () => {
+        const code = document.getElementById('tg-code-input').value.trim();
+        if (!code) {
+          this.setTelegramLoginStatus('Please enter verification code', 'error');
+          return;
+        }
+
+        verifyBtn.disabled = true;
+        this.setTelegramLoginStatus('Verifying...', 'info');
+
+        try {
+          const response = await fetch(`${API_BASE}/telegram/auth/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            this.setTelegramLoginStatus('Authenticated successfully!', 'success');
+            setTimeout(() => {
+              this.closeTelegramLoginModal();
+              // Refresh telegram status
+              this.fetchAnnouncedTokens();
+            }, 1500);
+          } else if (data.status === 'needs_password') {
+            document.getElementById('tg-step-code').classList.add('hidden');
+            document.getElementById('tg-step-password').classList.remove('hidden');
+            this.setTelegramLoginStatus('Enter your 2FA password', 'info');
+            document.getElementById('tg-password-input').focus();
+            verifyBtn.disabled = false;
+          } else {
+            this.setTelegramLoginStatus(`Error: ${data.error}`, 'error');
+            verifyBtn.disabled = false;
+          }
+        } catch (err) {
+          this.setTelegramLoginStatus(`Error: ${err.message}`, 'error');
+          verifyBtn.disabled = false;
+        }
+      });
+    }
+
+    // Step 3: 2FA password
+    if (passwordBtn) {
+      passwordBtn.addEventListener('click', async () => {
+        const code = document.getElementById('tg-code-input').value.trim();
+        const password = document.getElementById('tg-password-input').value;
+        if (!password) {
+          this.setTelegramLoginStatus('Please enter 2FA password', 'error');
+          return;
+        }
+
+        passwordBtn.disabled = true;
+        this.setTelegramLoginStatus('Verifying password...', 'info');
+
+        try {
+          const response = await fetch(`${API_BASE}/telegram/auth/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, password })
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            this.setTelegramLoginStatus('Authenticated successfully!', 'success');
+            setTimeout(() => {
+              this.closeTelegramLoginModal();
+              // Refresh telegram status
+              this.fetchAnnouncedTokens();
+            }, 1500);
+          } else {
+            this.setTelegramLoginStatus(`Error: ${data.error}`, 'error');
+            passwordBtn.disabled = false;
+          }
+        } catch (err) {
+          this.setTelegramLoginStatus(`Error: ${err.message}`, 'error');
+          passwordBtn.disabled = false;
+        }
+      });
+    }
   }
 
   openIgnoreListWindow() {

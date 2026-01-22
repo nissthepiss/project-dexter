@@ -6,6 +6,3598 @@
   },
   "degen": [
     {
+      "contractAddress": "9Knf1RZYTqebkmkx7yqEPAbPvSAw6oMT72xYPDP5pump",
+      "name": "FINANCIAL FREEDOM COIN",
+      "symbol": "FFC",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/ee69b850dab8522da8c4244e5c5c026f295ecbd2b44ce6b290ef5e52df1e0cbf?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769069931170,
+      "twoxIsoTime": "2026-01-22T08:18:51.170Z",
+      "twoxMultiplier": 2.428627494126865,
+      "spottedMc": 2099.37,
+      "spottedAt": 1769069739552,
+      "spottedIsoTime": "2026-01-22T08:15:39.552Z",
+      "currentMc": 5098.587702345116,
+      "peakMc": 5098.587702345116,
+      "peakMultiplier": 2.428627494126865,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 11567.252410388459,
+      "previousVolume24h": 12482.86,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000002549293851172558,
+      "totalSupply": 2000000000,
+      "timeToTwoXSeconds": 192,
+      "dayOfWeek": 4,
+      "hourOfDay": 8,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 5098.587702345116,
+          "timestamp": 1769069931152,
+          "isoTime": "2026-01-22T08:18:51.152Z",
+          "multiplier": 2.428627494126865
+        },
+        "1.5x": {
+          "marketCap": 5098.587702345116,
+          "timestamp": 1769069931152,
+          "isoTime": "2026-01-22T08:18:51.152Z",
+          "multiplier": 2.428627494126865
+        },
+        "1.75x": {
+          "marketCap": 5098.587702345116,
+          "timestamp": 1769069931152,
+          "isoTime": "2026-01-22T08:18:51.152Z",
+          "multiplier": 2.428627494126865
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 7,
+          "sells": 2,
+          "txns": 9,
+          "buy_usd": 623.0975141831282,
+          "sell_usd": 99.64120073720096,
+          "price_change": 34.12463842010161
+        },
+        "15m": {
+          "buys": 10,
+          "sells": 2,
+          "txns": 12,
+          "buy_usd": 887.6803477773516,
+          "sell_usd": 99.64120073720096,
+          "price_change": 48.35731971931242
+        },
+        "30m": {
+          "buys": 16,
+          "sells": 6,
+          "txns": 22,
+          "buy_usd": 1333.4334659766014,
+          "sell_usd": 539.2274849764804,
+          "price_change": 51.97606122316491
+        },
+        "1h": {
+          "buys": 45,
+          "sells": 37,
+          "txns": 82,
+          "buy_usd": 5839.590712124059,
+          "sell_usd": 5727.6616982644,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 45,
+          "sells": 37,
+          "txns": 82,
+          "buy_usd": 5839.590712124059,
+          "sell_usd": 5727.6616982644,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 45,
+          "sells": 37,
+          "txns": 82,
+          "buy_usd": 5839.590712124059,
+          "sell_usd": 5727.6616982644,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 11.046255949358681,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.7777777777777778,
+          "weighted": 2.5,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 523.4563134459272,
+          "weighted": 1.6313282653383594,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 9,
+          "weighted": 0.09000000000000001,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 34.12463842010161,
+          "weighted": 6.824927684020323,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769069931170,
+      "recordedIso": "2026-01-22T08:18:51.170Z"
+    },
+    {
+      "contractAddress": "6mSyfLzQCmz1BQxbe2PGDP3AHcdC5PERfAtbAm7Kpump",
+      "name": "Gengar Nami",
+      "symbol": "GNAMI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6f2624ccc82ab8274645a04f82b4ba39c32258f0f5ac875500bbc47b55e08d5c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769069707742,
+      "twoxIsoTime": "2026-01-22T08:15:07.742Z",
+      "twoxMultiplier": 2.034449291345223,
+      "spottedMc": 65529,
+      "spottedAt": 1769066899548,
+      "spottedIsoTime": "2026-01-22T07:28:19.548Z",
+      "currentMc": 133315.42761256112,
+      "peakMc": 158159.0526600792,
+      "peakMultiplier": 2.4135734203189307,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 382139.5748671456,
+      "previousVolume24h": 155394.14589056492,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00013331550231775673,
+      "totalSupply": 999999439.636094,
+      "timeToTwoXSeconds": 2808,
+      "dayOfWeek": 4,
+      "hourOfDay": 8,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 133315.42761256112,
+          "timestamp": 1769069707728,
+          "isoTime": "2026-01-22T08:15:07.728Z",
+          "multiplier": 2.034449291345223
+        },
+        "1.5x": {
+          "marketCap": 133315.42761256112,
+          "timestamp": 1769069707728,
+          "isoTime": "2026-01-22T08:15:07.728Z",
+          "multiplier": 2.034449291345223
+        },
+        "1.75x": {
+          "marketCap": 133315.42761256112,
+          "timestamp": 1769069707728,
+          "isoTime": "2026-01-22T08:15:07.728Z",
+          "multiplier": 2.034449291345223
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769069707743,
+      "recordedIso": "2026-01-22T08:15:07.743Z"
+    },
+    {
+      "contractAddress": "6mSyfLzQCmz1BQxbe2PGDP3AHcdC5PERfAtbAm7Kpump",
+      "name": "Gengar Nami",
+      "symbol": "GNAMI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6f2624ccc82ab8274645a04f82b4ba39c32258f0f5ac875500bbc47b55e08d5c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769069201705,
+      "twoxIsoTime": "2026-01-22T08:06:41.705Z",
+      "twoxMultiplier": 2.2973880337977364,
+      "spottedMc": 65529,
+      "spottedAt": 1769066899548,
+      "spottedIsoTime": "2026-01-22T07:28:19.548Z",
+      "currentMc": 150545.54046673188,
+      "peakMc": 154568.93756206686,
+      "peakMultiplier": 2.3587867594815557,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 351759.1883630093,
+      "previousVolume24h": 155394.14589056492,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00015054562482706623,
+      "totalSupply": 999999439.636094,
+      "timeToTwoXSeconds": 2302,
+      "dayOfWeek": 4,
+      "hourOfDay": 8,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 150545.54046673188,
+          "timestamp": 1769069201691,
+          "isoTime": "2026-01-22T08:06:41.691Z",
+          "multiplier": 2.2973880337977364
+        },
+        "1.5x": {
+          "marketCap": 150545.54046673188,
+          "timestamp": 1769069201691,
+          "isoTime": "2026-01-22T08:06:41.691Z",
+          "multiplier": 2.2973880337977364
+        },
+        "1.75x": {
+          "marketCap": 150545.54046673188,
+          "timestamp": 1769069201691,
+          "isoTime": "2026-01-22T08:06:41.691Z",
+          "multiplier": 2.2973880337977364
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769069201705,
+      "recordedIso": "2026-01-22T08:06:41.705Z"
+    },
+    {
+      "contractAddress": "6mSyfLzQCmz1BQxbe2PGDP3AHcdC5PERfAtbAm7Kpump",
+      "name": "Gengar Nami",
+      "symbol": "GNAMI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6f2624ccc82ab8274645a04f82b4ba39c32258f0f5ac875500bbc47b55e08d5c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769068647504,
+      "twoxIsoTime": "2026-01-22T07:57:27.504Z",
+      "twoxMultiplier": 2.133800403567393,
+      "spottedMc": 65529,
+      "spottedAt": 1769066899548,
+      "spottedIsoTime": "2026-01-22T07:28:19.548Z",
+      "currentMc": 139825.8066453677,
+      "peakMc": 146259.70837899606,
+      "peakMultiplier": 2.2319844401562063,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 302905.4074805771,
+      "previousVolume24h": 155394.14589056492,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00013982588499874678,
+      "totalSupply": 999999439.636094,
+      "timeToTwoXSeconds": 1748,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 139825.8066453677,
+          "timestamp": 1769068647489,
+          "isoTime": "2026-01-22T07:57:27.489Z",
+          "multiplier": 2.133800403567393
+        },
+        "1.5x": {
+          "marketCap": 139825.8066453677,
+          "timestamp": 1769068647489,
+          "isoTime": "2026-01-22T07:57:27.489Z",
+          "multiplier": 2.133800403567393
+        },
+        "1.75x": {
+          "marketCap": 139825.8066453677,
+          "timestamp": 1769068647489,
+          "isoTime": "2026-01-22T07:57:27.489Z",
+          "multiplier": 2.133800403567393
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769068647504,
+      "recordedIso": "2026-01-22T07:57:27.504Z"
+    },
+    {
+      "contractAddress": "6mSyfLzQCmz1BQxbe2PGDP3AHcdC5PERfAtbAm7Kpump",
+      "name": "Gengar Nami",
+      "symbol": "GNAMI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6f2624ccc82ab8274645a04f82b4ba39c32258f0f5ac875500bbc47b55e08d5c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769068560719,
+      "twoxIsoTime": "2026-01-22T07:56:00.719Z",
+      "twoxMultiplier": 2.0046349090911537,
+      "spottedMc": 65529,
+      "spottedAt": 1769066899548,
+      "spottedIsoTime": "2026-01-22T07:28:19.548Z",
+      "currentMc": 131361.72095783422,
+      "peakMc": 132867.88272424933,
+      "peakMultiplier": 2.027619568805404,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 297632.4477233407,
+      "previousVolume24h": 155394.14589056492,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00013136179456824253,
+      "totalSupply": 999999439.636094,
+      "timeToTwoXSeconds": 1661,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 131361.72095783422,
+          "timestamp": 1769068560705,
+          "isoTime": "2026-01-22T07:56:00.705Z",
+          "multiplier": 2.0046349090911537
+        },
+        "1.5x": {
+          "marketCap": 131361.72095783422,
+          "timestamp": 1769068560705,
+          "isoTime": "2026-01-22T07:56:00.705Z",
+          "multiplier": 2.0046349090911537
+        },
+        "1.75x": {
+          "marketCap": 131361.72095783422,
+          "timestamp": 1769068560705,
+          "isoTime": "2026-01-22T07:56:00.705Z",
+          "multiplier": 2.0046349090911537
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769068560719,
+      "recordedIso": "2026-01-22T07:56:00.719Z"
+    },
+    {
+      "contractAddress": "6mSyfLzQCmz1BQxbe2PGDP3AHcdC5PERfAtbAm7Kpump",
+      "name": "Gengar Nami",
+      "symbol": "GNAMI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6f2624ccc82ab8274645a04f82b4ba39c32258f0f5ac875500bbc47b55e08d5c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769068494708,
+      "twoxIsoTime": "2026-01-22T07:54:54.708Z",
+      "twoxMultiplier": 2.004860180966076,
+      "spottedMc": 65529,
+      "spottedAt": 1769066899548,
+      "spottedIsoTime": "2026-01-22T07:28:19.548Z",
+      "currentMc": 131376.482798526,
+      "peakMc": 132284.42105656135,
+      "peakMultiplier": 2.018715699256228,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 292016.8525638682,
+      "previousVolume24h": 155394.14589056492,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.0001313765564172063,
+      "totalSupply": 999999439.636094,
+      "timeToTwoXSeconds": 1595,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 126557.07396631737,
+          "timestamp": 1769068459700,
+          "isoTime": "2026-01-22T07:54:19.700Z",
+          "multiplier": 1.9313139826079655
+        },
+        "1.5x": {
+          "marketCap": 126557.07396631737,
+          "timestamp": 1769068459700,
+          "isoTime": "2026-01-22T07:54:19.700Z",
+          "multiplier": 1.9313139826079655
+        },
+        "1.75x": {
+          "marketCap": 126557.07396631737,
+          "timestamp": 1769068459700,
+          "isoTime": "2026-01-22T07:54:19.700Z",
+          "multiplier": 1.9313139826079655
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 125,
+          "sells": 205,
+          "txns": 330,
+          "buy_usd": 4503.328539176687,
+          "sell_usd": 10719.924502439306,
+          "price_change": 6.85356364737114
+        },
+        "15m": {
+          "buys": 432,
+          "sells": 834,
+          "txns": 1266,
+          "buy_usd": 21648.484506860597,
+          "sell_usd": 49791.89727709029,
+          "price_change": 15.30882446983417
+        },
+        "30m": {
+          "buys": 1097,
+          "sells": 2447,
+          "txns": 3544,
+          "buy_usd": 64956.64102688893,
+          "sell_usd": 139413.03760062653,
+          "price_change": 65.91747529206646
+        },
+        "1h": {
+          "buys": 2284,
+          "sells": 3109,
+          "txns": 5393,
+          "buy_usd": 112821.8068547616,
+          "sell_usd": 180733.71966412792,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 2284,
+          "sells": 3109,
+          "txns": 5393,
+          "buy_usd": 112821.8068547616,
+          "sell_usd": 180733.71966412792,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 2284,
+          "sells": 3109,
+          "txns": 5393,
+          "buy_usd": 112821.8068547616,
+          "sell_usd": 180733.71966412792,
+          "price_change": 0
+        }
+      },
+      "mvpScore": -1.0017658121477107,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.3787878787878788,
+          "weighted": -1.090909090909091,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -6216.595963262619,
+          "weighted": -2.2761315852469233,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 330,
+          "weighted": 1,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 6.85356364737114,
+          "weighted": 1.370712729474228,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": -0.001087573093184907,
+          "weighted": -0.005437865465924535,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 19,
+      "recordedAt": 1769068494708,
+      "recordedIso": "2026-01-22T07:54:54.708Z"
+    },
+    {
+      "contractAddress": "BpWE8ANKS84vF1jBijMmpbMZ8monJwfMfEFAMyS1TRND",
+      "name": "Solana Is Life",
+      "symbol": "索拉纳生活",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/d0c2aaa50972c2a2cf4a9b3a79b01f3481445d1b6efaf388be05b85d1c6b068f?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769068472490,
+      "twoxIsoTime": "2026-01-22T07:54:32.490Z",
+      "twoxMultiplier": 2.0836960991058624,
+      "spottedMc": 13859.98,
+      "spottedAt": 1769067469341,
+      "spottedIsoTime": "2026-01-22T07:37:49.341Z",
+      "currentMc": 28879.98625968527,
+      "peakMc": 39006.37535176721,
+      "peakMultiplier": 2.814316857006086,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 15713.332552500013,
+      "previousVolume24h": 14504.20274652124,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000028879986259685268,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 1003,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 28879.98625968527,
+          "timestamp": 1769068472476,
+          "isoTime": "2026-01-22T07:54:32.476Z",
+          "multiplier": 2.0836960991058624
+        },
+        "1.5x": {
+          "marketCap": 28879.98625968527,
+          "timestamp": 1769068472476,
+          "isoTime": "2026-01-22T07:54:32.476Z",
+          "multiplier": 2.0836960991058624
+        },
+        "1.75x": {
+          "marketCap": 28879.98625968527,
+          "timestamp": 1769068472476,
+          "isoTime": "2026-01-22T07:54:32.476Z",
+          "multiplier": 2.0836960991058624
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 1,
+          "sells": 1,
+          "txns": 2,
+          "buy_usd": 0.22401169268684984,
+          "sell_usd": 8.880641535911693,
+          "price_change": 18.54953776929128
+        },
+        "15m": {
+          "buys": 16,
+          "sells": 7,
+          "txns": 23,
+          "buy_usd": 660.6520182517132,
+          "sell_usd": 214.37782950239364,
+          "price_change": 48.56284555663973
+        },
+        "30m": {
+          "buys": 85,
+          "sells": 43,
+          "txns": 128,
+          "buy_usd": 10299.524563320714,
+          "sell_usd": 3663.680199805007,
+          "price_change": 0
+        },
+        "1h": {
+          "buys": 93,
+          "sells": 60,
+          "txns": 153,
+          "buy_usd": 10647.425862171434,
+          "sell_usd": 5065.906690328578,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 93,
+          "sells": 60,
+          "txns": 153,
+          "buy_usd": 10647.425862171434,
+          "sell_usd": 5065.906690328578,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 93,
+          "sells": 60,
+          "txns": 153,
+          "buy_usd": 10647.425862171434,
+          "sell_usd": 5065.906690328578,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 3.167498245347316,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -8.656629843224843,
+          "weighted": -0.5624093085109407,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 2,
+          "weighted": 0.020000000000000004,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 18.54953776929128,
+          "weighted": 3.7099075538582564,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769068472490,
+      "recordedIso": "2026-01-22T07:54:32.490Z"
+    },
+    {
+      "contractAddress": "6mSyfLzQCmz1BQxbe2PGDP3AHcdC5PERfAtbAm7Kpump",
+      "name": "Gengar Nami",
+      "symbol": "GNAMI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6f2624ccc82ab8274645a04f82b4ba39c32258f0f5ac875500bbc47b55e08d5c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769067965491,
+      "twoxIsoTime": "2026-01-22T07:46:05.491Z",
+      "twoxMultiplier": 2.018715699256228,
+      "spottedMc": 65529,
+      "spottedAt": 1769066899548,
+      "spottedIsoTime": "2026-01-22T07:28:19.548Z",
+      "currentMc": 132284.42105656135,
+      "peakMc": 132284.42105656135,
+      "peakMultiplier": 2.018715699256228,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 163562.69402120198,
+      "previousVolume24h": 155394.14589056492,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00013228449518401777,
+      "totalSupply": 999999439.636094,
+      "timeToTwoXSeconds": 1066,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 85205.4567038975,
+          "timestamp": 1769067311037,
+          "isoTime": "2026-01-22T07:35:11.037Z",
+          "multiplier": 1.3002709747424421
+        },
+        "1.5x": {
+          "marketCap": 100078.03039639363,
+          "timestamp": 1769067396511,
+          "isoTime": "2026-01-22T07:36:36.511Z",
+          "multiplier": 1.5272326816584052
+        },
+        "1.75x": {
+          "marketCap": 116260.20642675202,
+          "timestamp": 1769067897481,
+          "isoTime": "2026-01-22T07:44:57.481Z",
+          "multiplier": 1.7741794690404558
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 150,
+          "sells": 294,
+          "txns": 444,
+          "buy_usd": 9690.115507624549,
+          "sell_usd": 17366.058517662408,
+          "price_change": 26.62876682818037
+        },
+        "15m": {
+          "buys": 573,
+          "sells": 1385,
+          "txns": 1958,
+          "buy_usd": 40217.62931775692,
+          "sell_usd": 84210.88248438007,
+          "price_change": 53.6116581724336
+        },
+        "30m": {
+          "buys": 1318,
+          "sells": 2213,
+          "txns": 3531,
+          "buy_usd": 70560.0333887402,
+          "sell_usd": 126210.88436611056,
+          "price_change": 71.2635994585857
+        },
+        "1h": {
+          "buys": 2039,
+          "sells": 2610,
+          "txns": 4649,
+          "buy_usd": 102474.70310358795,
+          "sell_usd": 152787.34305986238,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 2039,
+          "sells": 2610,
+          "txns": 4649,
+          "buy_usd": 102474.70310358795,
+          "sell_usd": 152787.34305986238,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 2039,
+          "sells": 2610,
+          "txns": 4649,
+          "buy_usd": 102474.70310358795,
+          "sell_usd": 152787.34305986238,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 2.5395156270850703,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.33783783783783783,
+          "weighted": -1.4594594594594597,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -7675.9430100378595,
+          "weighted": -2.3310790449962187,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 444,
+          "weighted": 1,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 26.62876682818037,
+          "weighted": 5.325753365636075,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0.0008601531809347096,
+          "weighted": 0.0043007659046735485,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 19,
+      "recordedAt": 1769067965491,
+      "recordedIso": "2026-01-22T07:46:05.491Z"
+    },
+    {
+      "contractAddress": "BpWE8ANKS84vF1jBijMmpbMZ8monJwfMfEFAMyS1TRND",
+      "name": "Solana Is Life",
+      "symbol": "索拉纳生活",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/d0c2aaa50972c2a2cf4a9b3a79b01f3481445d1b6efaf388be05b85d1c6b068f?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769067811794,
+      "twoxIsoTime": "2026-01-22T07:43:31.794Z",
+      "twoxMultiplier": 2.0246208725619503,
+      "spottedMc": 13859.98,
+      "spottedAt": 1769067469341,
+      "spottedIsoTime": "2026-01-22T07:37:49.341Z",
+      "currentMc": 28061.20480129118,
+      "peakMc": 28061.20480129118,
+      "peakMultiplier": 2.0246208725619503,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 14864.151722629416,
+      "previousVolume24h": 14504.20274652124,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000028061204801291182,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 342,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 19191.765792994654,
+          "timestamp": 1769067761386,
+          "isoTime": "2026-01-22T07:42:41.386Z",
+          "multiplier": 1.384689284760487
+        },
+        "1.5x": {
+          "marketCap": 22574.381464879112,
+          "timestamp": 1769067765697,
+          "isoTime": "2026-01-22T07:42:45.697Z",
+          "multiplier": 1.628745601716533
+        },
+        "1.75x": {
+          "marketCap": 26959.492944949812,
+          "timestamp": 1769067803696,
+          "isoTime": "2026-01-22T07:43:23.696Z",
+          "multiplier": 1.9451321679360152
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 4,
+          "sells": 1,
+          "txns": 5,
+          "buy_usd": 535.142775471542,
+          "sell_usd": 45.8326424754996,
+          "price_change": 52.85634601569179
+        },
+        "15m": {
+          "buys": 39,
+          "sells": 16,
+          "txns": 55,
+          "buy_usd": 5181.525189081993,
+          "sell_usd": 1770.1203036363095,
+          "price_change": -27.53804028863612
+        },
+        "30m": {
+          "buys": 80,
+          "sells": 54,
+          "txns": 134,
+          "buy_usd": 10482.934655144794,
+          "sell_usd": 4897.361503301685,
+          "price_change": 0
+        },
+        "1h": {
+          "buys": 80,
+          "sells": 54,
+          "txns": 134,
+          "buy_usd": 10482.934655144794,
+          "sell_usd": 4897.361503301685,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 80,
+          "sells": 54,
+          "txns": 134,
+          "buy_usd": 10482.934655144794,
+          "sell_usd": 4897.361503301685,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 80,
+          "sells": 54,
+          "txns": 134,
+          "buy_usd": 10482.934655144794,
+          "sell_usd": 4897.361503301685,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 14.935019728864953,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.8,
+          "weighted": 2.7000000000000006,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 489.3101329960424,
+          "weighted": 1.6137505257265938,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 5,
+          "weighted": 0.05,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 52.85634601569179,
+          "weighted": 10.571269203138359,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769067811794,
+      "recordedIso": "2026-01-22T07:43:31.794Z"
+    },
+    {
+      "contractAddress": "Fog7adDzphnkwHz5qcczbvxZ6kWgWi3kEv5bSFewpump",
+      "name": "XROLL",
+      "symbol": "XROLL",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6cc775a65f7b37d66a6c3898cac33a21ffa2f4729575b91f8ea089a013a4148c?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769067091492,
+      "twoxIsoTime": "2026-01-22T07:31:31.492Z",
+      "twoxMultiplier": 2.0260477375733,
+      "spottedMc": 23493.03,
+      "spottedAt": 1769060670451,
+      "spottedIsoTime": "2026-01-22T05:44:30.451Z",
+      "currentMc": 47598.000280241664,
+      "peakMc": 47598.000280241664,
+      "peakMultiplier": 2.0260477375733,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 272156.35496503743,
+      "previousVolume24h": 83293.70679126715,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000047598000280241664,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 6421,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 43310.2787908037,
+          "timestamp": 1769066935481,
+          "isoTime": "2026-01-22T07:28:55.481Z",
+          "multiplier": 1.8435373721824602
+        },
+        "1.5x": {
+          "marketCap": 43310.2787908037,
+          "timestamp": 1769066935481,
+          "isoTime": "2026-01-22T07:28:55.481Z",
+          "multiplier": 1.8435373721824602
+        },
+        "1.75x": {
+          "marketCap": 43310.2787908037,
+          "timestamp": 1769066935481,
+          "isoTime": "2026-01-22T07:28:55.481Z",
+          "multiplier": 1.8435373721824602
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 47,
+          "sells": 46,
+          "txns": 93,
+          "buy_usd": 1234.6747628239464,
+          "sell_usd": 2493.165573243238,
+          "price_change": 1.43077276494325
+        },
+        "15m": {
+          "buys": 209,
+          "sells": 241,
+          "txns": 450,
+          "buy_usd": 6929.1075012579195,
+          "sell_usd": 10902.749184456126,
+          "price_change": 5.91596486386835
+        },
+        "30m": {
+          "buys": 511,
+          "sells": 598,
+          "txns": 1109,
+          "buy_usd": 20611.900616506133,
+          "sell_usd": 36143.29970191057,
+          "price_change": -35.88683815410226
+        },
+        "1h": {
+          "buys": 906,
+          "sells": 1261,
+          "txns": 2167,
+          "buy_usd": 36198.66742666862,
+          "sell_usd": 69789.56171040516,
+          "price_change": -17.72935451574884
+        },
+        "6h": {
+          "buys": 3236,
+          "sells": 5785,
+          "txns": 9021,
+          "buy_usd": 115881.91981496563,
+          "sell_usd": 157763.8894078416,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 3236,
+          "sells": 5785,
+          "txns": 9021,
+          "buy_usd": 115881.91981496563,
+          "sell_usd": 157763.8894078416,
+          "price_change": 0
+        }
+      },
+      "mvpScore": -0.5953683794270159,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5053763440860215,
+          "weighted": 0.048387096774193505,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -1258.4908104192918,
+          "weighted": -1.8599100291898596,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 93,
+          "weighted": 0.9300000000000002,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 1.43077276494325,
+          "weighted": 0.28615455298865,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 3,
+      "recordedAt": 1769067091492,
+      "recordedIso": "2026-01-22T07:31:31.492Z"
+    },
+    {
+      "contractAddress": "H9DdwLZ8e6JNxFFRgEXa7RUdHA4kM8ddgZGtG3Mtpump",
+      "name": "Misanthropic",
+      "symbol": "Misanthropic",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/23ac668181e8e95191545d19513a7e390c72a7d96f68be10d3510952a9df954d?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769067042720,
+      "twoxIsoTime": "2026-01-22T07:30:42.720Z",
+      "twoxMultiplier": 2.7164195366033423,
+      "spottedMc": 6402,
+      "spottedAt": 1769060670457,
+      "spottedIsoTime": "2026-01-22T05:44:30.457Z",
+      "currentMc": 17390.517873334597,
+      "peakMc": 18448.898386174034,
+      "peakMultiplier": 2.881739829143086,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 256308.88934037148,
+      "previousVolume24h": 293986.26,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000017390517873334596,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 6372,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 17390.517873334597,
+          "timestamp": 1769067042706,
+          "isoTime": "2026-01-22T07:30:42.706Z",
+          "multiplier": 2.7164195366033423
+        },
+        "1.5x": {
+          "marketCap": 17390.517873334597,
+          "timestamp": 1769067042706,
+          "isoTime": "2026-01-22T07:30:42.706Z",
+          "multiplier": 2.7164195366033423
+        },
+        "1.75x": {
+          "marketCap": 17390.517873334597,
+          "timestamp": 1769067042706,
+          "isoTime": "2026-01-22T07:30:42.706Z",
+          "multiplier": 2.7164195366033423
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "15m": {
+          "buys": 0,
+          "sells": 1,
+          "txns": 1,
+          "buy_usd": 0,
+          "sell_usd": 5.831244390130437,
+          "price_change": -0.0728098806176
+        },
+        "30m": {
+          "buys": 0,
+          "sells": 2,
+          "txns": 2,
+          "buy_usd": 0,
+          "sell_usd": 6.703033790120387,
+          "price_change": -0.12501610863298
+        },
+        "1h": {
+          "buys": 0,
+          "sells": 11,
+          "txns": 11,
+          "buy_usd": 0,
+          "sell_usd": 428.16366745739737,
+          "price_change": -1.35247387529068
+        },
+        "6h": {
+          "buys": 1346,
+          "sells": 3230,
+          "txns": 4576,
+          "buy_usd": 72630.58389409659,
+          "sell_usd": 183678.30544627487,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 1346,
+          "sells": 3230,
+          "txns": 4576,
+          "buy_usd": 72630.58389409659,
+          "sell_usd": 183678.30544627487,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769067042720,
+      "recordedIso": "2026-01-22T07:30:42.720Z"
+    },
+    {
+      "contractAddress": "H9DdwLZ8e6JNxFFRgEXa7RUdHA4kM8ddgZGtG3Mtpump",
+      "name": "Misanthropic",
+      "symbol": "Misanthropic",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/23ac668181e8e95191545d19513a7e390c72a7d96f68be10d3510952a9df954d?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769066900500,
+      "twoxIsoTime": "2026-01-22T07:28:20.500Z",
+      "twoxMultiplier": 2.716419536603343,
+      "spottedMc": 6402,
+      "spottedAt": 1769060670457,
+      "spottedIsoTime": "2026-01-22T05:44:30.457Z",
+      "currentMc": 17390.5178733346,
+      "peakMc": 18448.898386174034,
+      "peakMultiplier": 2.881739829143086,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 256308.88934037148,
+      "previousVolume24h": 293986.26,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.0000173905178733346,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 6230,
+      "dayOfWeek": 4,
+      "hourOfDay": 7,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 17390.5178733346,
+          "timestamp": 1769066900486,
+          "isoTime": "2026-01-22T07:28:20.486Z",
+          "multiplier": 2.716419536603343
+        },
+        "1.5x": {
+          "marketCap": 17390.5178733346,
+          "timestamp": 1769066900486,
+          "isoTime": "2026-01-22T07:28:20.486Z",
+          "multiplier": 2.716419536603343
+        },
+        "1.75x": {
+          "marketCap": 17390.5178733346,
+          "timestamp": 1769066900486,
+          "isoTime": "2026-01-22T07:28:20.486Z",
+          "multiplier": 2.716419536603343
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769066900500,
+      "recordedIso": "2026-01-22T07:28:20.500Z"
+    },
+    {
+      "contractAddress": "H9DdwLZ8e6JNxFFRgEXa7RUdHA4kM8ddgZGtG3Mtpump",
+      "name": "Misanthropic",
+      "symbol": "Misanthropic",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/23ac668181e8e95191545d19513a7e390c72a7d96f68be10d3510952a9df954d?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769060742427,
+      "twoxIsoTime": "2026-01-22T05:45:42.427Z",
+      "twoxMultiplier": 2.872060015464409,
+      "spottedMc": 6402,
+      "spottedAt": 1769060670457,
+      "spottedIsoTime": "2026-01-22T05:44:30.457Z",
+      "currentMc": 18386.928219003148,
+      "peakMc": 18448.898386174034,
+      "peakMultiplier": 2.881739829143086,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 254048.70056173025,
+      "previousVolume24h": 293986.26,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00001838692821900315,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 72,
+      "dayOfWeek": 4,
+      "hourOfDay": 5,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 18386.928219003148,
+          "timestamp": 1769060742414,
+          "isoTime": "2026-01-22T05:45:42.414Z",
+          "multiplier": 2.872060015464409
+        },
+        "1.5x": {
+          "marketCap": 18386.928219003148,
+          "timestamp": 1769060742414,
+          "isoTime": "2026-01-22T05:45:42.414Z",
+          "multiplier": 2.872060015464409
+        },
+        "1.75x": {
+          "marketCap": 18386.928219003148,
+          "timestamp": 1769060742414,
+          "isoTime": "2026-01-22T05:45:42.414Z",
+          "multiplier": 2.872060015464409
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 4,
+          "sells": 7,
+          "txns": 11,
+          "buy_usd": 10.19769121415861,
+          "sell_usd": 193.54725264947035,
+          "price_change": -1.58284040301957
+        },
+        "15m": {
+          "buys": 12,
+          "sells": 8,
+          "txns": 20,
+          "buy_usd": 246.6954590681338,
+          "sell_usd": 202.96418307001466,
+          "price_change": 0.05498202045573
+        },
+        "30m": {
+          "buys": 17,
+          "sells": 28,
+          "txns": 45,
+          "buy_usd": 322.3564510356853,
+          "sell_usd": 1060.685702202387,
+          "price_change": -11.01846465527588
+        },
+        "1h": {
+          "buys": 51,
+          "sells": 93,
+          "txns": 144,
+          "buy_usd": 1763.8006345911376,
+          "sell_usd": 4902.7045903497,
+          "price_change": 4.4926912490178
+        },
+        "6h": {
+          "buys": 1326,
+          "sells": 3191,
+          "txns": 4517,
+          "buy_usd": 72051.61667859655,
+          "sell_usd": 181997.08388313372,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 1326,
+          "sells": 3191,
+          "txns": 4517,
+          "buy_usd": 72051.61667859655,
+          "sell_usd": 181997.08388313372,
+          "price_change": 0
+        }
+      },
+      "mvpScore": -2.7918087331665253,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.36363636363636365,
+          "weighted": -1.2272727272727273,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -183.34956143531173,
+          "weighted": -1.357967925289884,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 11,
+          "weighted": 0.11000000000000001,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -1.58284040301957,
+          "weighted": -0.316568080603914,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769060742427,
+      "recordedIso": "2026-01-22T05:45:42.427Z"
+    },
+    {
+      "contractAddress": "H9DdwLZ8e6JNxFFRgEXa7RUdHA4kM8ddgZGtG3Mtpump",
+      "name": "Misanthropic",
+      "symbol": "Misanthropic",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/23ac668181e8e95191545d19513a7e390c72a7d96f68be10d3510952a9df954d?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769060674527,
+      "twoxIsoTime": "2026-01-22T05:44:34.527Z",
+      "twoxMultiplier": 2.881739829143086,
+      "spottedMc": 6402,
+      "spottedAt": 1769060670457,
+      "spottedIsoTime": "2026-01-22T05:44:30.457Z",
+      "currentMc": 18448.898386174034,
+      "peakMc": 18448.898386174034,
+      "peakMultiplier": 2.881739829143086,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 254040.28591029908,
+      "previousVolume24h": 293986.26,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000018448898386174033,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 4,
+      "dayOfWeek": 4,
+      "hourOfDay": 5,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 18448.898386174034,
+          "timestamp": 1769060674514,
+          "isoTime": "2026-01-22T05:44:34.514Z",
+          "multiplier": 2.881739829143086
+        },
+        "1.5x": {
+          "marketCap": 18448.898386174034,
+          "timestamp": 1769060674514,
+          "isoTime": "2026-01-22T05:44:34.514Z",
+          "multiplier": 2.881739829143086
+        },
+        "1.75x": {
+          "marketCap": 18448.898386174034,
+          "timestamp": 1769060674514,
+          "isoTime": "2026-01-22T05:44:34.514Z",
+          "multiplier": 2.881739829143086
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 7,
+          "sells": 6,
+          "txns": 13,
+          "buy_usd": 105.77662895763125,
+          "sell_usd": 187.7245735135852,
+          "price_change": -0.8774072306165
+        },
+        "15m": {
+          "buys": 12,
+          "sells": 8,
+          "txns": 20,
+          "buy_usd": 244.6146205825499,
+          "sell_usd": 259.3701999109548,
+          "price_change": -0.03771855868574
+        },
+        "30m": {
+          "buys": 16,
+          "sells": 33,
+          "txns": 49,
+          "buy_usd": 319.7644787403974,
+          "sell_usd": 1152.2115404587119,
+          "price_change": -12.33949103856727
+        },
+        "1h": {
+          "buys": 50,
+          "sells": 93,
+          "txns": 143,
+          "buy_usd": 1761.2086622958498,
+          "sell_usd": 4897.892632127854,
+          "price_change": 5.14090821542499
+        },
+        "6h": {
+          "buys": 1325,
+          "sells": 3190,
+          "txns": 4515,
+          "buy_usd": 72049.02470630125,
+          "sell_usd": 181991.26120399783,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 1325,
+          "sells": 3190,
+          "txns": 4515,
+          "buy_usd": 72049.02470630125,
+          "sell_usd": 181991.26120399783,
+          "price_change": 0
+        }
+      },
+      "mvpScore": -0.847450438929091,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5384615384615384,
+          "weighted": 0.3461538461538459,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -81.94794455595395,
+          "weighted": -1.148122838959637,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 13,
+          "weighted": 0.13,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -0.8774072306165,
+          "weighted": -0.1754814461233,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769060674527,
+      "recordedIso": "2026-01-22T05:44:34.527Z"
+    },
+    {
+      "contractAddress": "Rr4C139m736ccQU8TLTqb3KmHxmC6C1PyMij9soBAGS",
+      "name": "Not Jerome Powell",
+      "symbol": "NOTJEROME",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/c4bc1cbf2bb874470963d69448518cb49a7837f9f34d7faebc5598ca15f27634?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769049821523,
+      "twoxIsoTime": "2026-01-22T02:43:41.523Z",
+      "twoxMultiplier": 2.0083539368094345,
+      "spottedMc": 55918,
+      "spottedAt": 1769048749487,
+      "spottedIsoTime": "2026-01-22T02:25:49.487Z",
+      "currentMc": 112303.13543850995,
+      "peakMc": 112303.13543850995,
+      "peakMultiplier": 2.0083539368094345,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 81049.18484856497,
+      "previousVolume24h": 77529.89338989138,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00011230313543850996,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 1072,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 81438.31907373275,
+          "timestamp": 1769049261959,
+          "isoTime": "2026-01-22T02:34:21.959Z",
+          "multiplier": 1.456388266277992
+        },
+        "1.5x": {
+          "marketCap": 92025.76235577068,
+          "timestamp": 1769049396824,
+          "isoTime": "2026-01-22T02:36:36.824Z",
+          "multiplier": 1.6457269994593993
+        },
+        "1.75x": {
+          "marketCap": 100673.25336196463,
+          "timestamp": 1769049804519,
+          "isoTime": "2026-01-22T02:43:24.519Z",
+          "multiplier": 1.8003729275361176
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 147,
+          "sells": 102,
+          "txns": 249,
+          "buy_usd": 8451.417896361574,
+          "sell_usd": 7166.625757714983,
+          "price_change": 15.67411675865808
+        },
+        "15m": {
+          "buys": 470,
+          "sells": 321,
+          "txns": 791,
+          "buy_usd": 27171.79948078663,
+          "sell_usd": 27270.991915629853,
+          "price_change": 30.72996490977184
+        },
+        "30m": {
+          "buys": 700,
+          "sells": 485,
+          "txns": 1185,
+          "buy_usd": 45683.05216702955,
+          "sell_usd": 41833.999124482005,
+          "price_change": 61.2993997731622
+        },
+        "1h": {
+          "buys": 752,
+          "sells": 526,
+          "txns": 1278,
+          "buy_usd": 49971.17551238725,
+          "sell_usd": 45448.97823720681,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 752,
+          "sells": 526,
+          "txns": 1278,
+          "buy_usd": 49971.17551238725,
+          "sell_usd": 45448.97823720681,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 752,
+          "sells": 526,
+          "txns": 1278,
+          "buy_usd": 49971.17551238725,
+          "sell_usd": 45448.97823720681,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 6.7393443624951175,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5903614457831325,
+          "weighted": 0.8132530120481929,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 1284.7921386465914,
+          "weighted": 1.8652997223556338,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 249,
+          "weighted": 1,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 15.67411675865808,
+          "weighted": 3.134823351731616,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": -0.014806344728064979,
+          "weighted": -0.0740317236403249,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 15,
+      "recordedAt": 1769049821524,
+      "recordedIso": "2026-01-22T02:43:41.524Z"
+    },
+    {
+      "contractAddress": "FhhxU5havsnezvVaV3hMS3TtVRezTr933kdsJMCApump",
+      "name": "Boogie ",
+      "symbol": "BOOGIE ",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/b002758245e4150a6c45b35c9d5e066f912ccf80afd6c5e4e63ab9d221b3ae24?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769049816718,
+      "twoxIsoTime": "2026-01-22T02:43:36.718Z",
+      "twoxMultiplier": 6.681907692920209,
+      "spottedMc": 3247,
+      "spottedAt": 1769049803499,
+      "spottedIsoTime": "2026-01-22T02:43:23.499Z",
+      "currentMc": 21696.15427891192,
+      "peakMc": 21696.15427891192,
+      "peakMultiplier": 6.681907692920209,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 59268.492022116894,
+      "previousVolume24h": 51792.28,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00002169615427891192,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 13,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 21696.15427891192,
+          "timestamp": 1769049816705,
+          "isoTime": "2026-01-22T02:43:36.705Z",
+          "multiplier": 6.681907692920209
+        },
+        "1.5x": {
+          "marketCap": 21696.15427891192,
+          "timestamp": 1769049816705,
+          "isoTime": "2026-01-22T02:43:36.705Z",
+          "multiplier": 6.681907692920209
+        },
+        "1.75x": {
+          "marketCap": 21696.15427891192,
+          "timestamp": 1769049816705,
+          "isoTime": "2026-01-22T02:43:36.705Z",
+          "multiplier": 6.681907692920209
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": -1e-14
+        },
+        "15m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "30m": {
+          "buys": 0,
+          "sells": 2,
+          "txns": 2,
+          "buy_usd": 0,
+          "sell_usd": 16.16949405156794,
+          "price_change": -0.14421268540988
+        },
+        "1h": {
+          "buys": 0,
+          "sells": 14,
+          "txns": 14,
+          "buy_usd": 0,
+          "sell_usd": 229.59056945368155,
+          "price_change": -1.95387549140069
+        },
+        "6h": {
+          "buys": 634,
+          "sells": 670,
+          "txns": 1304,
+          "buy_usd": 23639.656198008233,
+          "sell_usd": 35628.83582410866,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 634,
+          "sells": 670,
+          "txns": 1304,
+          "buy_usd": 23639.656198008233,
+          "sell_usd": 35628.83582410866,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769049816718,
+      "recordedIso": "2026-01-22T02:43:36.718Z"
+    },
+    {
+      "contractAddress": "4y1sJ7LU2pNq9qE6V5brQdUX1QuhbngW3kjH1s2pBAGS",
+      "name": "Adequate Coin",
+      "symbol": "ADEQUATE",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/d8d07e8df968686e7b60bd00fe239d760de6bfc0b59f836fa96ce59edbf21496?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769049696502,
+      "twoxIsoTime": "2026-01-22T02:41:36.502Z",
+      "twoxMultiplier": 4.154945160177661,
+      "spottedMc": 5290,
+      "spottedAt": 1769049683693,
+      "spottedIsoTime": "2026-01-22T02:41:23.693Z",
+      "currentMc": 21979.65989733983,
+      "peakMc": 21979.65989733983,
+      "peakMultiplier": 4.154945160177661,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 72582.11512706456,
+      "previousVolume24h": 53996.98,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000021979659897339827,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 13,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 21979.65989733983,
+          "timestamp": 1769049696484,
+          "isoTime": "2026-01-22T02:41:36.484Z",
+          "multiplier": 4.154945160177661
+        },
+        "1.5x": {
+          "marketCap": 21979.65989733983,
+          "timestamp": 1769049696484,
+          "isoTime": "2026-01-22T02:41:36.484Z",
+          "multiplier": 4.154945160177661
+        },
+        "1.75x": {
+          "marketCap": 21979.65989733983,
+          "timestamp": 1769049696484,
+          "isoTime": "2026-01-22T02:41:36.484Z",
+          "multiplier": 4.154945160177661
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 1,
+          "txns": 1,
+          "buy_usd": 0,
+          "sell_usd": 0.7797297642104486,
+          "price_change": -0.05102469123657
+        },
+        "15m": {
+          "buys": 1,
+          "sells": 5,
+          "txns": 6,
+          "buy_usd": 13.008092766579809,
+          "sell_usd": 138.79581875882906,
+          "price_change": -2.07031913272675
+        },
+        "30m": {
+          "buys": 7,
+          "sells": 19,
+          "txns": 26,
+          "buy_usd": 276.8824483202797,
+          "sell_usd": 686.1137804388832,
+          "price_change": -4.64128508093208
+        },
+        "1h": {
+          "buys": 39,
+          "sells": 56,
+          "txns": 95,
+          "buy_usd": 1518.3751392575725,
+          "sell_usd": 1811.846164179299,
+          "price_change": -13.06507859096474
+        },
+        "6h": {
+          "buys": 539,
+          "sells": 463,
+          "txns": 1002,
+          "buy_usd": 34065.798484556995,
+          "sell_usd": 37892.92843711741,
+          "price_change": 71.34688290427962
+        },
+        "24h": {
+          "buys": 543,
+          "sells": 470,
+          "txns": 1013,
+          "buy_usd": 34371.7662509539,
+          "sell_usd": 38210.348876110664,
+          "price_change": 75.64810053335843
+        }
+      },
+      "mvpScore": -4.500204938247315,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": -4.5,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -0.7797297642104486,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 1,
+          "weighted": 0.010000000000000002,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -0.05102469123657,
+          "weighted": -0.010204938247314,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769049696502,
+      "recordedIso": "2026-01-22T02:41:36.502Z"
+    },
+    {
+      "contractAddress": "8opvqaWysX1oYbXuTL8PHaoaTiXD69VFYAX4smPebonk",
+      "name": "WAR",
+      "symbol": "WAR",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/4662ac6d8eb514d482a8ac4e140cbeb67f79ae1b324cfd65a1d6c83b688cce76?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769049257702,
+      "twoxIsoTime": "2026-01-22T02:34:17.702Z",
+      "twoxMultiplier": 2.078180476247104,
+      "spottedMc": 301316,
+      "spottedAt": 1769043311508,
+      "spottedIsoTime": "2026-01-22T00:55:11.508Z",
+      "currentMc": 626189.0283808724,
+      "peakMc": 741923.1661711151,
+      "peakMultiplier": 2.462276036357562,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 7.967002172009482,
+      "previousVolume24h": 183031.4,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.0006261890283808725,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 5946,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 626189.0283808724,
+          "timestamp": 1769049257688,
+          "isoTime": "2026-01-22T02:34:17.688Z",
+          "multiplier": 2.078180476247104
+        },
+        "1.5x": {
+          "marketCap": 626189.0283808724,
+          "timestamp": 1769049257688,
+          "isoTime": "2026-01-22T02:34:17.688Z",
+          "multiplier": 2.078180476247104
+        },
+        "1.75x": {
+          "marketCap": 626189.0283808724,
+          "timestamp": 1769049257688,
+          "isoTime": "2026-01-22T02:34:17.688Z",
+          "multiplier": 2.078180476247104
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "15m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "30m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "1h": {
+          "buys": 3,
+          "sells": 0,
+          "txns": 3,
+          "buy_usd": 0.3900580779564553,
+          "sell_usd": 0,
+          "price_change": 7.2675551195545
+        },
+        "6h": {
+          "buys": 35,
+          "sells": 3,
+          "txns": 38,
+          "buy_usd": 4.671899163314118,
+          "sell_usd": 0.9817594572411714,
+          "price_change": 56.51596083307823
+        },
+        "24h": {
+          "buys": 82,
+          "sells": 3,
+          "txns": 108,
+          "buy_usd": 6.985242714768312,
+          "sell_usd": 0.9817594572411705,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769049257702,
+      "recordedIso": "2026-01-22T02:34:17.702Z"
+    },
+    {
+      "contractAddress": "A2kWsVZYSW5AuctuGqKD3pV8wBspDN4qztuuD2Uhpump",
+      "name": "twocents",
+      "symbol": "twocents",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/62bef40bace545b3dfb5062b578064c5cd0dc905688ff4a6896b43e6d83f6053?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769048837486,
+      "twoxIsoTime": "2026-01-22T02:27:17.486Z",
+      "twoxMultiplier": 5.264476317701887,
+      "spottedMc": 3639,
+      "spottedAt": 1769042372788,
+      "spottedIsoTime": "2026-01-22T00:39:32.788Z",
+      "currentMc": 19157.429320117168,
+      "peakMc": 19635.3330583027,
+      "peakMultiplier": 5.395804632674553,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 60736.9409229952,
+      "previousVolume24h": 59059.24,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00001915742932011717,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 6465,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 19157.429320117168,
+          "timestamp": 1769048837471,
+          "isoTime": "2026-01-22T02:27:17.471Z",
+          "multiplier": 5.264476317701887
+        },
+        "1.5x": {
+          "marketCap": 19157.429320117168,
+          "timestamp": 1769048837471,
+          "isoTime": "2026-01-22T02:27:17.471Z",
+          "multiplier": 5.264476317701887
+        },
+        "1.75x": {
+          "marketCap": 19157.429320117168,
+          "timestamp": 1769048837471,
+          "isoTime": "2026-01-22T02:27:17.471Z",
+          "multiplier": 5.264476317701887
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "15m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "30m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": -2e-14
+        },
+        "1h": {
+          "buys": 5,
+          "sells": 8,
+          "txns": 13,
+          "buy_usd": 85.37810581470134,
+          "sell_usd": 333.04143989126385,
+          "price_change": -0.49765619959289
+        },
+        "6h": {
+          "buys": 447,
+          "sells": 571,
+          "txns": 1018,
+          "buy_usd": 24435.047367017836,
+          "sell_usd": 36301.89355597737,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 447,
+          "sells": 571,
+          "txns": 1018,
+          "buy_usd": 24435.047367017836,
+          "sell_usd": 36301.89355597737,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769048837486,
+      "recordedIso": "2026-01-22T02:27:17.486Z"
+    },
+    {
+      "contractAddress": "2yqy46CfsN5JGTq7iwgsmmURf4THhX7jFk2sL8u9pump",
+      "name": "SPL Token",
+      "symbol": "SPL",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/3b81d49ab0b6f58414ddbdc7586586db9319c08d66e0d3200af50b7eaa86056f?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769048776684,
+      "twoxIsoTime": "2026-01-22T02:26:16.684Z",
+      "twoxMultiplier": 2.95131194093001,
+      "spottedMc": 2406,
+      "spottedAt": 1769042372790,
+      "spottedIsoTime": "2026-01-22T00:39:32.790Z",
+      "currentMc": 7100.856529877604,
+      "peakMc": 7174.6825963611245,
+      "peakMultiplier": 2.9819960915881647,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 58304.78756614313,
+      "previousVolume24h": 81852.05,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.0000071008565298776035,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 6404,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 7100.856529877604,
+          "timestamp": 1769048776671,
+          "isoTime": "2026-01-22T02:26:16.671Z",
+          "multiplier": 2.95131194093001
+        },
+        "1.5x": {
+          "marketCap": 7100.856529877604,
+          "timestamp": 1769048776671,
+          "isoTime": "2026-01-22T02:26:16.671Z",
+          "multiplier": 2.95131194093001
+        },
+        "1.75x": {
+          "marketCap": 7100.856529877604,
+          "timestamp": 1769048776671,
+          "isoTime": "2026-01-22T02:26:16.671Z",
+          "multiplier": 2.95131194093001
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 1,
+          "txns": 1,
+          "buy_usd": 0,
+          "sell_usd": 17.934951209944963,
+          "price_change": -0.23017555364471
+        },
+        "15m": {
+          "buys": 0,
+          "sells": 1,
+          "txns": 1,
+          "buy_usd": 0,
+          "sell_usd": 17.934951209944963,
+          "price_change": -0.2301755536447
+        },
+        "30m": {
+          "buys": 0,
+          "sells": 2,
+          "txns": 2,
+          "buy_usd": 0,
+          "sell_usd": 18.603097004940473,
+          "price_change": -0.2460833271586
+        },
+        "1h": {
+          "buys": 0,
+          "sells": 3,
+          "txns": 3,
+          "buy_usd": 0,
+          "sell_usd": 20.031413294688157,
+          "price_change": -1.01876913840781
+        },
+        "6h": {
+          "buys": 192,
+          "sells": 557,
+          "txns": 749,
+          "buy_usd": 16213.761644513339,
+          "sell_usd": 42091.02592162979,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 192,
+          "sells": 557,
+          "txns": 749,
+          "buy_usd": 16213.761644513339,
+          "sell_usd": 42091.02592162979,
+          "price_change": 0
+        }
+      },
+      "mvpScore": -5.288255230466978,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": -4.5,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -17.934951209944963,
+          "weighted": -0.752220119738036,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 1,
+          "weighted": 0.010000000000000002,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -0.23017555364471,
+          "weighted": -0.04603511072894201,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769048776684,
+      "recordedIso": "2026-01-22T02:26:16.684Z"
+    },
+    {
+      "contractAddress": "2gAFPvnr8WzLUcqdpBbeEtKuxNxhvusyrCDjbtWeBAGS",
+      "name": "pomkori",
+      "symbol": "KORI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/b10377d81f5e6267b6b41e3fe6526f7a1e3e61aa71be08226f700a47180c2b36?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769048753132,
+      "twoxIsoTime": "2026-01-22T02:25:53.132Z",
+      "twoxMultiplier": 4.414661614258172,
+      "spottedMc": 16709.78,
+      "spottedAt": 1769045791809,
+      "spottedIsoTime": "2026-01-22T01:36:31.809Z",
+      "currentMc": 73768.0243486989,
+      "peakMc": 73768.0243486989,
+      "peakMultiplier": 4.414661614258172,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 382841.3712892019,
+      "previousVolume24h": 382841.3712892019,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00007376802434869891,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 2961,
+      "dayOfWeek": 4,
+      "hourOfDay": 2,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 73768.0243486989,
+          "timestamp": 1769048753117,
+          "isoTime": "2026-01-22T02:25:53.117Z",
+          "multiplier": 4.414661614258172
+        },
+        "1.5x": {
+          "marketCap": 73768.0243486989,
+          "timestamp": 1769048753117,
+          "isoTime": "2026-01-22T02:25:53.117Z",
+          "multiplier": 4.414661614258172
+        },
+        "1.75x": {
+          "marketCap": 73768.0243486989,
+          "timestamp": 1769048753117,
+          "isoTime": "2026-01-22T02:25:53.117Z",
+          "multiplier": 4.414661614258172
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 104,
+          "sells": 78,
+          "txns": 182,
+          "buy_usd": 4887.738830838964,
+          "sell_usd": 4509.00478331681,
+          "price_change": -13.32767040234033
+        },
+        "15m": {
+          "buys": 911,
+          "sells": 651,
+          "txns": 1562,
+          "buy_usd": 46144.11672209687,
+          "sell_usd": 47824.32978300581,
+          "price_change": -32.48745389828242
+        },
+        "30m": {
+          "buys": 2994,
+          "sells": 2057,
+          "txns": 5051,
+          "buy_usd": 173378.21632106643,
+          "sell_usd": 172671.79509434843,
+          "price_change": 24.30827761664571
+        },
+        "1h": {
+          "buys": 3210,
+          "sells": 2197,
+          "txns": 5407,
+          "buy_usd": 190733.35625879964,
+          "sell_usd": 188733.64744918098,
+          "price_change": 80.29006992009843
+        },
+        "6h": {
+          "buys": 3229,
+          "sells": 2220,
+          "txns": 5449,
+          "buy_usd": 192333.221678337,
+          "sell_usd": 190508.1496108649,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 3229,
+          "sells": 2220,
+          "txns": 5449,
+          "buy_usd": 192333.221678337,
+          "sell_usd": 190508.1496108649,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 0.5243236718988475,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5714285714285714,
+          "weighted": 0.6428571428571426,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 378.73404752215356,
+          "weighted": 1.547000609509771,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 182,
+          "weighted": 1,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -13.32767040234033,
+          "weighted": -2.665534080468066,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769048753132,
+      "recordedIso": "2026-01-22T02:25:53.132Z"
+    },
+    {
+      "contractAddress": "Hg23qBLJDvhQtGLHMvot7NK54qAhzQFj9BVd5jpABAGS",
+      "name": "Claude Code",
+      "symbol": "CC",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6d901315af4277a8f5753742aa12b8f86fb50e0218b7b9360f6463ccd37b1734?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769045432434,
+      "twoxIsoTime": "2026-01-22T01:30:32.434Z",
+      "twoxMultiplier": 2.040109264237844,
+      "spottedMc": 27685.45,
+      "spottedAt": 1769042598375,
+      "spottedIsoTime": "2026-01-22T00:43:18.375Z",
+      "currentMc": 56481.34302959362,
+      "peakMc": 56481.34302959362,
+      "peakMultiplier": 2.040109264237844,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 33006.43952043805,
+      "previousVolume24h": 32876.447366696164,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00005648134302959362,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 2834,
+      "dayOfWeek": 4,
+      "hourOfDay": 1,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 34935.47633023534,
+          "timestamp": 1769042900408,
+          "isoTime": "2026-01-22T00:48:20.408Z",
+          "multiplier": 1.2618713559012167
+        },
+        "1.5x": {
+          "marketCap": 48900.9009217017,
+          "timestamp": 1769044565873,
+          "isoTime": "2026-01-22T01:16:05.873Z",
+          "multiplier": 1.766303271996724
+        },
+        "1.75x": {
+          "marketCap": 48900.9009217017,
+          "timestamp": 1769044565873,
+          "isoTime": "2026-01-22T01:16:05.873Z",
+          "multiplier": 1.766303271996724
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 2,
+          "sells": 1,
+          "txns": 3,
+          "buy_usd": 15.647225225868707,
+          "sell_usd": 11.953843712519339,
+          "price_change": 3.22927780173099
+        },
+        "15m": {
+          "buys": 9,
+          "sells": 4,
+          "txns": 13,
+          "buy_usd": 121.89971437140353,
+          "sell_usd": 145.63261537355027,
+          "price_change": 27.0168031109043
+        },
+        "30m": {
+          "buys": 23,
+          "sells": 8,
+          "txns": 31,
+          "buy_usd": 662.7773622963507,
+          "sell_usd": 199.26770890346336,
+          "price_change": 39.97169856638141
+        },
+        "1h": {
+          "buys": 119,
+          "sells": 169,
+          "txns": 288,
+          "buy_usd": 13038.377981644802,
+          "sell_usd": 20235.593868538206,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 119,
+          "sells": 169,
+          "txns": 288,
+          "buy_usd": 13038.377981644802,
+          "sell_usd": 20235.593868538206,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 119,
+          "sells": 169,
+          "txns": 288,
+          "buy_usd": 13038.377981644802,
+          "sell_usd": 20235.593868538206,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 2.5163100629846413,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.6666666666666666,
+          "weighted": 1.4999999999999998,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 3.693381513349369,
+          "weighted": 0.3404545026384434,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 3,
+          "weighted": 0.03,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 3.22927780173099,
+          "weighted": 0.6458555603461981,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 2,
+      "recordedAt": 1769045432434,
+      "recordedIso": "2026-01-22T01:30:32.434Z"
+    },
+    {
+      "contractAddress": "2Ze8a3RMU3woneVmw2NkBXzu6gE11Kze4DWMVqenBAGS",
+      "name": "Kawai",
+      "symbol": "KAWAI",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/6bf1e6c218d82e2d1e1cbba99e933d15a31ebd55362c8680b2478a5666d65b40?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769045419604,
+      "twoxIsoTime": "2026-01-22T01:30:19.604Z",
+      "twoxMultiplier": 2.206935190639299,
+      "spottedMc": 8926.54,
+      "spottedAt": 1769042372768,
+      "spottedIsoTime": "2026-01-22T00:39:32.768Z",
+      "currentMc": 19700.29525664933,
+      "peakMc": 19700.29525664933,
+      "peakMultiplier": 2.206935190639299,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 66674.48330714669,
+      "previousVolume24h": 66674.48330714669,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00001970029525664933,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 3047,
+      "dayOfWeek": 4,
+      "hourOfDay": 1,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 12421.929759420183,
+          "timestamp": 1769042689498,
+          "isoTime": "2026-01-22T00:44:49.498Z",
+          "multiplier": 1.3915727436857037
+        },
+        "1.5x": {
+          "marketCap": 14226.362261817756,
+          "timestamp": 1769042764583,
+          "isoTime": "2026-01-22T00:46:04.583Z",
+          "multiplier": 1.5937151754002956
+        },
+        "1.75x": {
+          "marketCap": 15702.48293554977,
+          "timestamp": 1769045411597,
+          "isoTime": "2026-01-22T01:30:11.597Z",
+          "multiplier": 1.759078314279639
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 16,
+          "sells": 7,
+          "txns": 23,
+          "buy_usd": 1014.4195690816523,
+          "sell_usd": 518.6227894512697,
+          "price_change": 45.50694517998236
+        },
+        "15m": {
+          "buys": 21,
+          "sells": 9,
+          "txns": 30,
+          "buy_usd": 1422.803539860638,
+          "sell_usd": 769.5632188803033,
+          "price_change": 54.95521252968518
+        },
+        "30m": {
+          "buys": 24,
+          "sells": 13,
+          "txns": 37,
+          "buy_usd": 1598.1957799460274,
+          "sell_usd": 1034.6012207270892,
+          "price_change": 43.85587890774315
+        },
+        "1h": {
+          "buys": 91,
+          "sells": 70,
+          "txns": 161,
+          "buy_usd": 7716.752544069998,
+          "sell_usd": 8152.172429319159,
+          "price_change": -53.26645422183731
+        },
+        "6h": {
+          "buys": 414,
+          "sells": 320,
+          "txns": 734,
+          "buy_usd": 37024.4201136546,
+          "sell_usd": 31013.59472304833,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 414,
+          "sells": 320,
+          "txns": 734,
+          "buy_usd": 37024.4201136546,
+          "sell_usd": 31013.59472304833,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 12.809870877358323,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.6956521739130435,
+          "weighted": 1.7608695652173911,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 495.7967796303826,
+          "weighted": 1.6171822209298803,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 23,
+          "weighted": 0.22999999999999998,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 45.50694517998236,
+          "weighted": 9.101389035996473,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0.02008601104291564,
+          "weighted": 0.1004300552145782,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 12,
+      "recordedAt": 1769045419604,
+      "recordedIso": "2026-01-22T01:30:19.604Z"
+    },
+    {
+      "contractAddress": "8opvqaWysX1oYbXuTL8PHaoaTiXD69VFYAX4smPebonk",
+      "name": "WAR",
+      "symbol": "WAR",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/4662ac6d8eb514d482a8ac4e140cbeb67f79ae1b324cfd65a1d6c83b688cce76?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769044304608,
+      "twoxIsoTime": "2026-01-22T01:11:44.608Z",
+      "twoxMultiplier": 2.0828807915826046,
+      "spottedMc": 301316,
+      "spottedAt": 1769043311508,
+      "spottedIsoTime": "2026-01-22T00:55:11.508Z",
+      "currentMc": 627605.308596504,
+      "peakMc": 627605.308596504,
+      "peakMultiplier": 2.0828807915826046,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 5.329281436122633,
+      "previousVolume24h": 183031.4,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.0006276053085965041,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 993,
+      "dayOfWeek": 4,
+      "hourOfDay": 1,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 567116.0016228996,
+          "timestamp": 1769043786060,
+          "isoTime": "2026-01-22T01:03:06.060Z",
+          "multiplier": 1.8821303934172084
+        },
+        "1.5x": {
+          "marketCap": 567116.0016228996,
+          "timestamp": 1769043786060,
+          "isoTime": "2026-01-22T01:03:06.060Z",
+          "multiplier": 1.8821303934172084
+        },
+        "1.75x": {
+          "marketCap": 567116.0016228996,
+          "timestamp": 1769043786060,
+          "isoTime": "2026-01-22T01:03:06.060Z",
+          "multiplier": 1.8821303934172084
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 3,
+          "sells": 0,
+          "txns": 3,
+          "buy_usd": 0.9577721785413461,
+          "sell_usd": 0,
+          "price_change": 18.56386453269208
+        },
+        "15m": {
+          "buys": 6,
+          "sells": 3,
+          "txns": 9,
+          "buy_usd": 1.4315909009939944,
+          "sell_usd": 0.981759457241171,
+          "price_change": 14.16804539328187
+        },
+        "30m": {
+          "buys": 11,
+          "sells": 3,
+          "txns": 14,
+          "buy_usd": 2.4498652675570907,
+          "sell_usd": 0.9817594572411714,
+          "price_change": 53.76754967586367
+        },
+        "1h": {
+          "buys": 12,
+          "sells": 3,
+          "txns": 15,
+          "buy_usd": 2.579965953090127,
+          "sell_usd": 0.9817594572411714,
+          "price_change": 53.77197575855923
+        },
+        "6h": {
+          "buys": 35,
+          "sells": 3,
+          "txns": 38,
+          "buy_usd": 4.287207687536846,
+          "sell_usd": 0.9817594572411705,
+          "price_change": 47.0876862288502
+        },
+        "24h": {
+          "buys": 77,
+          "sells": 3,
+          "txns": 103,
+          "buy_usd": 6.287053614663979,
+          "sell_usd": 0.9817594572411705,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 8.242772906538416,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 1,
+          "weighted": 4.5,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0.9577721785413461,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 3,
+          "weighted": 0.03,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 18.56386453269208,
+          "weighted": 3.712772906538416,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769044304608,
+      "recordedIso": "2026-01-22T01:11:44.608Z"
+    },
+    {
+      "contractAddress": "63wfFjQ2X2R9Avf51ZQeS2W15kZu1xQT488XA99BAGS",
+      "name": "SHOGGOTH",
+      "symbol": "SHOGGOTH",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/361e4903f81cff7d630fcaae1cf93d193bd013d1d59f2c131f942d245e3c4e12?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769043146427,
+      "twoxIsoTime": "2026-01-22T00:52:26.427Z",
+      "twoxMultiplier": 2.0066801258315023,
+      "spottedMc": 178413,
+      "spottedAt": 1769042372778,
+      "spottedIsoTime": "2026-01-22T00:39:32.778Z",
+      "currentMc": 358017.82128997584,
+      "peakMc": 358017.82128997584,
+      "peakMultiplier": 2.0066801258315023,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 545370.7195780117,
+      "previousVolume24h": 528221.4446292348,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00035801782128997583,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 774,
+      "dayOfWeek": 4,
+      "hourOfDay": 0,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 225930.99719671134,
+          "timestamp": 1769042959836,
+          "isoTime": "2026-01-22T00:49:19.836Z",
+          "multiplier": 1.26633707855768
+        },
+        "1.5x": {
+          "marketCap": 290193.22111473774,
+          "timestamp": 1769043080151,
+          "isoTime": "2026-01-22T00:51:20.151Z",
+          "multiplier": 1.6265250913035358
+        },
+        "1.75x": {
+          "marketCap": 316242.61141567584,
+          "timestamp": 1769043122411,
+          "isoTime": "2026-01-22T00:52:02.411Z",
+          "multiplier": 1.772531213620509
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 174,
+          "sells": 120,
+          "txns": 294,
+          "buy_usd": 29004.49011194467,
+          "sell_usd": 19325.38881730012,
+          "price_change": 52.7776804960901
+        },
+        "15m": {
+          "buys": 328,
+          "sells": 208,
+          "txns": 536,
+          "buy_usd": 44761.340142326924,
+          "sell_usd": 38085.02879690728,
+          "price_change": 40.74098571370938
+        },
+        "30m": {
+          "buys": 664,
+          "sells": 454,
+          "txns": 1118,
+          "buy_usd": 85853.90638725739,
+          "sell_usd": 83057.2690468235,
+          "price_change": 34.853598821623
+        },
+        "1h": {
+          "buys": 1771,
+          "sells": 1304,
+          "txns": 3075,
+          "buy_usd": 182646.6133499659,
+          "sell_usd": 176724.0194068945,
+          "price_change": 48.89479993284651
+        },
+        "6h": {
+          "buys": 3010,
+          "sells": 2434,
+          "txns": 5444,
+          "buy_usd": 279302.5023459895,
+          "sell_usd": 270459.82360659464,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 3010,
+          "sells": 2434,
+          "txns": 5444,
+          "buy_usd": 279302.5023459895,
+          "sell_usd": 270459.82360659464,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 14.851223525598108,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5918367346938775,
+          "weighted": 0.8265306122448979,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 9679.101294644548,
+          "weighted": 2.3915010209410696,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 294,
+          "weighted": 1,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 52.7776804960901,
+          "weighted": 10.55553609921802,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0.015531158638824108,
+          "weighted": 0.07765579319412054,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 20,
+      "recordedAt": 1769043146427,
+      "recordedIso": "2026-01-22T00:52:26.427Z"
+    },
+    {
+      "contractAddress": "2yqy46CfsN5JGTq7iwgsmmURf4THhX7jFk2sL8u9pump",
+      "name": "SPL Token",
+      "symbol": "SPL",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/3b81d49ab0b6f58414ddbdc7586586db9319c08d66e0d3200af50b7eaa86056f?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769042377030,
+      "twoxIsoTime": "2026-01-22T00:39:37.030Z",
+      "twoxMultiplier": 2.9819960915881643,
+      "spottedMc": 2406,
+      "spottedAt": 1769042372790,
+      "spottedIsoTime": "2026-01-22T00:39:32.790Z",
+      "currentMc": 7174.682596361124,
+      "peakMc": 7174.682596361124,
+      "peakMultiplier": 2.9819960915881643,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 58284.756152848444,
+      "previousVolume24h": 81852.05,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000007174682596361124,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 4,
+      "dayOfWeek": 4,
+      "hourOfDay": 0,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 7174.682596361124,
+          "timestamp": 1769042377018,
+          "isoTime": "2026-01-22T00:39:37.018Z",
+          "multiplier": 2.9819960915881643
+        },
+        "1.5x": {
+          "marketCap": 7174.682596361124,
+          "timestamp": 1769042377018,
+          "isoTime": "2026-01-22T00:39:37.018Z",
+          "multiplier": 2.9819960915881643
+        },
+        "1.75x": {
+          "marketCap": 7174.682596361124,
+          "timestamp": 1769042377018,
+          "isoTime": "2026-01-22T00:39:37.018Z",
+          "multiplier": 2.9819960915881643
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 0,
+          "sells": 0,
+          "txns": 0,
+          "buy_usd": 0,
+          "sell_usd": 0,
+          "price_change": 0
+        },
+        "15m": {
+          "buys": 0,
+          "sells": 1,
+          "txns": 1,
+          "buy_usd": 0,
+          "sell_usd": 62.75501491233178,
+          "price_change": 0.60657201033454
+        },
+        "30m": {
+          "buys": 0,
+          "sells": 2,
+          "txns": 2,
+          "buy_usd": 0,
+          "sell_usd": 77.24658013483281,
+          "price_change": 0.04652050886124
+        },
+        "1h": {
+          "buys": 3,
+          "sells": 25,
+          "txns": 28,
+          "buy_usd": 53.753072882491594,
+          "sell_usd": 240.63600085448883,
+          "price_change": -3.10214543578139
+        },
+        "6h": {
+          "buys": 192,
+          "sells": 554,
+          "txns": 746,
+          "buy_usd": 16213.761644513339,
+          "sell_usd": 42070.994508335105,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 192,
+          "sells": 554,
+          "txns": 746,
+          "buy_usd": 16213.761644513339,
+          "sell_usd": 42070.994508335105,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769042377030,
+      "recordedIso": "2026-01-22T00:39:37.030Z"
+    },
+    {
+      "contractAddress": "A2kWsVZYSW5AuctuGqKD3pV8wBspDN4qztuuD2Uhpump",
+      "name": "twocents",
+      "symbol": "twocents",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/62bef40bace545b3dfb5062b578064c5cd0dc905688ff4a6896b43e6d83f6053?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769042377002,
+      "twoxIsoTime": "2026-01-22T00:39:37.002Z",
+      "twoxMultiplier": 5.353532709209912,
+      "spottedMc": 3639,
+      "spottedAt": 1769042372788,
+      "spottedIsoTime": "2026-01-22T00:39:32.788Z",
+      "currentMc": 19481.50552881487,
+      "peakMc": 19481.50552881487,
+      "peakMultiplier": 5.353532709209912,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 60120.518632787,
+      "previousVolume24h": 59059.24,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00001948150552881487,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 4,
+      "dayOfWeek": 4,
+      "hourOfDay": 0,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 19481.50552881487,
+          "timestamp": 1769042376990,
+          "isoTime": "2026-01-22T00:39:36.990Z",
+          "multiplier": 5.353532709209912
+        },
+        "1.5x": {
+          "marketCap": 19481.50552881487,
+          "timestamp": 1769042376990,
+          "isoTime": "2026-01-22T00:39:36.990Z",
+          "multiplier": 5.353532709209912
+        },
+        "1.75x": {
+          "marketCap": 19481.50552881487,
+          "timestamp": 1769042376990,
+          "isoTime": "2026-01-22T00:39:36.990Z",
+          "multiplier": 5.353532709209912
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 1,
+          "sells": 0,
+          "txns": 1,
+          "buy_usd": 45.25196889129564,
+          "sell_usd": 0,
+          "price_change": -0.02725084931129
+        },
+        "15m": {
+          "buys": 7,
+          "sells": 8,
+          "txns": 15,
+          "buy_usd": 303.3031753508569,
+          "sell_usd": 97.09248701210379,
+          "price_change": 1.02647750736547
+        },
+        "30m": {
+          "buys": 32,
+          "sells": 70,
+          "txns": 102,
+          "buy_usd": 1138.7035795564318,
+          "sell_usd": 4916.366408368156,
+          "price_change": -92.82456446443187
+        },
+        "1h": {
+          "buys": 155,
+          "sells": 251,
+          "txns": 406,
+          "buy_usd": 6172.121670130787,
+          "sell_usd": 15842.21781287825,
+          "price_change": -120.60371071443853
+        },
+        "6h": {
+          "buys": 438,
+          "sells": 553,
+          "txns": 991,
+          "buy_usd": 24324.03875810693,
+          "sell_usd": 35796.47987468007,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 438,
+          "sells": 553,
+          "txns": 991,
+          "buy_usd": 24324.03875810693,
+          "sell_usd": 35796.47987468007,
+          "price_change": 0
+        }
+      },
+      "mvpScore": 5.497932318074933,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 1,
+          "weighted": 4.5,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 45.25196889129564,
+          "weighted": 0.9933824879371911,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 1,
+          "weighted": 0.010000000000000002,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -0.02725084931129,
+          "weighted": -0.005450169862258001,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769042377002,
+      "recordedIso": "2026-01-22T00:39:37.002Z"
+    },
+    {
+      "contractAddress": "2bCxzAoxoZjfS1wP8NkT2pKYgmYsU7BDwmsPYHnLBAGS",
+      "name": "DAWKOIN",
+      "symbol": "DAWKOIN",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/7332feaa7f144a0c0e87dc4ef9faafb79d117bf4215606d307904d10ac34bbd1?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769042376963,
+      "twoxIsoTime": "2026-01-22T00:39:36.963Z",
+      "twoxMultiplier": 2.0006296070607914,
+      "spottedMc": 23414,
+      "spottedAt": 1769042372779,
+      "spottedIsoTime": "2026-01-22T00:39:32.779Z",
+      "currentMc": 46842.74161972137,
+      "peakMc": 46842.74161972137,
+      "peakMultiplier": 2.0006296070607914,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 64514.42479466743,
+      "previousVolume24h": 24577.69,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.000046842741619721366,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 4,
+      "dayOfWeek": 4,
+      "hourOfDay": 0,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 46842.74161972137,
+          "timestamp": 1769042376951,
+          "isoTime": "2026-01-22T00:39:36.951Z",
+          "multiplier": 2.0006296070607914
+        },
+        "1.5x": {
+          "marketCap": 46842.74161972137,
+          "timestamp": 1769042376951,
+          "isoTime": "2026-01-22T00:39:36.951Z",
+          "multiplier": 2.0006296070607914
+        },
+        "1.75x": {
+          "marketCap": 46842.74161972137,
+          "timestamp": 1769042376951,
+          "isoTime": "2026-01-22T00:39:36.951Z",
+          "multiplier": 2.0006296070607914
+        }
+      },
+      "transactionMetrics": {
+        "5m": {
+          "buys": 110,
+          "sells": 101,
+          "txns": 211,
+          "buy_usd": 4394.083378080398,
+          "sell_usd": 8609.394162532306,
+          "price_change": -30.64410966272304
+        },
+        "15m": {
+          "buys": 283,
+          "sells": 201,
+          "txns": 484,
+          "buy_usd": 13933.573008982592,
+          "sell_usd": 16595.470001617803,
+          "price_change": 26.06672550619992
+        },
+        "30m": {
+          "buys": 353,
+          "sells": 239,
+          "txns": 592,
+          "buy_usd": 17324.62678536873,
+          "sell_usd": 20611.69887797642,
+          "price_change": 17.06595841594697
+        },
+        "1h": {
+          "buys": 522,
+          "sells": 377,
+          "txns": 899,
+          "buy_usd": 30665.07481248312,
+          "sell_usd": 33849.349982184314,
+          "price_change": 0
+        },
+        "6h": {
+          "buys": 522,
+          "sells": 377,
+          "txns": 899,
+          "buy_usd": 30665.07481248312,
+          "sell_usd": 33849.349982184314,
+          "price_change": 0
+        },
+        "24h": {
+          "buys": 522,
+          "sells": 377,
+          "txns": 899,
+          "buy_usd": 30665.07481248312,
+          "sell_usd": 33849.349982184314,
+          "price_change": 0
+        }
+      },
+      "mvpScore": -7.111776564342869,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0.5213270142180095,
+          "weighted": 0.1919431279620858,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": -4215.310784451908,
+          "weighted": -2.1748977597603467,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 211,
+          "weighted": 1,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": -30.64410966272304,
+          "weighted": -6.128821932544608,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": true,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769042376963,
+      "recordedIso": "2026-01-22T00:39:36.963Z"
+    },
+    {
+      "contractAddress": "HKWqwDuUYAJSsk7gUufDaDg5gaQqK7xx3mR8ygUspump",
+      "name": "Xepe",
+      "symbol": "XEPE",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/4781fe9b17a800b57f4bc3c75fdacc6f712be7715cbae0bac4589151d9fae2f8?width=800&height=800&quality=90",
+      "source": "degen",
+      "holderRank": null,
+      "twoxTimestamp": 1769042373659,
+      "twoxIsoTime": "2026-01-22T00:39:33.659Z",
+      "twoxMultiplier": 3.9668213309513467,
+      "spottedMc": 24233.83,
+      "spottedAt": 1769038100992,
+      "spottedIsoTime": "2026-01-21T23:28:20.992Z",
+      "currentMc": 96131.27377464868,
+      "peakMc": 96617.90213499696,
+      "peakMultiplier": 3.986901869617677,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 333430.75801599247,
+      "previousVolume24h": 50825.24446230428,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.00009613127377464868,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 4273,
+      "dayOfWeek": 4,
+      "hourOfDay": 0,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 96131.27377464868,
+          "timestamp": 1769042373644,
+          "isoTime": "2026-01-22T00:39:33.644Z",
+          "multiplier": 3.9668213309513467
+        },
+        "1.5x": {
+          "marketCap": 96131.27377464868,
+          "timestamp": 1769042373644,
+          "isoTime": "2026-01-22T00:39:33.644Z",
+          "multiplier": 3.9668213309513467
+        },
+        "1.75x": {
+          "marketCap": 96131.27377464868,
+          "timestamp": 1769042373644,
+          "isoTime": "2026-01-22T00:39:33.644Z",
+          "multiplier": 3.9668213309513467
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769042373659,
+      "recordedIso": "2026-01-22T00:39:33.659Z"
+    },
+    {
       "contractAddress": "3mRSaEUsKC8MCrgMCBraYBEDnaHScStzB7jFRojnBAGS",
       "name": "Zeta",
       "symbol": "ZETA",
@@ -28836,6 +32428,91 @@
     }
   ],
   "holder": [
+    {
+      "contractAddress": "VTCQxY6bAE6TJyYWxeJZzaXuK23pitUqSZ8gGk9BAGS",
+      "name": "Gas City",
+      "symbol": "CITY",
+      "chain": "Solana",
+      "logoUrl": "https://cdn.dexscreener.com/cms/images/9fe1665a4816c7bd4c509ba320e541f034afc141391e3f618988b2cf42545ffc?width=800&height=800&quality=90",
+      "source": "ex-holder",
+      "holderRank": null,
+      "twoxTimestamp": 1769042374433,
+      "twoxIsoTime": "2026-01-22T00:39:34.433Z",
+      "twoxMultiplier": 3.1703531587963836,
+      "spottedMc": 127851,
+      "spottedAt": 1769036138073,
+      "spottedIsoTime": "2026-01-21T22:55:38.073Z",
+      "currentMc": 405332.82170527644,
+      "peakMc": 405332.82170527644,
+      "peakMultiplier": 3.1703531587963836,
+      "holderSpottedMc": null,
+      "holderSpottedAt": null,
+      "holderSpottedIsoTime": null,
+      "holderPeakMc": null,
+      "holderPeakMultiplier": null,
+      "volume24h": 454713.81682697055,
+      "previousVolume24h": 167150.2,
+      "liquidity": 0,
+      "pools": 0,
+      "priceUsd": 0.0004053328217052764,
+      "totalSupply": 1000000000,
+      "timeToTwoXSeconds": 6236,
+      "dayOfWeek": 4,
+      "hourOfDay": 0,
+      "pricePath": {
+        "1.25x": {
+          "marketCap": 405332.82170527644,
+          "timestamp": 1769042374417,
+          "isoTime": "2026-01-22T00:39:34.417Z",
+          "multiplier": 3.1703531587963836
+        },
+        "1.5x": {
+          "marketCap": 405332.82170527644,
+          "timestamp": 1769042374417,
+          "isoTime": "2026-01-22T00:39:34.417Z",
+          "multiplier": 3.1703531587963836
+        },
+        "1.75x": {
+          "marketCap": 405332.82170527644,
+          "timestamp": 1769042374417,
+          "isoTime": "2026-01-22T00:39:34.417Z",
+          "multiplier": 3.1703531587963836
+        }
+      },
+      "transactionMetrics": null,
+      "mvpScore": 0,
+      "mvpComponents": {
+        "buyPressure": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.45
+        },
+        "netBuyVolume": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.3
+        },
+        "txnsVelocity": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "priceMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.1
+        },
+        "sseMomentum": {
+          "raw": 0,
+          "weighted": 0,
+          "weight": 0.05
+        }
+      },
+      "mvpHasData": false,
+      "mvpDataPoints": 0,
+      "recordedAt": 1769042374433,
+      "recordedIso": "2026-01-22T00:39:34.433Z"
+    },
     {
       "contractAddress": "HEPvyunjSoiua8rAWZVMjgZ5TLp9vMQ61iGQh2u7pump",
       "name": "Xoge",

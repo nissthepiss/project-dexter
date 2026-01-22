@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER - Header Mockup 05: Minimal Control</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-dark: #030303;
+            --bg-panel: #080808;
+            --bg-hover: #141414;
+            --text-primary: #e8e8ea;
+            --text-secondary: #9a9a9e;
+            --text-dim: #4a4a4e;
+            --accent-orange: #ff6b00;
+            --accent-orange-glow: rgba(255, 107, 0, 0.40);
+            --accent-orange-dim: rgba(255, 107, 0, 0.15);
+            --accent-cyan: #00e5ff;
+            --status-green: #4ade80;
+            --status-red: #f87171;
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Bebas Neue', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(3, 7, 18, 0.02) 2px,
+                rgba(3, 7, 18, 0.02) 4px
+            );
+        }
+
+        /* ============================================
+           HEADER 05: MINIMAL CONTROL
+           Ultra-refined, spaced-out elements
+           ============================================ */
+        .header-minimal {
+            background: var(--bg-deep);
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+            padding: 20px 32px;
+        }
+
+        /* Subtle accent line */
+        .header-minimal::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+            opacity: 0.5;
+        }
+
+        .minimal-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 48px;
+        }
+
+        /* Section: Brand */
+        .minimal-brand {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .minimal-logo {
+            font-family: var(--font-display);
+            font-size: 36px;
+            letter-spacing: 6px;
+            color: var(--text-primary);
+        }
+
+        .minimal-logo-dot {
+            color: var(--accent-orange);
+        }
+
+        .minimal-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-subtle);
+        }
+
+        /* Section: Controls */
+        .minimal-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .minimal-control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .minimal-mode-btn {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .minimal-mode-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .minimal-mode-btn.active {
+            color: var(--accent-orange);
+            border-color: var(--accent-orange-dim);
+            background: var(--accent-orange-dim);
+        }
+
+        .minimal-timeframe-btn {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .minimal-timeframe-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .minimal-timeframe-btn.active {
+            color: var(--accent-orange);
+        }
+
+        /* Section: Arrivals */
+        .minimal-arrivals {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .minimal-arrivals-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .minimal-arrivals-list {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .minimal-arrival-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .minimal-arrival-item:hover {
+            border-bottom-color: var(--accent-orange);
+        }
+
+        .minimal-arrival-symbol {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .minimal-arrival-momentum {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .minimal-arrival-item.positive .minimal-arrival-momentum {
+            color: var(--status-green);
+        }
+
+        .minimal-arrival-item.negative .minimal-arrival-momentum {
+            color: var(--status-red);
+        }
+
+        /* Section: Alerts */
+        .minimal-alerts {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 280px;
+        }
+
+        .minimal-alerts-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .minimal-alerts-feed {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .minimal-alert-item {
+            font-size: 10px;
+            color: var(--text-secondary);
+            padding-left: 8px;
+            border-left: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .minimal-alert-item:hover {
+            border-left-color: var(--accent-orange);
+            padding-left: 12px;
+        }
+
+        .minimal-alert-item.tier1 {
+            color: var(--accent-orange);
+        }
+
+        .minimal-alert-item.new-token {
+            color: var(--accent-cyan);
+        }
+
+        .minimal-alert-item.mvp {
+            color: var(--status-green);
+        }
+
+        /* Status indicators */
+        .minimal-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 9px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .minimal-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--status-green);
+        }
+
+        .minimal-status-dot.orange {
+            background: var(--accent-orange);
+        }
+
+        /* Preview content */
+        .preview-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .preview-token {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .preview-token:hover {
+            border-color: var(--accent-orange-dim);
+        }
+
+        .preview-token-rank {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .preview-token-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-token-mc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-section {
+            margin-top: 24px;
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-orange-dim);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .mvp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mvp-trophy {
+            font-size: 24px;
+        }
+
+        .mvp-title {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--accent-orange);
+        }
+
+        .mvp-score-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mvp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mvp-bar-label {
+            width: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .mvp-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mvp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan));
+            border-radius: 4px;
+            animation: bar-fill 1s ease-out forwards;
+            transform-origin: left;
+        }
+
+        @keyframes bar-fill {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .mvp-bar-value {
+            width: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER: MINIMAL CONTROL -->
+    <header class="header-minimal">
+        <div class="minimal-container">
+            <!-- Brand -->
+            <div class="minimal-brand">
+                <span class="minimal-logo">DEXTER<span class="minimal-logo-dot">.</span></span>
+                <div class="minimal-divider"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="minimal-controls">
+                <div class="minimal-control-group">
+                    <button class="minimal-mode-btn active">Degen</button>
+                    <button class="minimal-mode-btn">Holder</button>
+                    <button class="minimal-mode-btn">Radar</button>
+                </div>
+                <div class="minimal-divider"></div>
+                <div class="minimal-control-group">
+                    <button class="minimal-timeframe-btn">5m</button>
+                    <button class="minimal-timeframe-btn">30m</button>
+                    <button class="minimal-timeframe-btn">1h</button>
+                    <button class="minimal-timeframe-btn">2h</button>
+                    <button class="minimal-timeframe-btn active">All</button>
+                </div>
+            </div>
+
+            <!-- Arrivals -->
+            <div class="minimal-arrivals">
+                <span class="minimal-arrivals-label">Recent</span>
+                <div class="minimal-arrivals-list">
+                    <div class="minimal-arrival-item positive">
+                        <span class="minimal-arrival-symbol">FCHAD</span>
+                        <span class="minimal-arrival-momentum">+24</span>
+                    </div>
+                    <div class="minimal-arrival-item positive">
+                        <span class="minimal-arrival-symbol">PEPE</span>
+                        <span class="minimal-arrival-momentum">+18</span>
+                    </div>
+                    <div class="minimal-arrival-item negative">
+                        <span class="minimal-arrival-symbol">WIF</span>
+                        <span class="minimal-arrival-momentum">-5</span>
+                    </div>
+                    <div class="minimal-arrival-item positive">
+                        <span class="minimal-arrival-symbol">DOGE</span>
+                        <span class="minimal-arrival-momentum">+42</span>
+                    </div>
+                    <div class="minimal-arrival-item positive">
+                        <span class="minimal-arrival-symbol">BONK</span>
+                        <span class="minimal-arrival-momentum">+8</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="minimal-alerts">
+                <span class="minimal-alerts-label">Events</span>
+                <div class="minimal-alerts-feed">
+                    <div class="minimal-alert-item tier1">Tier 1: FCHAD 1.1x</div>
+                    <div class="minimal-alert-item new-token">New: PEPE found</div>
+                    <div class="minimal-alert-item mvp">MVP: DOGE</div>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="minimal-status">
+                <div class="minimal-status-dot"></div>
+                <span>Solana</span>
+                <div class="minimal-status-dot orange"></div>
+                <span>Degen</span>
+                <span>v1.0.0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Preview Content Area -->
+    <main class="preview-content">
+        <h2 class="preview-title">Top 10 Degens</h2>
+        <div class="preview-grid">
+            <div class="preview-token">
+                <div class="preview-token-rank">#1</div>
+                <div class="preview-token-name">FCHAD</div>
+                <div class="preview-token-mc">$156K → $189K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#2</div>
+                <div class="preview-token-name">DOGE</div>
+                <div class="preview-token-mc">$89K → $126K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#3</div>
+                <div class="preview-token-name">PEPE</div>
+                <div class="preview-token-mc">$234K → $276K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#4</div>
+                <div class="preview-token-name">BONK</div>
+                <div class="preview-token-mc">$445K → $481K</div>
+            </div>
+            <div class="preview-token">
+                <div class="preview-token-rank">#5</div>
+                <div class="preview-token-name">WIF</div>
+                <div class="preview-token-mc">$678K → $644K</div>
+            </div>
+        </div>
+
+        <!-- MVP Section -->
+        <div class="mvp-section">
+            <div class="mvp-header">
+                <span class="mvp-trophy">🏆</span>
+                <span class="mvp-title">MOST VALUABLE PLAYER</span>
+            </div>
+            <div class="mvp-score-bars">
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Buy Pressure</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 85%"></div>
+                    </div>
+                    <span class="mvp-bar-value">85%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Net Volume</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 72%"></div>
+                    </div>
+                    <span class="mvp-bar-value">72%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Momentum</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 94%"></div>
+                    </div>
+                    <span class="mvp-bar-value">94%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">TXN Velocity</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 68%"></div>
+                    </div>
+                    <span class="mvp-bar-value">68%</span>
+                </div>
+                <div class="mvp-bar-row">
+                    <span class="mvp-bar-label">Overall MVP</span>
+                    <div class="mvp-bar-track">
+                        <div class="mvp-bar-fill" style="width: 80%"></div>
+                    </div>
+                    <span class="mvp-bar-value">80</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

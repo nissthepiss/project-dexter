@@ -17,12 +17,16 @@ const ENV_SUFFIX = IS_RAILWAY ? '-railway' : '-local';
 // Railway can override these via environment variables
 const API_ID = parseInt(process.env.TELEGRAM_API_ID || '24633284');
 const API_HASH = process.env.TELEGRAM_API_HASH || 'db57716f3f179bc1c653c3ec0f7377d5';
-const PHONE = process.env.TELEGRAM_PHONE || '+447521185232';
+const DEFAULT_PHONE = process.env.TELEGRAM_PHONE || '+447521185232';
+
+// Credential storage file (for runtime persistence)
+const CREDENTIALS_FILE = path.join(__dirname, '../data/telegram_credentials.json');
 
 // Channels
 const PRIVATE_CHANNEL_ID = BigInt('-1003511885609');
 const HOLDER_CHANNEL_ID = BigInt('-1002244051860');
 const HOLDER_MESSAGE_ID = 7;
+const BNB_CHANNEL_ID = BigInt('-1003461856903');
 
 // Rate limiting for public channels: max 3 per 5 minutes
 const PUBLIC_RATE_LIMIT = {
@@ -52,21 +56,29 @@ class TelegramService {
     this.phoneCodeHash = null;
     this.isReconnecting = false;
     this.authKeyDuplicated = false;
-    
+    this.phone = DEFAULT_PHONE; // Current phone number for authentication
+
     // Toggles
     this.telegramMessagingEnabled = false; // "Telegram Message" toggle (default OFF)
     this.publicChannelEnabled = false;     // "Public Channels" toggle (default OFF)
-    
+
     // Track announced tokens
     this.announcedTokens = new Map(); // address -> { announcedAt, isAuto }
     this.loadAnnouncedTokens();
-    
+
     // Public channels list (loaded from file)
     this.publicChannels = [];
     this.loadPublicChannels();
-    
+
     // Public channel rate limiting
     this.publicSendHistory = []; // Track send times
+
+    // BNB posting tracking
+    this.bnbPostedOnDiscovery = new Map(); // address -> postedAt
+    this.bnbPostedOn2x = new Map(); // address -> postedAt
+
+    // Load saved credentials (phone number)
+    this.loadCredentials();
   }
 
   // ==========================================================================
@@ -197,6 +209,47 @@ class TelegramService {
   }
 
   // ==========================================================================
+  // CREDENTIAL PERSISTENCE
+  // ==========================================================================
+
+  loadCredentials() {
+    try {
+      if (fs.existsSync(CREDENTIALS_FILE)) {
+        const data = JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf-8'));
+        if (data.phone) {
+          this.phone = data.phone;
+          logger.info(`Loaded saved phone number: ${this.phone}`);
+        }
+      }
+    } catch (error) {
+      logger.warn('Failed to load credentials, using defaults', error);
+    }
+  }
+
+  saveCredentials() {
+    try {
+      const dataDir = path.dirname(CREDENTIALS_FILE);
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      const data = { phone: this.phone };
+      fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(data, null, 2));
+    } catch (error) {
+      logger.error('Failed to save credentials', error);
+    }
+  }
+
+  getPhone() {
+    return this.phone;
+  }
+
+  setPhone(phone) {
+    this.phone = phone;
+    this.saveCredentials();
+    logger.info(`Phone number updated to: ${phone}`);
+  }
+
+  // ==========================================================================
   // AUTHENTICATION & CONNECTION
   // ==========================================================================
 
@@ -280,13 +333,33 @@ class TelegramService {
     }
   }
 
-  async startAuth() {
+  async startAuth(phoneNumber = null) {
+    // Prevent concurrent authentication attempts - reset if in progress
     if (this.isAuthenticating) {
-      return { success: false, error: 'Authentication already in progress' };
+      logger.warn('Authentication already in progress, resetting state for new attempt');
+      this.isAuthenticating = false;
+      this.phoneCodeHash = null;
     }
 
+    // Use provided phone or saved/default phone
+    const phone = phoneNumber || this.phone;
+
     try {
+      // Always ensure client is initialized and connected
       if (!this.client) {
+        await this.initialize();
+      }
+
+      // Verify client is actually connected, if not, reconnect
+      if (!this.client.isConnected) {
+        logger.warn('Client not connected, reconnecting...');
+        await this.client.connect();
+      }
+
+      // If client is already authorized, we need to re-authenticate
+      if (await this.client.isUserAuthorized()) {
+        logger.warn('Client already authorized. Disconnecting to start fresh authentication.');
+        await this.cleanup();
         await this.initialize();
       }
 
@@ -295,7 +368,7 @@ class TelegramService {
       const Api = (await import('telegram/tl/index.js')).Api;
       const result = await this.client.invoke(
         new Api.auth.SendCode({
-          phoneNumber: PHONE,
+          phoneNumber: phone,
           apiId: API_ID,
           apiHash: API_HASH,
           settings: new Api.CodeSettings({})
@@ -303,10 +376,17 @@ class TelegramService {
       );
 
       this.phoneCodeHash = result.phoneCodeHash;
-      logger.info(`Verification code sent to ${PHONE}`);
-      return { success: true, status: 'code_sent', phone: PHONE };
+
+      // Save phone number if provided
+      if (phoneNumber) {
+        this.setPhone(phoneNumber);
+      }
+
+      logger.info(`Verification code sent to ${phone} (hash: ${this.phoneCodeHash?.substring(0, 8)}...)`);
+      return { success: true, status: 'code_sent', phone };
     } catch (error) {
       this.isAuthenticating = false;
+      this.phoneCodeHash = null;
       logger.error('Failed to send auth code', error);
       return { success: false, error: error.message };
     }
@@ -314,9 +394,9 @@ class TelegramService {
 
   async verifyCode(code, password = null) {
     if (!this.isAuthenticating || !this.phoneCodeHash) {
-      return { 
-        success: false, 
-        error: 'No authentication in progress. Please request a code first.' 
+      return {
+        success: false,
+        error: 'No authentication in progress. Please request a code first.'
       };
     }
 
@@ -326,7 +406,7 @@ class TelegramService {
       try {
         await this.client.invoke(
           new Api.auth.SignIn({
-            phoneNumber: PHONE,
+            phoneNumber: this.phone,
             phoneCodeHash: this.phoneCodeHash,
             phoneCode: code
           })
@@ -338,10 +418,10 @@ class TelegramService {
       } catch (signInError) {
         if (signInError.errorMessage === 'SESSION_PASSWORD_NEEDED') {
           if (!password) {
-            return { 
-              success: false, 
-              status: 'needs_password', 
-              error: 'Two-factor authentication password required' 
+            return {
+              success: false,
+              status: 'needs_password',
+              error: 'Two-factor authentication password required'
             };
           }
 
@@ -356,16 +436,30 @@ class TelegramService {
         throw signInError;
       }
     } catch (error) {
+      const errorMessage = error.errorMessage || error.message;
+
+      // Special handling for PHONE_CODE_EXPIRED
+      if (errorMessage === 'PHONE_CODE_EXPIRED') {
+        logger.warn('Phone code expired, user needs to request a new code');
+        this.isAuthenticating = false;
+        this.phoneCodeHash = null;
+        return {
+          success: false,
+          status: 'code_expired',
+          error: 'Verification code expired. Please request a new code and try again.'
+        };
+      }
+
       logger.error('Failed to verify code', error);
 
-      if (error.errorMessage !== 'SESSION_PASSWORD_NEEDED') {
+      if (errorMessage !== 'SESSION_PASSWORD_NEEDED') {
         this.isAuthenticating = false;
         this.phoneCodeHash = null;
       }
 
-      return { 
-        success: false, 
-        error: error.message || error.errorMessage || 'Verification failed' 
+      return {
+        success: false,
+        error: errorMessage || 'Verification failed'
       };
     }
   }
@@ -527,6 +621,115 @@ class TelegramService {
   }
 
   // ==========================================================================
+  // BNB CONTRACT POSTING
+  // ==========================================================================
+
+  /**
+   * Check if a contract address is a BNB (EVM) address
+   * @param {string} address - Contract address to check
+   * @returns {boolean} - True if BNB/EVM address
+   */
+  isBNBAddress(address) {
+    return /^0x[a-fA-F0-9]{40}$/i.test(address);
+  }
+
+  /**
+   * Post a BNB contract address to the BNB channel on discovery
+   * @param {string} contractAddress - The BNB contract address
+   * @param {object} tokenInfo - Optional token info (name, symbol)
+   */
+  async postBNBOnDiscovery(contractAddress, tokenInfo = {}) {
+    try {
+      // Check if it's a BNB address
+      if (!this.isBNBAddress(contractAddress)) {
+        return { success: false, error: 'Not a BNB address' };
+      }
+
+      // Check if already posted
+      if (this.bnbPostedOnDiscovery.has(contractAddress)) {
+        return { success: true, status: 'already_posted' };
+      }
+
+      await this.ensureConnected();
+
+      // Post just the contract address (pure format)
+      await this.sendToChannel(BNB_CHANNEL_ID, contractAddress);
+
+      // Track as posted
+      this.bnbPostedOnDiscovery.set(contractAddress, Date.now());
+
+      const name = tokenInfo.symbol || tokenInfo.name || '';
+      logger.success(`📡 Posted BNB on discovery: ${contractAddress}${name ? ` (${name})` : ''}`);
+
+      return { success: true, posted: true };
+    } catch (error) {
+      logger.error(`Failed to post BNB on discovery: ${contractAddress}`, error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Post a BNB contract address to the BNB channel when it hits 2x
+   * @param {string} contractAddress - The BNB contract address
+   * @param {object} tokenInfo - Token info with multiplier
+   */
+  async postBNBOn2x(contractAddress, tokenInfo = {}) {
+    try {
+      // Check if it's a BNB address
+      if (!this.isBNBAddress(contractAddress)) {
+        return { success: false, error: 'Not a BNB address' };
+      }
+
+      // Check if already posted on 2x
+      if (this.bnbPostedOn2x.has(contractAddress)) {
+        return { success: true, status: 'already_posted' };
+      }
+
+      await this.ensureConnected();
+
+      // Post just the contract address (pure format)
+      await this.sendToChannel(BNB_CHANNEL_ID, contractAddress);
+
+      // Track as posted
+      this.bnbPostedOn2x.set(contractAddress, Date.now());
+
+      const name = tokenInfo.symbol || tokenInfo.name || '';
+      const multiplier = tokenInfo.multiplier || 0;
+      logger.success(`🚀 Posted BNB on 2x: ${contractAddress} (${multiplier.toFixed(2)}x)${name ? ` (${name})` : ''}`);
+
+      return { success: true, posted: true };
+    } catch (error) {
+      logger.error(`Failed to post BNB on 2x: ${contractAddress}`, error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Check if a BNB token has been posted on discovery
+   */
+  isBNBPostedOnDiscovery(contractAddress) {
+    return this.bnbPostedOnDiscovery.has(contractAddress);
+  }
+
+  /**
+   * Check if a BNB token has been posted on 2x
+   */
+  isBNBPostedOn2x(contractAddress) {
+    return this.bnbPostedOn2x.has(contractAddress);
+  }
+
+  /**
+   * Get BNB posting stats
+   */
+  getBNBStats() {
+    return {
+      postedOnDiscovery: this.bnbPostedOnDiscovery.size,
+      postedOn2x: this.bnbPostedOn2x.size,
+      channelId: BNB_CHANNEL_ID.toString()
+    };
+  }
+
+  // ==========================================================================
   // TOGGLES
   // ==========================================================================
 
@@ -561,6 +764,11 @@ class TelegramService {
         max: PUBLIC_RATE_LIMIT.maxSends,
         windowMinutes: PUBLIC_RATE_LIMIT.windowMs / 60000,
         canSend: this.canSendToPublicChannel()
+      },
+      bnbStats: {
+        postedOnDiscovery: this.bnbPostedOnDiscovery.size,
+        postedOn2x: this.bnbPostedOn2x.size,
+        channelId: BNB_CHANNEL_ID.toString()
       }
     };
   }

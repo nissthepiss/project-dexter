@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEXTER Logo Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #030303;
+            min-height: 100vh;
+            padding: 40px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #ff6b00;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #9a9a9e;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+        }
+
+        .mockup-card {
+            background: #080808;
+            border: 1px solid #141414;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .mockup-canvas-container {
+            background: #000;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .mockup-info {
+            padding: 15px 20px;
+            border-top: 1px solid #141414;
+        }
+
+        .mockup-name {
+            color: #ff6b00;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .mockup-desc {
+            color: #6a6a6e;
+            font-size: 11px;
+        }
+
+        .download-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #080808;
+            border: 1px solid #141414;
+            border-radius: 8px;
+        }
+
+        .download-btn {
+            background: #ff6b00;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .download-btn:hover {
+            background: #ff8c00;
+        }
+
+        .download-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+        }
+
+        .status {
+            color: #4ade80;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>◈ DEXTER Logo Generator</h1>
+        <p class="subtitle">Generating 10 creative mockups incorporating the dog into DEXTER branding...</p>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="download-section">
+            <button class="download-btn" id="downloadAll" onclick="downloadAll()">Download All Mockups</button>
+            <p class="status" id="status"></p>
+        </div>
+    </div>
+
+    <script>
+        const dogImg = new Image();
+        dogImg.crossOrigin = 'anonymous';
+        dogImg.src = 'dog.png';
+
+        let canvases = [];
+        let mockupData = [];
+
+        const mockups = [
+            {
+                name: 'Terminal Hunter',
+                desc: 'Dog as ASCII-style terminal mascot with DEXTER command',
+                render: renderTerminalHunter
+            },
+            {
+                name: 'Badge Emblem',
+                desc: 'Circular badge with dog silhouette and orange ring',
+                render: renderBadgeEmblem
+            },
+            {
+                name: 'Glint Stalker',
+                desc: 'Dog with glitch/cyberpunk effects and trading indicators',
+                render: renderGlitchStalker
+            },
+            {
+                name: 'Minimal Icon',
+                desc: 'Clean, minimal dog head icon with DEXTER text',
+                render: renderMinimalIcon
+            },
+            {
+                name: 'Hunter Mark',
+                desc: 'Target scope overlay on dog with hunting theme',
+                render: renderHunterMark
+            },
+            {
+                name: 'Chart Rider',
+                desc: 'Dog riding upward price chart with momentum',
+                render: renderChartRider
+            },
+            {
+                name: 'Neon Glow',
+                desc: 'Dog portrait with electric orange glow and neon effects',
+                render: renderNeonGlow
+            },
+            {
+                name: 'Block Matrix',
+                desc: 'Pixelated/8-bit style dog in terminal blocks',
+                render: renderBlockMatrix
+            },
+            {
+                name: 'Radar Sweep',
+                desc: 'Dog in radar/scanner display with detection ring',
+                render: renderRadarSweep
+            },
+            {
+                name: 'Momentum Burst',
+                desc: 'Dog with speed lines and explosive energy',
+                render: renderMomentumBurst
+            }
+        ];
+
+        dogImg.onload = () => {
+            document.getElementById('status').textContent = 'Images loaded, generating mockups...';
+            generateAllMockups();
+        };
+
+        function createCanvas(width, height) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            return canvas;
+        }
+
+        function drawRoundedRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function renderTerminalHunter(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Dark terminal background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            // Terminal prompt
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 28px JetBrains Mono, monospace';
+            ctx.fillText('$ ./dexter', 30, 50);
+
+            // Dog in terminal frame
+            const dogSize = 100;
+            const dogX = 30;
+            const dogY = 70;
+
+            // Terminal box around dog
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(dogX - 5, dogY - 5, dogSize + 10, dogSize + 10);
+            ctx.setLineDash([]);
+
+            // Draw dog with terminal filter
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(dogX, dogY, dogSize, dogSize);
+            ctx.clip();
+
+            // Orange tint overlay
+            ctx.globalAlpha = 0.15;
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(dogX, dogY, dogSize, dogSize);
+            ctx.globalAlpha = 1;
+
+            ctx.drawImage(dogImg, dogX, dogY, dogSize, dogSize);
+            ctx.restore();
+
+            // Scanline effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            for (let i = dogY; i < dogY + dogSize; i += 3) {
+                ctx.fillRect(dogX, i, dogSize, 1);
+            }
+
+            // ASCII art style elements
+            ctx.fillStyle = '#4ade80';
+            ctx.font = '11px JetBrains Mono, monospace';
+            const ascii = [
+                '┌─────────────────┐',
+                '│ TARGET ACQUIRED │',
+                '│ SCANNING...     │',
+                '└─────────────────┘'
+            ];
+            ascii.forEach((line, i) => {
+                ctx.fillText(line, 150, 85 + i * 18);
+            });
+
+            // DEXTER text
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 48px Bebas Neue, sans-serif';
+            ctx.fillText('DEXTER', 30, 220);
+
+            // Dot
+            ctx.fillStyle = '#ff6b00';
+            ctx.beginPath();
+            ctx.arc(212, 205, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tagline
+            ctx.fillStyle = '#6a6a6e';
+            ctx.font = '12px JetBrains Mono, monospace';
+            ctx.fillText('TOKEN HUNTER', 30, 245);
+
+            return canvas;
+        }
+
+        function renderBadgeEmblem(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Black background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const centerX = w / 2;
+            const centerY = h / 2 - 10;
+
+            // Outer ring - orange
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 95, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Inner ring - grey
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 85, 0, Math.PI * 2);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Dog in circle
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 75, 0, Math.PI * 2);
+            ctx.clip();
+
+            // Dark background inside
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fill();
+
+            // Draw dog
+            const dogSize = 150;
+            ctx.drawImage(dogImg, centerX - dogSize/2, centerY - dogSize/2 - 10, dogSize, dogSize);
+            ctx.restore();
+
+            // Orange overlay tint
+            ctx.save();
+            ctx.globalAlpha = 0.1;
+            ctx.fillStyle = '#ff6b00';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 75, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // DEXTER text curved effect (simplified as straight for canvas)
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 52px Bebas Neue, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('DEXTER', centerX, h - 35);
+
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 14px JetBrains Mono, monospace';
+            ctx.fillText('TOKEN HUNTER', centerX, h - 15);
+
+            // Decorative elements
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = '10px JetBrains Mono, monospace';
+
+            // Top text
+            ctx.save();
+            ctx.translate(centerX, 30);
+            ctx.fillText('◈ SOLANA TRACKER ◈', 0, 0);
+            ctx.restore();
+
+            return canvas;
+        }
+
+        function renderGlitchStalker(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Dark background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const dogX = 50;
+            const dogY = 40;
+            const dogSize = 120;
+
+            // RGB offset effect - draw dog 3 times with slight offset
+            ctx.globalAlpha = 0.7;
+
+            // Red channel offset
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.rect(dogX - 3, dogY, dogSize, dogSize);
+            ctx.clip();
+            ctx.drawImage(dogImg, dogX - 3, dogY, dogSize, dogSize);
+            ctx.restore();
+
+            // Blue channel offset
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = '#00ffff';
+            ctx.beginPath();
+            ctx.rect(dogX + 3, dogY, dogSize, dogSize);
+            ctx.clip();
+            ctx.drawImage(dogImg, dogX + 3, dogY, dogSize, dogSize);
+            ctx.restore();
+
+            ctx.globalAlpha = 1;
+
+            // Main dog
+            ctx.drawImage(dogImg, dogX, dogY, dogSize, dogSize);
+
+            // Glitch lines
+            for (let i = 0; i < 8; i++) {
+                const y = dogY + Math.random() * dogSize;
+                const height = Math.random() * 4 + 1;
+                ctx.fillStyle = Math.random() > 0.5 ? '#ff6b00' : '#ff4500';
+                ctx.globalAlpha = Math.random() * 0.5 + 0.3;
+                ctx.fillRect(dogX - 5, y, dogSize + 15, height);
+            }
+            ctx.globalAlpha = 1;
+
+            // Glitch text effect
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 46px Bebas Neue, sans-serif';
+
+            // Main text
+            ctx.fillText('DEXT', 195, 70);
+
+            // Glitched E
+            ctx.fillStyle = '#ff4500';
+            ctx.fillText('E', 273, 70);
+            ctx.fillStyle = '#ff8c00';
+            ctx.fillText('E', 275, 70);
+
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillText('R', 298, 70);
+
+            // Dot
+            ctx.fillStyle = '#ff4500';
+            ctx.fillRect(335, 35, 8, 8);
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(333, 33, 8, 8);
+
+            // Trading indicators
+            ctx.fillStyle = '#4ade80';
+            ctx.font = 'bold 16px JetBrains Mono, monospace';
+            ctx.fillText('▲ +247%', 195, 110);
+
+            ctx.fillStyle = '#f87171';
+            ctx.fillText('▼ VOL', 195, 135);
+
+            // Glitch bars
+            ctx.fillStyle = 'rgba(255, 107, 0, 0.3)';
+            ctx.fillRect(0, 180, w, 2);
+            ctx.fillRect(0, 185, w, 1);
+            ctx.fillRect(0, 190, w, 3);
+
+            // Bottom text
+            ctx.fillStyle = '#9a9a9e';
+            ctx.font = '12px JetBrains Mono, monospace';
+            ctx.fillText('TOKEN_HUNTER.exe', 195, 230);
+
+            return canvas;
+        }
+
+        function renderMinimalIcon(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Clean dark background
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, w, h);
+
+            const centerX = w / 2;
+
+            // Simple dog silhouette circle
+            const iconSize = 100;
+            const iconY = 30;
+
+            // Background circle
+            ctx.beginPath();
+            ctx.arc(centerX, iconY + iconSize/2, iconSize/2 + 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#141414';
+            ctx.fill();
+
+            // Dog clipped to circle
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, iconY + iconSize/2, iconSize/2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(dogImg, centerX - iconSize/2, iconY, iconSize, iconSize);
+            ctx.restore();
+
+            // Orange border
+            ctx.beginPath();
+            ctx.arc(centerX, iconY + iconSize/2, iconSize/2 + 5, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Clean DEXTER text
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 52px Bebas Neue, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('DEXTER', centerX, 200);
+
+            // Minimal dot
+            ctx.fillStyle = '#ff6b00';
+            ctx.beginPath();
+            ctx.arc(centerX + 68, 188, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Subtitle
+            ctx.fillStyle = '#4a4a4e';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.letterSpacing = '3px';
+            ctx.fillText('TOKEN HUNTER', centerX, 225);
+
+            return canvas;
+        }
+
+        function renderHunterMark(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const dogX = 60;
+            const dogY = 30;
+            const dogSize = 130;
+
+            // Dog with scope overlay
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(dogX + dogSize/2, dogY + dogSize/2, dogSize/2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(dogImg, dogX, dogY, dogSize, dogSize);
+            ctx.restore();
+
+            // Target scope crosshairs
+            const cx = dogX + dogSize/2;
+            const cy = dogY + dogSize/2;
+            const radius = dogSize/2 + 10;
+
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 2;
+
+            // Outer circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Inner circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius - 15, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Crosshairs
+            ctx.beginPath();
+            // Horizontal
+            ctx.moveTo(cx - radius - 10, cy);
+            ctx.lineTo(cx - radius + 20, cy);
+            ctx.moveTo(cx + radius - 20, cy);
+            ctx.lineTo(cx + radius + 10, cy);
+            // Vertical
+            ctx.moveTo(cx, cy - radius - 10);
+            ctx.lineTo(cx, cy - radius + 20);
+            ctx.moveTo(cx, cy + radius - 20);
+            ctx.lineTo(cx, cy + radius + 10);
+            ctx.stroke();
+
+            // Center dot
+            ctx.fillStyle = '#ff4500';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tick marks
+            for (let i = 0; i < 360; i += 30) {
+                const rad = i * Math.PI / 180;
+                const x1 = cx + Math.cos(rad) * (radius - 5);
+                const y1 = cy + Math.sin(rad) * (radius - 5);
+                const x2 = cx + Math.cos(rad) * radius;
+                const y2 = cy + Math.sin(rad) * radius;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            // DEXTER text
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 48px Bebas Neue, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('DEXTER', cx, h - 50);
+
+            // Hunter subtitle
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 14px JetBrains Mono, monospace';
+            ctx.fillText('◕ TARGET LOCKED', cx, h - 25);
+
+            return canvas;
+        }
+
+        function renderChartRider(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.fillStyle = '#030303';
+            ctx.fillRect(0, 0, w, h);
+
+            // Grid lines
+            ctx.strokeStyle = '#141414';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += 30) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let y = 0; y < h; y += 30) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // Price chart - upward trend
+            const chartPoints = [
+                [20, 200],
+                [60, 180],
+                [100, 190],
+                [140, 150],
+                [180, 130],
+                [220, 80],
+                [260, 50],
+                [300, 30],
+                [340, 20]
+            ];
+
+            // Chart line
+            ctx.beginPath();
+            ctx.moveTo(chartPoints[0][0], chartPoints[0][1]);
+            for (let i = 1; i < chartPoints.length; i++) {
+                ctx.lineTo(chartPoints[i][0], chartPoints[i][1]);
+            }
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Chart fill
+            ctx.lineTo(340, 250);
+            ctx.lineTo(20, 250);
+            ctx.closePath();
+            const gradient = ctx.createLinearGradient(0, 0, 0, 250);
+            gradient.addColorStop(0, 'rgba(255, 107, 0, 0.3)');
+            gradient.addColorStop(1, 'rgba(255, 107, 0, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Dog at the peak
+            const dogSize = 60;
+            const peakX = chartPoints[chartPoints.length - 1][0];
+            const peakY = chartPoints[chartPoints.length - 1][1];
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(peakX, peakY, dogSize/2 + 5, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(dogImg, peakX - dogSize/2, peakY - dogSize/2, dogSize, dogSize);
+            ctx.restore();
+
+            // Circle around dog
+            ctx.strokeStyle = '#ff8c00';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(peakX, peakY, dogSize/2 + 5, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // DEXTER text
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 44px Bebas Neue, sans-serif';
+            ctx.fillText('DEXTER.', 20, 240);
+
+            // Momentum indicators
+            ctx.fillStyle = '#4ade80';
+            ctx.font = 'bold 16px JetBrains Mono, monospace';
+            ctx.fillText('▲ MOMENTUM', 20, 40);
+
+            // Percentage
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 24px JetBrains Mono, monospace';
+            ctx.fillText('+847%', 200, 40);
+
+            return canvas;
+        }
+
+        function renderNeonGlow(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Deep black
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const centerX = w / 2;
+            const centerY = h / 2 - 20;
+
+            // Multiple glow layers
+            const glowColors = [
+                'rgba(255, 107, 0, 0.1)',
+                'rgba(255, 107, 0, 0.2)',
+                'rgba(255, 140, 0, 0.3)',
+                'rgba(255, 140, 0, 0.15)',
+                'rgba(255, 69, 0, 0.1)'
+            ];
+
+            for (let i = 0; i < glowColors.length; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 60 + i * 20, 0, Math.PI * 2);
+                ctx.fillStyle = glowColors[i];
+                ctx.fill();
+            }
+
+            // Dog in center
+            const dogSize = 100;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 50, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(dogImg, centerX - dogSize/2, centerY - dogSize/2, dogSize, dogSize);
+            ctx.restore();
+
+            // Neon ring
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 3;
+            ctx.shadowColor = '#ff6b00';
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 55, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // DEXTER with glow
+            ctx.shadowColor = '#ff6b00';
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 48px Bebas Neue, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('DEXTER', centerX, h - 45);
+            ctx.shadowBlur = 0;
+
+            // Dot with glow
+            ctx.shadowColor = '#ff4500';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#ff6b00';
+            ctx.beginPath();
+            ctx.arc(centerX + 70, h - 58, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Electric accent lines
+            ctx.strokeStyle = '#ff8c00';
+            ctx.lineWidth = 1;
+            ctx.shadowColor = '#ff6b00';
+            ctx.shadowBlur = 5;
+
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 72 - 90) * Math.PI / 180;
+                const x1 = centerX + Math.cos(angle) * 65;
+                const y1 = centerY + Math.sin(angle) * 65;
+                const x2 = centerX + Math.cos(angle) * 80;
+                const y2 = centerY + Math.sin(angle) * 80;
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+
+            // Tagline
+            ctx.fillStyle = '#6a6a6e';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.fillText('TOKEN HUNTER', centerX, h - 20);
+
+            return canvas;
+        }
+
+        function renderBlockMatrix(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const blockSize = 12;
+            const gridW = 24;
+            const gridH = 15;
+
+            // Create pixelated dog effect
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = gridW;
+            tempCanvas.height = gridH;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(dogImg, 0, 0, gridW, gridH);
+
+            const pixelData = tempCtx.getImageData(0, 0, gridW, gridH).data;
+
+            const startX = 80;
+            const startY = 30;
+
+            // Draw pixel blocks
+            for (let y = 0; y < gridH; y++) {
+                for (let x = 0; x < gridW; x++) {
+                    const i = (y * gridW + x) * 4;
+                    const brightness = (pixelData[i] + pixelData[i + 1] + pixelData[i + 2]) / 3;
+
+                    if (brightness > 50) {
+                        // Color based on brightness
+                        if (brightness > 200) {
+                            ctx.fillStyle = '#ff8c00';
+                        } else if (brightness > 150) {
+                            ctx.fillStyle = '#ff6b00';
+                        } else if (brightness > 100) {
+                            ctx.fillStyle = '#cc5500';
+                        } else {
+                            ctx.fillStyle = '#333';
+                        }
+
+                        const bx = startX + x * blockSize;
+                        const by = startY + y * blockSize;
+
+                        // Draw block with small gap
+                        ctx.fillRect(bx, by, blockSize - 1, blockSize - 1);
+                    }
+                }
+            }
+
+            // Block border
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(startX - 3, startY - 3, gridW * blockSize + 2, gridH * blockSize + 2);
+
+            // Terminal cursor effect
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(startX + gridW * blockSize + 5, startY + gridH * blockSize - 10, 8, 14);
+
+            // DEXTER in block style
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 44px Bebas Neue, sans-serif';
+            ctx.fillText('DEXTER', 30, 230);
+
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(192, 200, 6, 6);
+
+            // Block decoration
+            ctx.fillStyle = '#ff6b00';
+            for (let i = 0; i < 8; i++) {
+                ctx.fillRect(30 + i * 15, 245, 10, 2);
+            }
+
+            return canvas;
+        }
+
+        function renderRadarSweep(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, h);
+
+            const centerX = 250;
+            const centerY = 110;
+
+            // Radar circles
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 1;
+
+            for (let r = 30; r <= 100; r += 20) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Radar grid lines
+            for (let angle = 0; angle < 360; angle += 45) {
+                const rad = angle * Math.PI / 180;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + Math.cos(rad) * 100,
+                    centerY + Math.sin(rad) * 100
+                );
+                ctx.stroke();
+            }
+
+            // Sweep gradient
+            const sweepGradient = ctx.createConicGradient(-Math.PI / 4, centerX, centerY);
+            sweepGradient.addColorStop(0, 'rgba(255, 107, 0, 0)');
+            sweepGradient.addColorStop(0.8, 'rgba(255, 107, 0, 0)');
+            sweepGradient.addColorStop(1, 'rgba(255, 107, 0, 0.4)');
+
+            ctx.fillStyle = sweepGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 100, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Dog at detection point
+            const dogX = centerX + 50;
+            const dogY = centerY - 30;
+            const dogSize = 50;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(dogX, dogY, dogSize/2 + 3, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(dogImg, dogX - dogSize/2, dogY - dogSize/2, dogSize, dogSize);
+            ctx.restore();
+
+            // Detection ring
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(dogX, dogY, dogSize/2 + 3, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Pulse rings
+            ctx.strokeStyle = 'rgba(255, 107, 0, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(dogX, dogY, dogSize/2 + 10, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // DEXTER text
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 46px Bebas Neue, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('DEXTER.', 20, 240);
+
+            // Radar label
+            ctx.fillStyle = '#4ade80';
+            ctx.font = '12px JetBrains Mono, monospace';
+            ctx.fillText('◉ TARGET DETECTED', 20, 30);
+
+            // Coordinates
+            ctx.fillStyle = '#6a6a6e';
+            ctx.font = '11px JetBrains Mono, monospace';
+            ctx.fillText(`X:${dogX} Y:${dogY}`, 20, 50);
+
+            return canvas;
+        }
+
+        function renderMomentumBurst(canvas) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.fillStyle = '#030303';
+            ctx.fillRect(0, 0, w, h);
+
+            const centerX = w / 2;
+            const centerY = h / 2 - 10;
+
+            // Speed lines (burst effect)
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < 20; i++) {
+                const angle = (i * 18 - 90) * Math.PI / 180;
+                const length = 40 + Math.random() * 60;
+                const x1 = centerX + Math.cos(angle) * 60;
+                const y1 = centerY + Math.sin(angle) * 60;
+                const x2 = centerX + Math.cos(angle) * (60 + length);
+                const y2 = centerY + Math.sin(angle) * (60 + length);
+
+                ctx.globalAlpha = 0.3 + Math.random() * 0.4;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+
+            // Dog in center
+            const dogSize = 90;
+
+            // Glow behind dog
+            const glowGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 60);
+            glowGradient.addColorStop(0, 'rgba(255, 107, 0, 0.4)');
+            glowGradient.addColorStop(1, 'rgba(255, 107, 0, 0)');
+            ctx.fillStyle = glowGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 60, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 45, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(dogImg, centerX - dogSize/2, centerY - dogSize/2, dogSize, dogSize);
+            ctx.restore();
+
+            // Motion blur streaks
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.2)';
+            for (let i = 0; i < 5; i++) {
+                const offset = i * 15;
+                ctx.fillRect(centerX - 70 - offset, centerY - 40 + i * 5, 20 + offset, 5);
+            }
+
+            // DEXTER text with italic
+            ctx.save();
+            ctx.translate(centerX, h - 40);
+            ctx.transform(1, 0, -0.15, 1, 0, 0);
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 52px Bebas Neue, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('DEXTER', 0, 0);
+            ctx.restore();
+
+            // Speed effect on text
+            ctx.fillStyle = '#ff6b00';
+            ctx.font = 'bold 14px JetBrains Mono, monospace';
+            ctx.fillText('>>> MOMENTUM', centerX - 50, h - 18);
+
+            return canvas;
+        }
+
+        function generateAllMockups() {
+            const grid = document.getElementById('grid');
+
+            mockups.forEach((mockup, index) => {
+                const canvas = createCanvas(400, 270);
+
+                mockup.render(canvas);
+
+                canvases.push(canvas);
+                mockupData.push({
+                    name: mockup.name,
+                    desc: mockup.desc,
+                    filename: `mockup-${index + 1}.png`
+                });
+
+                // Create card
+                const card = document.createElement('div');
+                card.className = 'mockup-card';
+
+                const container = document.createElement('div');
+                container.className = 'mockup-canvas-container';
+                container.appendChild(canvas);
+
+                const info = document.createElement('div');
+                info.className = 'mockup-info';
+                info.innerHTML = `
+                    <div class="mockup-name">${mockup.name}</div>
+                    <div class="mockup-desc">${mockup.desc}</div>
+                `;
+
+                card.appendChild(container);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+
+            document.getElementById('status').textContent = 'Generated 10 mockups! Click "Download All" to save.';
+        }
+
+        function downloadAll() {
+            mockupData.forEach((data, index) => {
+                const link = document.createElement('a');
+                link.download = data.filename;
+                link.href = canvases[index].toDataURL('image/png');
+                link.click();
+            });
+
+            document.getElementById('status').textContent = 'Downloaded all 10 mockups to graphictask folder!';
+        }
+    </script>
+</body>
+</html>
