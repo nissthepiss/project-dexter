@@ -1,0 +1,5 @@
+{
+  "providers": [],
+  "buildCommand": "echo 'No build needed - use Dockerfile'",
+  "startCommand": "node src/backend/server.mjs"
+}
