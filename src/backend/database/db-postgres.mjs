@@ -44,12 +44,48 @@ export async function initDatabase() {
 }
 
 /**
+ * Migrate existing tables to use BIGINT for timestamps
+ */
+async function migrateTables() {
+  const client = await pool.connect();
+
+  try {
+    // Alter tokens table timestamps to BIGINT
+    await client.query(`ALTER TABLE tokens ALTER COLUMN spottedAt TYPE BIGINT`);
+    await client.query(`ALTER TABLE tokens ALTER COLUMN lastUpdated TYPE BIGINT`);
+    await client.query(`ALTER TABLE tokens ALTER COLUMN holderSpottedAt TYPE BIGINT`);
+
+    // Alter priceHistory timestamp to BIGINT
+    await client.query(`ALTER TABLE priceHistory ALTER COLUMN timestamp TYPE BIGINT`);
+
+    // Alter alertTiers createdAt to BIGINT
+    await client.query(`ALTER TABLE alertTiers ALTER COLUMN createdAt TYPE BIGINT`);
+
+    // Alter alertHistory triggeredAt to BIGINT
+    await client.query(`ALTER TABLE alertHistory ALTER COLUMN triggeredAt TYPE BIGINT`);
+
+    // Alter blacklist blacklistedAt to BIGINT
+    await client.query(`ALTER TABLE blacklist ALTER COLUMN blacklistedAt TYPE BIGINT`);
+
+    logger.database('PostgreSQL tables migrated to BIGINT timestamps');
+  } catch (err) {
+    // Tables might not exist yet, which is fine
+    logger.database('Migration skipped (tables may not exist yet)');
+  } finally {
+    client.release();
+  }
+}
+
+/**
  * Create database tables
  */
 async function createTables() {
   const client = await pool.connect();
 
   try {
+    // First, try to migrate existing tables
+    await migrateTables();
+
     // Main tokens table
     await client.query(`
       CREATE TABLE IF NOT EXISTS tokens (
@@ -58,18 +94,18 @@ async function createTables() {
         name TEXT NOT NULL,
         chainShort TEXT,
         symbol TEXT,
-        spottedAt INTEGER NOT NULL,
+        spottedAt BIGINT NOT NULL,
         spottedMc REAL NOT NULL,
         currentMc REAL,
         previousMc REAL,
         volume24h REAL,
         previousVolume24h REAL,
         peakMultiplier REAL DEFAULT 1.0,
-        lastUpdated INTEGER,
+        lastUpdated BIGINT,
         logoUrl TEXT,
         source TEXT DEFAULT 'degen',
         holderRank INTEGER DEFAULT NULL,
-        holderSpottedAt INTEGER DEFAULT NULL,
+        holderSpottedAt BIGINT DEFAULT NULL,
         holderSpottedMc REAL DEFAULT NULL,
         holderPeakMc REAL DEFAULT NULL,
         holderPeakMultiplier REAL DEFAULT NULL
@@ -81,7 +117,7 @@ async function createTables() {
       CREATE TABLE IF NOT EXISTS priceHistory (
         id SERIAL PRIMARY KEY,
         tokenId TEXT NOT NULL,
-        timestamp INTEGER NOT NULL,
+        timestamp BIGINT NOT NULL,
         marketCap REAL,
         volume REAL,
         FOREIGN KEY (tokenId) REFERENCES tokens(id) ON DELETE CASCADE
@@ -95,7 +131,7 @@ async function createTables() {
         tier1Multiplier REAL DEFAULT 1.1,
         tier2Multiplier REAL DEFAULT 1.3,
         tier3Multiplier REAL DEFAULT 1.4,
-        createdAt INTEGER
+        createdAt BIGINT
       )
     `);
 
@@ -106,7 +142,7 @@ async function createTables() {
         tokenId TEXT NOT NULL,
         multiplier REAL,
         tier INTEGER,
-        triggeredAt INTEGER,
+        triggeredAt BIGINT,
         FOREIGN KEY (tokenId) REFERENCES tokens(id) ON DELETE CASCADE
       )
     `);
@@ -117,7 +153,7 @@ async function createTables() {
         id SERIAL PRIMARY KEY,
         contractAddress TEXT UNIQUE NOT NULL,
         name TEXT,
-        blacklistedAt INTEGER NOT NULL
+        blacklistedAt BIGINT NOT NULL
       )
     `);
 

@@ -507,67 +507,75 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
   const mode = process.env.DATABASE_URL ? '🌐 WEB HOSTING MODE (PostgreSQL)' : '💾 ELECTRON MODE (SQLite)';
   logger.success(`Server running on ${logger.highlight(`http://localhost:${PORT}`)} [${mode}]`);
 
-  // Get external IP with multiple fallbacks
-  const ipServices = [
-    'https://api.ipify.org?format=json',
-    'https://api64.ipify.org?format=json',
-    'https://icanhazip.com',
-    'https://ifconfig.me/ip'
-  ];
+  // Skip LocalTunnel and external IP detection in web hosting mode
+  const isWebHosted = !!process.env.DATABASE_URL;
 
-  let externalIP = null;
+  if (isWebHosted) {
+    logger.info('Running on web hosting platform - skipping LocalTunnel');
+    logger.info('Use the platform-provided URL to access this service');
+  } else {
+    // Get external IP with multiple fallbacks
+    const ipServices = [
+      'https://api.ipify.org?format=json',
+      'https://api64.ipify.org?format=json',
+      'https://icanhazip.com',
+      'https://ifconfig.me/ip'
+    ];
 
-  for (const service of ipServices) {
+    let externalIP = null;
+
+    for (const service of ipServices) {
+      try {
+        const response = await axios.get(service, {
+          timeout: 5000,
+          headers: { 'User-Agent': 'Project-Dexter/1.0' }
+        });
+
+        if (response.data.ip) {
+          externalIP = response.data.ip;
+        } else if (typeof response.data === 'string') {
+          externalIP = response.data.trim();
+        }
+
+        if (externalIP) {
+          logger.info(`External IP: ${logger.highlight(externalIP)}`);
+          break;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+
+    if (!externalIP) {
+      logger.warn('Could not fetch external IP');
+    }
+
+    // Start LocalTunnel
+    logger.info('Starting LocalTunnel...');
     try {
-      const response = await axios.get(service, {
-        timeout: 5000,
-        headers: { 'User-Agent': 'Project-Dexter/1.0' }
+      const tunnel = await localtunnel({ port: PORT });
+      logger.success(`Public URL: ${logger.highlight(tunnel.url)}`);
+      logger.info('Share this link with friends - no port forwarding needed!');
+      logger.warn('Note: LocalTunnel URL is temporary and changes on restart');
+
+      tunnel.on('close', () => {
+        logger.warn('LocalTunnel closed');
       });
 
-      if (response.data.ip) {
-        externalIP = response.data.ip;
-      } else if (typeof response.data === 'string') {
-        externalIP = response.data.trim();
-      }
+      tunnel.on('error', (err) => {
+        logger.error('LocalTunnel error:', err);
+      });
+    } catch (error) {
+      logger.error('Failed to start LocalTunnel:', error.message);
+      logger.info('Falling back to direct IP access');
 
       if (externalIP) {
-        logger.info(`External IP: ${logger.highlight(externalIP)}`);
-        break;
+        logger.info(`Direct link: ${logger.highlight(`http://${externalIP}:${PORT}`)}`);
+        logger.warn('External access checklist:');
+        logger.warn('  1. Windows Firewall: Allow port 3001 inbound');
+        logger.warn('  2. Router: Forward port 3001 to this PC');
+        logger.warn('  3. Server binds to 0.0.0.0 (all interfaces)');
       }
-    } catch (error) {
-      continue;
-    }
-  }
-
-  if (!externalIP) {
-    logger.warn('Could not fetch external IP');
-  }
-
-  // Start LocalTunnel
-  logger.info('Starting LocalTunnel...');
-  try {
-    const tunnel = await localtunnel({ port: PORT });
-    logger.success(`Public URL: ${logger.highlight(tunnel.url)}`);
-    logger.info('Share this link with friends - no port forwarding needed!');
-    logger.warn('Note: LocalTunnel URL is temporary and changes on restart');
-
-    tunnel.on('close', () => {
-      logger.warn('LocalTunnel closed');
-    });
-
-    tunnel.on('error', (err) => {
-      logger.error('LocalTunnel error:', err);
-    });
-  } catch (error) {
-    logger.error('Failed to start LocalTunnel:', error.message);
-    logger.info('Falling back to direct IP access');
-
-    if (externalIP) {
-      logger.info(`Direct link: ${logger.highlight(`http://${externalIP}:${PORT}`)}`);
-      logger.warn('External access checklist:');
-      logger.warn('  1. Windows Firewall: Allow port 3001 inbound');
-      logger.warn('  2. Router: Forward port 3001 to this PC');
-      logger.warn('  3. Server binds to 0.0.0.0 (all interfaces)');
     }
   }
 

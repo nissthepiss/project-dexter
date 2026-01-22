@@ -10,7 +10,8 @@
     "server": "node src/backend/server.mjs",
     "build": "electron-builder",
     "build:win": "electron-builder --win --publish never",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "npm run install-app-deps || true",
+"install-app-deps": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "com.dextertracker.app",
