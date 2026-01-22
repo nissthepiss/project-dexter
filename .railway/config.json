@@ -4,6 +4,9 @@
   },
   "deploy": {
     "startCommand": "node src/backend/server.mjs",
-    "healthcheckPath": "/health"
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 30000,
+    "restartPolicyType": "on-failure",
+    "restartPolicyMaxRetries": 10
   }
 }
